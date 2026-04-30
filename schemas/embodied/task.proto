@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package vmsgs.proto.embodied;
+
+import "common/header.proto";
+import "common/uuid.proto";
+import "common/key_value.proto";
+import "embodied/skill.proto";
+
+// High-level multi-skill task plan.
+
+enum TaskState {
+  TASK_PENDING = 0;
+  TASK_RUNNING = 1;
+  TASK_SUCCEEDED = 2;
+  TASK_FAILED = 3;
+  TASK_CANCELED = 4;
+}
+
+message TaskStep {
+  string name = 1;
+  string skill_name = 2;
+  repeated vmsgs.proto.common.KeyValue parameters = 3;
+  // Indices into `Task.steps` that must succeed before this step can run.
+  repeated uint32 dependencies = 4 [packed = true];
+}
+
+message Task {
+  vmsgs.proto.common.Header header = 1;
+  vmsgs.proto.common.UUID task_uuid = 2;
+  string description = 3;
+  repeated TaskStep steps = 4;
+}
+
+message TaskFeedback {
+  vmsgs.proto.common.Header header = 1;
+  vmsgs.proto.common.UUID task_uuid = 2;
+  TaskState state = 3;
+  uint32 active_step = 4;
+  float progress = 5;
+  // Per-step skill feedback for the currently running step.
+  SkillFeedback step_feedback = 6;
+  string message = 7;
+}

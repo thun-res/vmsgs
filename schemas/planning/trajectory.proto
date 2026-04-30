@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package vmsgs.proto.planning;
+
+import "common/header.proto";
+import "common/time.proto";
+import "geometry/pose.proto";
+
+// Time-parameterized state on the planned trajectory.
+message TrajectoryPoint {
+  vmsgs.proto.common.Duration time_from_start = 1;
+  vmsgs.proto.geometry.Pose pose = 2;
+  float longitudinal_velocity = 3;       // m/s
+  float lateral_velocity = 4;            // m/s
+  float acceleration = 5;                // m/s^2
+  float heading_rate = 6;                // rad/s
+  float front_wheel_angle = 7;           // rad
+  float rear_wheel_angle = 8;            // rad
+}
+
+message Trajectory {
+  vmsgs.proto.common.Header header = 1;
+  repeated TrajectoryPoint points = 2;
+}

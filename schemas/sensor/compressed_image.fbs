@@ -1,0 +1,12 @@
+include "../common/header.fbs";
+
+namespace vmsgs.fbs.sensor;
+
+/// `format` examples: "jpeg", "png", "webp", "rgb8; jpeg compressed bgr8".
+table CompressedImage {
+  header:vmsgs.fbs.common.Header (id: 0);
+  format:string (id: 1);
+  data:[uint8]  (id: 2);
+}
+
+root_type CompressedImage;

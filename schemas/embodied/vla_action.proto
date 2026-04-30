@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package vmsgs.proto.embodied;
+
+import "common/header.proto";
+import "common/uuid.proto";
+
+// Output of a Vision-Language-Action policy. Models commonly emit either
+// a tokenized action vector, a Cartesian delta, or a discrete action label;
+// all three are carried as optional fields here.
+message VLAAction {
+  vmsgs.proto.common.Header header = 1;
+  vmsgs.proto.common.UUID episode_uuid = 2;
+  uint64 step = 3;
+
+  // Continuous action vector (length depends on action_space_id).
+  repeated float action = 4 [packed = true];
+  // Identifier of the action space (e.g. "delta_eef_pose+gripper", "joint_velocity").
+  string action_space_id = 5;
+
+  // For tokenized policies (RT-2, OpenVLA): the discrete action token sequence.
+  repeated int32 action_tokens = 6 [packed = true];
+
+  // Discrete macro-action label (e.g. "pick", "place"); optional.
+  string discrete_label = 7;
+
+  // Per-component log-probability (length matches `action`); optional.
+  repeated float log_prob = 8 [packed = true];
+
+  // True for terminal action of an episode/horizon.
+  bool is_terminal = 9;
+}
+
+// Reward / done signal returned by the environment or supervisor.
+message VLAFeedback {
+  vmsgs.proto.common.Header header = 1;
+  vmsgs.proto.common.UUID episode_uuid = 2;
+  uint64 step = 3;
+  float reward = 4;
+  bool done = 5;
+  bool truncated = 6;
+  // Free-form metadata (success flag, error code, ...).
+  map<string, float> info = 7;
+}

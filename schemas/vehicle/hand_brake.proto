@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package vmsgs.proto.vehicle;
+
+import "common/header.proto";
+
+message HandBrakeCommand {
+  vmsgs.proto.common.Header header = 1;
+  bool active = 2;
+}
+
+message HandBrakeReport {
+  vmsgs.proto.common.Header header = 1;
+  bool active = 2;
+}

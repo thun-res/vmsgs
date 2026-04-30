@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package vmsgs.proto.system;
+
+import "common/header.proto";
+
+enum LogLevel {
+  LOG_DEBUG = 0;
+  LOG_INFO = 1;
+  LOG_WARN = 2;
+  LOG_ERROR = 3;
+  LOG_FATAL = 4;
+  LOG_TRACE = 5;
+}
+
+// Single log line. Mirrors rcl_interfaces/Log + rosgraph_msgs/Log conventions.
+message Log {
+  vmsgs.proto.common.Header header = 1;
+  LogLevel level = 2;
+  string name = 3;
+  string msg = 4;
+  string file = 5;
+  string function = 6;
+  uint32 line = 7;
+}

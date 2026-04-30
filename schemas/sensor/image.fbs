@@ -1,0 +1,22 @@
+// Raw uncompressed 2D image. Use CompressedImage for JPEG/PNG/H.264 etc.
+include "../common/header.fbs";
+
+namespace vmsgs.fbs.sensor;
+
+/// Pixel encoding strings follow ROS sensor_msgs/Image conventions:
+/// "mono8", "mono16", "rgb8", "rgba8", "bgr8", "bgra8",
+/// "yuv422", "yuv422_yuy2", "nv12", "nv21",
+/// "bayer_rggb8", "bayer_bggr8", "bayer_gbrg8", "bayer_grbg8",
+/// "32FC1" (depth), "16UC1" (depth, mm), "8UC1", "8UC3", "8UC4".
+table Image {
+  header:vmsgs.fbs.common.Header (id: 0);
+  height:uint32   (id: 1);
+  width:uint32    (id: 2);
+  encoding:string (id: 3);
+  is_bigendian:bool (id: 4);
+  /// Row stride in bytes. Equals width * pixel_size for tightly packed images.
+  step:uint32     (id: 5);
+  data:[uint8]    (id: 6);
+}
+
+root_type Image;

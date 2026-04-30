@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package vmsgs.proto.planning;
+
+import "common/header.proto";
+
+// External / scenario-imposed speed cap with kinematic constraints.
+message VelocityLimitConstraints {
+  float min_acceleration = 1;  // m/s^2 (negative; deceleration limit)
+  float max_acceleration = 2;  // m/s^2
+  float max_jerk = 3;          // m/s^3
+  float min_jerk = 4;          // m/s^3 (negative)
+}
+
+message VelocityLimit {
+  vmsgs.proto.common.Header header = 1;
+  string sender = 2;
+  float max_velocity = 3;      // m/s
+  bool use_constraints = 4;
+  VelocityLimitConstraints constraints = 5;
+}
+
+message VelocityLimitClearCommand {
+  vmsgs.proto.common.Header header = 1;
+  string sender = 2;
+  bool command = 3;
+}

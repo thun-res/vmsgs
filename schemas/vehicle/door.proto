@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package vmsgs.proto.vehicle;
+
+import "common/header.proto";
+
+enum DoorIndex {
+  DOOR_INDEX_UNKNOWN = 0;
+  DOOR_FRONT_LEFT = 1;
+  DOOR_FRONT_RIGHT = 2;
+  DOOR_REAR_LEFT = 3;
+  DOOR_REAR_RIGHT = 4;
+  DOOR_TRUNK = 5;
+  DOOR_HOOD = 6;
+}
+
+enum DoorState {
+  DOOR_STATE_UNKNOWN = 0;
+  DOOR_STATE_CLOSED = 1;
+  DOOR_STATE_AJAR = 2;
+  DOOR_STATE_OPEN = 3;
+}
+
+message DoorCommand {
+  vmsgs.proto.common.Header header = 1;
+  DoorIndex door = 2;
+  // True = open, false = close.
+  bool open = 3;
+}
+
+message DoorStatus {
+  vmsgs.proto.common.Header header = 1;
+  // index = enum DoorIndex
+  repeated DoorState states = 2 [packed = true];
+}

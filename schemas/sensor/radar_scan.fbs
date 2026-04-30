@@ -1,0 +1,19 @@
+include "../common/header.fbs";
+
+namespace vmsgs.fbs.sensor;
+
+/// Single radar reflection (range/angle/Doppler).
+struct RadarReturn {
+  range:float;        // m
+  azimuth:float;      // rad
+  elevation:float;    // rad
+  doppler_velocity:float; // m/s, positive = approaching
+  amplitude:float;    // dB
+}
+
+table RadarScan {
+  header:vmsgs.fbs.common.Header (id: 0);
+  returns:[RadarReturn]            (id: 1);
+}
+
+root_type RadarScan;

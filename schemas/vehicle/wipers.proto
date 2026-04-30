@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package vmsgs.proto.vehicle;
+
+import "common/header.proto";
+
+enum WipersCode {
+  WIPERS_OFF = 0;
+  WIPERS_LOW = 1;
+  WIPERS_HIGH = 2;
+  WIPERS_INTERMITTENT = 3;
+  WIPERS_AUTO = 4;
+  WIPERS_NO_COMMAND = 5;
+}
+
+message WipersCommand {
+  vmsgs.proto.common.Header header = 1;
+  WipersCode command = 2;
+}
+
+message WipersReport {
+  vmsgs.proto.common.Header header = 1;
+  WipersCode report = 2;
+}

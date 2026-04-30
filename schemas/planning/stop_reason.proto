@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package vmsgs.proto.planning;
+
+import "common/header.proto";
+import "geometry/pose.proto";
+
+enum StopReasonCode {
+  STOP_REASON_UNKNOWN = 0;
+  STOP_REASON_BLIND_SPOT = 1;
+  STOP_REASON_CROSSWALK = 2;
+  STOP_REASON_DETECTION_AREA = 3;
+  STOP_REASON_INTERSECTION = 4;
+  STOP_REASON_NO_STOPPING_AREA = 5;
+  STOP_REASON_STOP_LINE = 6;
+  STOP_REASON_TRAFFIC_LIGHT = 7;
+  STOP_REASON_VIRTUAL_TRAFFIC_LIGHT = 8;
+  STOP_REASON_OBSTACLE_STOP = 9;
+  STOP_REASON_OCCLUSION_SPOT = 10;
+  STOP_REASON_RUN_OUT = 11;
+  STOP_REASON_SURROUND_OBSTACLE_CHECK = 12;
+  STOP_REASON_WALKWAY = 13;
+  STOP_REASON_MERGE_FROM_PRIVATE_AREA = 14;
+  STOP_REASON_GOAL = 15;
+  STOP_REASON_USER_STOP = 16;
+}
+
+message StopFactor {
+  vmsgs.proto.geometry.Pose stop_pose = 1;
+  // Distance ego will travel before stopping (m).
+  float dist_to_stop_pose = 2;
+}
+
+message StopReason {
+  StopReasonCode reason = 1;
+  repeated StopFactor stop_factors = 2;
+}
+
+message StopReasonArray {
+  vmsgs.proto.common.Header header = 1;
+  repeated StopReason stop_reasons = 2;
+}

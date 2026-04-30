@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package vmsgs.proto.sensor;
+
+import "common/header.proto";
+import "common/uuid.proto";
+import "geometry/vector3.proto";
+
+// Object-level radar track produced by an on-board radar tracker.
+message RadarTrack {
+  vmsgs.proto.common.UUID uuid = 1;
+  vmsgs.proto.geometry.Vector3 position = 2;
+  vmsgs.proto.geometry.Vector3 velocity = 3;
+  vmsgs.proto.geometry.Vector3 acceleration = 4;
+  // Bounding-box extents in m.
+  vmsgs.proto.geometry.Vector3 size = 5;
+  // Class id; see perception.ObjectLabel.
+  uint32 classification = 6;
+  // Radar cross section (dBsm).
+  float rcs_dbsm = 7;
+  // [0, 1] confidence.
+  float existence_probability = 8;
+}
+
+message RadarTracks {
+  vmsgs.proto.common.Header header = 1;
+  repeated RadarTrack tracks = 2;
+}

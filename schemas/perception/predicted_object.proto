@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package vmsgs.proto.perception;
+
+import "common/header.proto";
+import "common/uuid.proto";
+import "common/time.proto";
+import "geometry/pose.proto";
+import "geometry/twist.proto";
+import "geometry/accel.proto";
+import "perception/shape.proto";
+import "perception/object_classification.proto";
+
+// One hypothesised future trajectory for an object.
+message PredictedPath {
+  // Equally spaced poses at `time_step` intervals from the start time.
+  repeated vmsgs.proto.geometry.Pose path = 1;
+  vmsgs.proto.common.Duration time_step = 2;
+  float confidence = 3;
+}
+
+message PredictedObjectKinematics {
+  vmsgs.proto.geometry.PoseWithCovariance initial_pose_with_covariance = 1;
+  vmsgs.proto.geometry.TwistWithCovariance initial_twist_with_covariance = 2;
+  vmsgs.proto.geometry.AccelWithCovariance initial_acceleration_with_covariance = 3;
+  // Multi-modal predictions; sum of `confidence` should be ~1.0.
+  repeated PredictedPath predicted_paths = 4;
+}
+
+message PredictedObject {
+  vmsgs.proto.common.UUID object_id = 1;
+  float existence_probability = 2;
+  repeated ObjectClassification classification = 3;
+  PredictedObjectKinematics kinematics = 4;
+  Shape shape = 5;
+}
+
+message PredictedObjects {
+  vmsgs.proto.common.Header header = 1;
+  repeated PredictedObject objects = 2;
+}

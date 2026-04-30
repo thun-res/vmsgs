@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package vmsgs.proto.sensor;
+
+import "common/header.proto";
+import "geometry/transform.proto";
+import "geometry/twist.proto";
+import "geometry/wrench.proto";
+
+// Mirrors sensor_msgs/MultiDOFJointState - state of multi-DoF joints
+// (e.g. floating-base / mobile-base / spherical wrist).
+message MultiDOFJointState {
+  vmsgs.proto.common.Header header = 1;
+  repeated string joint_names = 2;
+  repeated vmsgs.proto.geometry.Transform transforms = 3;
+  repeated vmsgs.proto.geometry.Twist twist = 4;
+  repeated vmsgs.proto.geometry.Wrench wrench = 5;
+}

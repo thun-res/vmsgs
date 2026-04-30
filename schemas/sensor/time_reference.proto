@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package vmsgs.proto.sensor;
+
+import "common/header.proto";
+import "common/time.proto";
+
+// Mirrors sensor_msgs/TimeReference: report the time according to a non-Linux
+// clock source (PTP master, GNSS, NTP server). `header.stamp` is the system
+// time at which the reference was sampled.
+message TimeReference {
+  vmsgs.proto.common.Header header = 1;
+  vmsgs.proto.common.Time time_ref = 2;
+  string source = 3;
+}

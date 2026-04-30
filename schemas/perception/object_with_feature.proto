@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package vmsgs.proto.perception;
+
+import "common/header.proto";
+import "perception/detected_object.proto";
+import "perception/tracked_object.proto";
+
+// Raw cluster / point indices that produced a detection - used for upstream
+// debugging and for downstream consumers that need the underlying feature.
+// Mirrors tier4_perception_msgs/Feature.
+message Feature {
+  // Identifier of the feature kind ("lidar_cluster", "image_bbox", ...).
+  string type = 1;
+  // Index list into the source modality (point cloud index, image index).
+  repeated uint32 indices = 2 [packed = true];
+  // Optional opaque blob (image patch, descriptor).
+  bytes data = 3;
+  string data_format = 4;  // "rgb8", "raw_f32", ...
+}
+
+message DetectedObjectWithFeature {
+  DetectedObject object = 1;
+  Feature feature = 2;
+}
+
+message DetectedObjectsWithFeature {
+  vmsgs.proto.common.Header header = 1;
+  repeated DetectedObjectWithFeature feature_objects = 2;
+}
+
+message TrackedObjectWithFeature {
+  TrackedObject object = 1;
+  Feature feature = 2;
+}
+
+message TrackedObjectsWithFeature {
+  vmsgs.proto.common.Header header = 1;
+  repeated TrackedObjectWithFeature feature_objects = 2;
+}

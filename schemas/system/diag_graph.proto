@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+package vmsgs.proto.system;
+
+import "common/header.proto";
+import "system/diagnostic.proto";
+
+// Hierarchical diagnostics aggregator. A graph is a DAG over diag nodes
+// (modules). Each node has child links and a leaf status. Mirrors
+// autoware_adapi_v1_msgs/Diag* + tier4_system_msgs/Diag*.
+
+message DiagNodeStruct {
+  uint32 index = 1;
+  string path = 2;
+}
+
+message DiagLinkStruct {
+  uint32 parent = 1;
+  uint32 child = 2;
+}
+
+message DiagLeafStruct {
+  uint32 index = 1;
+  string path = 2;
+  string name = 3;
+}
+
+// Static structure of the diag graph; published once at startup.
+message DiagGraphStruct {
+  vmsgs.proto.common.Header header = 1;
+  uint64 graph_id = 2;
+  repeated DiagNodeStruct nodes = 3;
+  repeated DiagLinkStruct links = 4;
+  repeated DiagLeafStruct leaves = 5;
+}
+
+// Per-tick statuses keyed off the structure's indices.
+message DiagNodeStatus {
+  uint32 index = 1;
+  DiagnosticLevel level = 2;
+}
+
+message DiagLinkStatus {
+  uint32 index = 1;
+  DiagnosticLevel level = 2;
+  bool used = 3;
+}
+
+message DiagLeafStatus {
+  uint32 index = 1;
+  DiagnosticStatus status = 2;
+}
+
+message DiagGraphStatus {
+  vmsgs.proto.common.Header header = 1;
+  uint64 graph_id = 2;
+  repeated DiagNodeStatus nodes = 3;
+  repeated DiagLinkStatus links = 4;
+  repeated DiagLeafStatus leaves = 5;
+}

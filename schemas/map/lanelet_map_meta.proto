@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package vmsgs.proto.map;
+
+import "map/area_info.proto";
+
+// Per-tile metadata for a partitioned lanelet map.
+// Mirrors autoware_map_msgs/LaneletMapCellMetaData.
+message LaneletMapCellMetaData {
+  string id = 1;
+  AreaInfo area = 2;
+  uint64 version = 3;
+}
+
+// Top-level catalogue of lanelet tiles available on the map server.
+// Mirrors autoware_map_msgs/LaneletMapMetaData.
+message LaneletMapMetaData {
+  string format = 1;        // "lanelet2_osm", ...
+  string version = 2;
+  string projector = 3;     // "MGRS:10TFK", "UTM:54N", ...
+  repeated LaneletMapCellMetaData metadata_list = 4;
+}

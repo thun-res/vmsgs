@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package vmsgs.proto.planning;
+
+import "common/header.proto";
+import "common/uuid.proto";
+
+// Operator/RTC handshake before executing a maneuver (lane change, pull over, ...).
+enum CooperateCommand {
+  COOPERATE_DEACTIVATE = 0;
+  COOPERATE_ACTIVATE = 1;
+}
+
+message CooperateStatus {
+  vmsgs.proto.common.UUID uuid = 1;
+  string module_name = 2;
+  bool safe = 3;
+  CooperateCommand command_status = 4;
+  bool auto_mode = 5;
+  // Distance from ego (m) where the maneuver is currently scheduled.
+  float distance = 6;
+  string detail = 7;
+}
+
+message CooperateStatusArray {
+  vmsgs.proto.common.Header header = 1;
+  repeated CooperateStatus statuses = 2;
+}

@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package vmsgs.proto.geometry;
+
+import "geometry/point.proto";
+import "geometry/quaternion.proto";
+import "common/header.proto";
+
+// Position + orientation.
+message Pose {
+  Point position = 1;
+  Quaternion orientation = 2;
+}
+
+// Pose with frame and timestamp.
+message PoseStamped {
+  vmsgs.proto.common.Header header = 1;
+  Pose pose = 2;
+}
+
+// Pose with row-major 6x6 covariance over (x, y, z, rot_x, rot_y, rot_z).
+message PoseWithCovariance {
+  Pose pose = 1;
+  // Length 36; row-major.
+  repeated double covariance = 2 [packed = true];
+}
+
+message PoseWithCovarianceStamped {
+  vmsgs.proto.common.Header header = 1;
+  PoseWithCovariance pose = 2;
+}
+
+// 2D pose on the ground plane (x, y, theta).
+message Pose2D {
+  double x = 1;
+  double y = 2;
+  double theta = 3;
+}
+
+// A polyline / waypoint list of stamped poses.
+message PoseArray {
+  vmsgs.proto.common.Header header = 1;
+  repeated Pose poses = 2;
+}

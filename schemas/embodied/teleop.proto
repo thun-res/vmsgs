@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package vmsgs.proto.embodied;
+
+import "common/header.proto";
+import "geometry/pose.proto";
+import "geometry/twist.proto";
+
+// Operator pose (e.g. VR / mocap). One per tracked body / hand.
+message TeleopPose {
+  string source = 1;       // "left_hand", "right_hand", "head", "body"
+  vmsgs.proto.geometry.Pose pose = 2;
+  vmsgs.proto.geometry.Twist twist = 3;
+  // Trigger / grip values in [0,1].
+  float trigger = 4;
+  float grip = 5;
+  // Bitmask of pressed buttons.
+  uint32 buttons = 6;
+}
+
+message TeleopFrame {
+  vmsgs.proto.common.Header header = 1;
+  string operator_id = 2;
+  repeated TeleopPose poses = 3;
+}
+
+// Haptic / force feedback rendered back to the operator.
+message HapticFeedback {
+  vmsgs.proto.common.Header header = 1;
+  // "left_hand", "right_hand", "torso", ...
+  string target = 2;
+  float vibration_amplitude = 3;
+  float vibration_frequency_hz = 4;
+  float duration_sec = 5;
+}

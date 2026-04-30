@@ -1,0 +1,26 @@
+#
+# Copyright (C) 2026 by Thun Lu. All rights reserved.
+#
+
+@PACKAGE_INIT@
+
+if(TARGET @PROJECT_NAMESPACE@@PROJECT_NAME@)
+  return()
+endif()
+
+set(VMSG_ENABLE_PROTOBUF @ENABLE_PROTOBUF@)
+set(VMSG_ENABLE_FLATBUFFERS @ENABLE_FLATBUFFERS@)
+
+if(NOT TARGET vlink::vlink)
+  find_package(vlink CONFIG REQUIRED)
+endif()
+
+if(VMSG_ENABLE_PROTOBUF NOT TARGET @protobuf_libs@)
+  find_package(Protobuf CONFIG REQUIRED)
+endif()
+
+if(VMSG_ENABLE_FLATBUFFERS NOT TARGET @flatbuffers_libs@)
+  find_package(Flatbuffers CONFIG REQUIRED)
+endif()
+
+include(${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@-targets.cmake)

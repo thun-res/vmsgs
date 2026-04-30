@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package vmsgs.proto.geometry;
+
+import "geometry/vector3.proto";
+import "common/header.proto";
+
+// Linear and angular acceleration.
+message Accel {
+  Vector3 linear = 1;
+  Vector3 angular = 2;
+}
+
+message AccelStamped {
+  vmsgs.proto.common.Header header = 1;
+  Accel accel = 2;
+}
+
+message AccelWithCovariance {
+  Accel accel = 1;
+  // Length 36; row-major covariance over (ax, ay, az, alpha_x, alpha_y, alpha_z).
+  repeated double covariance = 2 [packed = true];
+}
+
+message AccelWithCovarianceStamped {
+  vmsgs.proto.common.Header header = 1;
+  AccelWithCovariance accel = 2;
+}

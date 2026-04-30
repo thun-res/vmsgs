@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package vmsgs.proto.sensor;
+
+import "common/header.proto";
+
+// Articulated-mechanism state. All four data arrays should be the same length
+// as `name`, or empty when the corresponding quantity is not observed.
+message JointState {
+  vmsgs.proto.common.Header header = 1;
+  repeated string name = 2;
+  repeated double position = 3 [packed = true];   // rad or m
+  repeated double velocity = 4 [packed = true];   // rad/s or m/s
+  repeated double effort = 5 [packed = true];     // Nm or N
+  // Optional acceleration (extension over ROS sensor_msgs/JointState).
+  repeated double acceleration = 6 [packed = true];
+}

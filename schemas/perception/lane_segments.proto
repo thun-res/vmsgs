@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package vmsgs.proto.perception;
+
+import "common/header.proto";
+import "geometry/point.proto";
+
+enum LaneBoundaryType {
+  LANE_BOUNDARY_UNKNOWN = 0;
+  LANE_BOUNDARY_SOLID = 1;
+  LANE_BOUNDARY_DASHED = 2;
+  LANE_BOUNDARY_DOUBLE_SOLID = 3;
+  LANE_BOUNDARY_DOUBLE_DASHED = 4;
+  LANE_BOUNDARY_CURB = 5;
+  LANE_BOUNDARY_GRASS = 6;
+  LANE_BOUNDARY_VIRTUAL = 7;
+}
+
+message LaneBoundary {
+  uint64 id = 1;
+  LaneBoundaryType type = 2;
+  repeated vmsgs.proto.geometry.Point points = 3;
+  float confidence = 4;
+}
+
+message LaneSegment {
+  uint64 id = 1;
+  LaneBoundary left_boundary = 2;
+  LaneBoundary right_boundary = 3;
+  // Optional centerline.
+  repeated vmsgs.proto.geometry.Point centerline = 4;
+  float speed_limit = 5;  // m/s
+}
+
+message LaneSegments {
+  vmsgs.proto.common.Header header = 1;
+  repeated LaneSegment lanes = 2;
+}

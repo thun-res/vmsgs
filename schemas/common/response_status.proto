@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package vmsgs.proto.common;
+
+// Lightweight outcome carried in service responses (autoware_common_msgs/ResponseStatus).
+message ResponseStatus {
+  bool success = 1;
+  uint32 code = 2;
+  string message = 3;
+}

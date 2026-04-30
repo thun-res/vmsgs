@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package vmsgs.proto.vehicle;
+
+import "common/header.proto";
+
+// Static vehicle dimensions in meters (autoware_adapi_v1_msgs/VehicleDimensions).
+// Distinct from VehicleKinematics which carries dynamic/kinematic limits.
+message VehicleDimensions {
+  float wheel_radius = 1;
+  float wheel_width = 2;
+  float wheel_base = 3;
+  float wheel_tread = 4;
+  float front_overhang = 5;
+  float rear_overhang = 6;
+  float left_overhang = 7;
+  float right_overhang = 8;
+  float height = 9;
+  // Convex hull footprint of the vehicle in body frame (clockwise).
+  // Length 2N, alternating x,y in m.
+  repeated float footprint = 10 [packed = true];
+}
+
+// Capability / spec sheet (autoware_adapi_v1_msgs/VehicleSpecs).
+message VehicleSpecs {
+  string vendor = 1;
+  string model = 2;
+  string version = 3;
+  // Maximum allowed payload (kg).
+  float max_payload_kg = 4;
+  // Number of seats.
+  uint32 num_seats = 5;
+  // True if this is a passenger vehicle (false for cargo / shuttle / robot).
+  bool passenger_vehicle = 6;
+}
+
+// Dynamic vehicle metrics (autoware_adapi_v1_msgs/VehicleMetrics).
+message VehicleMetrics {
+  vmsgs.proto.common.Header header = 1;
+  float odometer_m = 2;        // total distance traveled (m)
+  float energy_remaining = 3;  // [0,1] for both fuel and battery vehicles
+  float estimated_range_m = 4; // m
+}

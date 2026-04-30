@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package vmsgs.proto.geometry;
+
+// Position in 3D space.
+message Point {
+  double x = 1;
+  double y = 2;
+  double z = 3;
+}
+
+// Lower-precision variant for high-volume streams (e.g. predicted paths).
+message Point32 {
+  float x = 1;
+  float y = 2;
+  float z = 3;
+}

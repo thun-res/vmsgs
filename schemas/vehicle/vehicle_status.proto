@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package vmsgs.proto.vehicle;
+
+import "common/header.proto";
+import "vehicle/gear_command.proto";
+import "vehicle/turn_indicators.proto";
+import "vehicle/hazard_lights.proto";
+import "vehicle/headlights.proto";
+import "vehicle/wipers.proto";
+
+// Aggregate vehicle status snapshot for HMI / cloud monitoring.
+// Mirrors autoware_adapi_v1_msgs/VehicleStatus.
+message VehicleStatus {
+  vmsgs.proto.common.Header header = 1;
+  GearCommandCode gear = 2;
+  TurnIndicatorsCode turn_indicators = 3;
+  HazardLightsCode hazard_lights = 4;
+  HeadlightsCode headlights = 5;
+  WipersCode wipers = 6;
+  bool horn_active = 7;
+  bool hand_brake_active = 8;
+
+  // Composite drive metrics.
+  float steering_tire_angle = 9;     // rad
+  float longitudinal_velocity = 10;  // m/s
+  float lateral_acceleration = 11;   // m/s^2
+}

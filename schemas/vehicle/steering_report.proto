@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package vmsgs.proto.vehicle;
+
+import "common/header.proto";
+
+// Tire / steering-wheel angle.
+message SteeringReport {
+  vmsgs.proto.common.Header header = 1;
+  // Equivalent front-wheel tire angle (rad). Positive = left.
+  float steering_tire_angle = 2;
+  // Optional rate of change (rad/s).
+  float steering_tire_rotation_rate = 3;
+}

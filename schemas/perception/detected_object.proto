@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package vmsgs.proto.perception;
+
+import "common/header.proto";
+import "geometry/pose.proto";
+import "geometry/twist.proto";
+import "geometry/accel.proto";
+import "perception/shape.proto";
+import "perception/object_classification.proto";
+
+// Per-object kinematics (position, velocity, accel) with covariance hints.
+message DetectedObjectKinematics {
+  enum OrientationAvailability {
+    UNAVAILABLE = 0;
+    SIGN_UNKNOWN = 1;
+    AVAILABLE = 2;
+  }
+
+  vmsgs.proto.geometry.PoseWithCovariance pose_with_covariance = 1;
+  bool has_position_covariance = 2;
+  OrientationAvailability orientation_availability = 3;
+  vmsgs.proto.geometry.TwistWithCovariance twist_with_covariance = 4;
+  bool has_twist = 5;
+  bool has_twist_covariance = 6;
+
+  // Optional acceleration (extension over Autoware vanilla DetectedObject).
+  vmsgs.proto.geometry.AccelWithCovariance accel_with_covariance = 7;
+  bool has_accel = 8;
+}
+
+message DetectedObject {
+  float existence_probability = 1;
+  repeated ObjectClassification classification = 2;
+  DetectedObjectKinematics kinematics = 3;
+  Shape shape = 4;
+}
+
+message DetectedObjects {
+  vmsgs.proto.common.Header header = 1;
+  repeated DetectedObject objects = 2;
+}

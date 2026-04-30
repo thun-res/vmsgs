@@ -1,0 +1,28 @@
+include "../common/header.fbs";
+include "../sensor/image.fbs";
+include "../sensor/depth_image.fbs";
+
+namespace vmsgs.fbs.embodied;
+
+/// Compact pinhole intrinsics inlined for zero-copy projection use.
+/// For full CameraInfo (binning, distortion coefficients, ROI) consume the
+/// vmsgs.proto.sensor.CameraInfo topic published alongside.
+struct CameraIntrinsics {
+  fx:float;
+  fy:float;
+  cx:float;
+  cy:float;
+}
+
+/// Colour + aligned depth pair from an RGB-D sensor (Realsense, Azure Kinect).
+table RGBDFrame {
+  header:vmsgs.fbs.common.Header (id: 0);
+  color:vmsgs.fbs.sensor.Image (id: 1);
+  depth:vmsgs.fbs.sensor.DepthImage (id: 2);
+  /// Intrinsics for the colour stream; use `depth.fx/fy/cx/cy` for depth.
+  color_intrinsics:CameraIntrinsics (id: 3);
+  /// True when colour and depth are pixel-registered (1:1 lookup).
+  is_aligned:bool (id: 4);
+}
+
+root_type RGBDFrame;

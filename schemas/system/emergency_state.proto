@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package vmsgs.proto.system;
+
+import "common/header.proto";
+
+enum EmergencyState {
+  EMERGENCY_STATE_NORMAL = 0;
+  EMERGENCY_STATE_OVERRIDE_REQUESTING = 1;
+  EMERGENCY_STATE_MRM_OPERATING = 2;
+  EMERGENCY_STATE_MRM_SUCCEEDED = 3;
+  EMERGENCY_STATE_MRM_FAILED = 4;
+}
+
+message EmergencyStateStamped {
+  vmsgs.proto.common.Header header = 1;
+  EmergencyState state = 2;
+}

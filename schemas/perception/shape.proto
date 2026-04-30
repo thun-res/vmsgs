@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package vmsgs.proto.perception;
+
+import "geometry/vector3.proto";
+import "geometry/polygon.proto";
+
+// Geometric extent of a detected/tracked/predicted object.
+message Shape {
+  enum ShapeType {
+    SHAPE_TYPE_UNKNOWN = 0;
+    SHAPE_TYPE_BOUNDING_BOX = 1;
+    SHAPE_TYPE_CYLINDER = 2;
+    SHAPE_TYPE_POLYGON = 3;
+  }
+  ShapeType type = 1;
+  // Used by BOUNDING_BOX (x=length, y=width, z=height) and CYLINDER (x=diameter, z=height).
+  vmsgs.proto.geometry.Vector3 dimensions = 2;
+  // Used by POLYGON; ignored otherwise. Convex, in object-local frame.
+  vmsgs.proto.geometry.Polygon footprint = 3;
+}

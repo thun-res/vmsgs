@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package vmsgs.proto.system;
+
+import "common/header.proto";
+
+// Multi-source command mode (MRM, autonomous, manual override, remote, ...).
+// Mirrors tier4_system_msgs/CommandMode*.
+
+message CommandModeAvailabilityItem {
+  uint32 mode = 1;       // implementation-defined enum value
+  bool available = 2;
+  string reason = 3;
+}
+
+message CommandModeAvailability {
+  vmsgs.proto.common.Header header = 1;
+  repeated CommandModeAvailabilityItem items = 2;
+}
+
+message CommandModeStatusItem {
+  uint32 mode = 1;
+  enum Status {
+    COMMAND_MODE_UNKNOWN = 0;
+    COMMAND_MODE_DISABLED = 1;
+    COMMAND_MODE_ACTIVE = 2;
+    COMMAND_MODE_TRANSITION = 3;
+    COMMAND_MODE_FAILED = 4;
+  }
+  Status status = 2;
+  string detail = 3;
+}
+
+message CommandModeStatus {
+  vmsgs.proto.common.Header header = 1;
+  repeated CommandModeStatusItem items = 2;
+}
+
+message CommandModeRequestItem {
+  uint32 mode = 1;
+  bool autonomous_override = 2;
+}
+
+message CommandModeRequest {
+  vmsgs.proto.common.Header header = 1;
+  repeated CommandModeRequestItem items = 2;
+}
+
+message CommandSourceStatus {
+  vmsgs.proto.common.Header header = 1;
+  // Identifier of the active command source ("autonomous", "remote", "manual").
+  string source = 2;
+  bool autonomous_control_enabled = 3;
+}

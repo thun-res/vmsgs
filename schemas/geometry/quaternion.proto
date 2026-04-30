@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package vmsgs.proto.geometry;
+
+// Hamilton quaternion: w + xi + yj + zk. Identity = (0,0,0,1).
+message Quaternion {
+  double x = 1;
+  double y = 2;
+  double z = 3;
+  double w = 4;
+}

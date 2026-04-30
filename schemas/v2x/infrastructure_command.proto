@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package vmsgs.proto.v2x;
+
+import "common/header.proto";
+
+// Command issued from the ego to roadside infrastructure (signal request,
+// gate request). Mirrors tier4_v2x_msgs/InfrastructureCommand.
+message InfrastructureCommand {
+  // Map regulatory-element / RSU id to address.
+  uint64 id = 1;
+  enum State {
+    INFRASTRUCTURE_STATE_UNKNOWN = 0;
+    INFRASTRUCTURE_STATE_REQUESTING = 1;
+    INFRASTRUCTURE_STATE_FINALIZED = 2;
+  }
+  State state = 2;
+  // Lifetime of this request (s).
+  float lifetime_sec = 3;
+}
+
+message InfrastructureCommandArray {
+  vmsgs.proto.common.Header header = 1;
+  repeated InfrastructureCommand commands = 2;
+}

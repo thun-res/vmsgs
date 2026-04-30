@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package vmsgs.proto.map;
+
+import "common/time.proto";
+import "geometry/pose.proto";
+
+// Static metadata about a 2D occupancy map / lanelet map.
+message MapMetaData {
+  vmsgs.proto.common.Time map_load_time = 1;
+  float resolution = 2;            // m/cell
+  uint32 width = 3;
+  uint32 height = 4;
+  vmsgs.proto.geometry.Pose origin = 5;
+  string map_id = 6;
+  string version = 7;
+  string format = 8;               // "lanelet2", "opendrive", "vector_tile", ...
+}

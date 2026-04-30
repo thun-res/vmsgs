@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package vmsgs.proto.planning;
+
+import "common/header.proto";
+
+// Whether the mission planner is currently able to recompute a route.
+// Mirrors tier4_planning_msgs/RerouteAvailability.
+message RerouteAvailability {
+  vmsgs.proto.common.Header header = 1;
+  bool availability = 2;
+  string reason = 3;
+}

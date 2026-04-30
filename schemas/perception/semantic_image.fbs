@@ -1,0 +1,25 @@
+include "../common/header.fbs";
+
+namespace vmsgs.fbs.perception;
+
+/// Per-pixel class id (and optional confidence) image. Tightly packed row-major.
+enum SemanticEncoding : ubyte {
+  CLASS_ID_UINT8  = 0,
+  CLASS_ID_UINT16 = 1,
+  CLASS_ID_UINT32 = 2,
+}
+
+table SemanticImage {
+  header:vmsgs.fbs.common.Header (id: 0);
+  height:uint32 (id: 1);
+  width:uint32  (id: 2);
+  encoding:SemanticEncoding (id: 3);
+  step:uint32 (id: 4);
+  data:[uint8] (id: 5);
+  /// Optional confidence map, same dims, float32 row-major.
+  confidence:[float] (id: 6);
+  /// Class id -> human-readable name (length = number of classes).
+  class_names:[string] (id: 7);
+}
+
+root_type SemanticImage;

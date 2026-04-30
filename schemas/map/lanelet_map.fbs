@@ -1,0 +1,18 @@
+include "../common/header.fbs";
+
+namespace vmsgs.fbs.map;
+
+/// Opaque binary container for a serialized Lanelet2 / OpenDRIVE / OSM map blob.
+/// The bytes are produced by the upstream map authoring tool; consumers parse
+/// them with the matching library indicated by `format`.
+table LaneletMapBin {
+  header:vmsgs.fbs.common.Header (id: 0);
+  /// "lanelet2_osm", "opendrive", "vector_tile", ...
+  format:string (id: 1);
+  version:string (id: 2);
+  /// Optional projection identifier (e.g. "MGRS:10TFK", "UTM:54N").
+  projector:string (id: 3);
+  data:[uint8] (id: 4);
+}
+
+root_type LaneletMapBin;

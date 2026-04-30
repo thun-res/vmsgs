@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package vmsgs.proto.map;
+
+import "map/area_info.proto";
+
+// Tile-level metadata for a partitioned point-cloud map.
+// Mirrors autoware_map_msgs/PointCloudMapCellMetaData.
+message PointCloudMapCellMetaData {
+  AreaInfo area = 1;
+  uint64 version = 2;
+}
+
+// Same as above but carries the tile's external string id.
+// Mirrors PointCloudMapCellMetaDataWithID.
+message PointCloudMapCellMetaDataWithID {
+  string cell_id = 1;
+  PointCloudMapCellMetaData metadata = 2;
+}
+
+// Reference to a tile's binary point-cloud blob (URI / topic).
+// Use point_cloud_map.fbs for the actual point-cloud bytes.
+// Mirrors PointCloudMapCellWithID.
+message PointCloudMapCellWithID {
+  string cell_id = 1;
+  // URL/path/topic from which to fetch this tile's point cloud.
+  string cell_uri = 2;
+  PointCloudMapCellMetaData metadata = 3;
+}
+
+// Top-level point-cloud-map manifest.
+// Mirrors autoware_map_msgs/PointCloudMapMetaData.
+message PointCloudMapMetaData {
+  string format = 1;       // "pcd", "vmap_pcd", ...
+  string version = 2;
+  string projector = 3;
+  repeated PointCloudMapCellMetaDataWithID metadata_list = 4;
+}

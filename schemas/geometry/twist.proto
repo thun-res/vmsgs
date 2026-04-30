@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package vmsgs.proto.geometry;
+
+import "geometry/vector3.proto";
+import "common/header.proto";
+
+// Linear and angular velocity.
+message Twist {
+  Vector3 linear = 1;
+  Vector3 angular = 2;
+}
+
+message TwistStamped {
+  vmsgs.proto.common.Header header = 1;
+  Twist twist = 2;
+}
+
+message TwistWithCovariance {
+  Twist twist = 1;
+  // Length 36; row-major covariance over (vx, vy, vz, wx, wy, wz).
+  repeated double covariance = 2 [packed = true];
+}
+
+message TwistWithCovarianceStamped {
+  vmsgs.proto.common.Header header = 1;
+  TwistWithCovariance twist = 2;
+}

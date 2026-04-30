@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package vmsgs.proto.control;
+
+import "common/header.proto";
+
+// Lateral target for steering controllers.
+message LateralCommand {
+  vmsgs.proto.common.Header header = 1;
+  // Target tire angle (rad). Positive = left.
+  float steering_tire_angle = 2;
+  // Target rate of change (rad/s).
+  float steering_tire_rotation_rate = 3;
+  // Optional: feed-forward steering torque (Nm).
+  float steering_tire_torque = 4;
+  bool use_torque = 5;
+}

@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package vmsgs.proto.sensor;
+
+import "common/header.proto";
+
+// Single planar laser sweep (2D LiDAR). Mirrors sensor_msgs/LaserScan.
+message LaserScan {
+  vmsgs.proto.common.Header header = 1;
+  float angle_min = 2;        // rad
+  float angle_max = 3;        // rad
+  float angle_increment = 4;  // rad between consecutive readings
+  float time_increment = 5;   // s between consecutive readings
+  float scan_time = 6;        // s for full sweep
+  float range_min = 7;        // m
+  float range_max = 8;        // m
+  repeated float ranges = 9 [packed = true];
+  // Per-beam intensity, optional (length 0 or N).
+  repeated float intensities = 10 [packed = true];
+}

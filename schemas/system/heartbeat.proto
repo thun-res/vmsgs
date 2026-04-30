@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package vmsgs.proto.system;
+
+import "common/header.proto";
+
+// Liveness signal published by every node.
+message Heartbeat {
+  vmsgs.proto.common.Header header = 1;
+  string node_name = 2;
+  // Monotonic uptime (s).
+  double uptime_sec = 3;
+  // CPU usage [0,1] of the publishing process.
+  float cpu_usage = 4;
+  // RSS bytes.
+  uint64 memory_rss = 5;
+  // Optional state machine token (e.g. "RUNNING", "PAUSED", "FAULTED").
+  string state = 6;
+}

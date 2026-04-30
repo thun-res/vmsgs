@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package vmsgs.proto.vehicle;
+
+import "common/header.proto";
+
+// Per-wheel linear ground speed (tier4_vehicle_msgs/WheelLinearSpeedReport).
+// Distinct from vehicle_odometry.WheelSpeeds which is a fixed 4-wheel POJO -
+// this variant supports any number of wheels for trucks / non-Ackermann setups.
+message WheelLinearSpeedReport {
+  vmsgs.proto.common.Header header = 1;
+  // Names matching `speeds[i]` (e.g. "front_left", "rear_right_outer").
+  repeated string wheel_names = 2;
+  // Linear ground speed per wheel (m/s).
+  repeated float speeds = 3 [packed = true];
+}

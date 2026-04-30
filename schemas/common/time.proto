@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package vmsgs.proto.common;
+
+// Wall-clock or steady-clock time point.
+// `sec`  : seconds since the chosen epoch (Unix epoch 1970-01-01T00:00:00Z by default).
+// `nsec` : sub-second nanoseconds in [0, 999_999_999].
+message Time {
+  int64 sec = 1;
+  uint32 nsec = 2;
+}
+
+// A signed time interval. `sec` may be negative.
+message Duration {
+  int64 sec = 1;
+  int32 nsec = 2;
+}

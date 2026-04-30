@@ -1,0 +1,24 @@
+include "../common/header.fbs";
+include "../sensor/point_field.fbs";
+
+namespace vmsgs.fbs.map;
+
+/// A spatially indexed PCD map tile (or full map). Same packed-data layout as
+/// sensor.PointCloud2 to allow zero-copy reuse by NDT/ICP localizers.
+table PointCloudMap {
+  header:vmsgs.fbs.common.Header (id: 0);
+  /// Tile id within the parent map; 0 if this is the whole map.
+  tile_id:uint64 (id: 1);
+  /// Bounding box in `header.frame_id` (m).
+  min_x:double (id: 2);
+  min_y:double (id: 3);
+  min_z:double (id: 4);
+  max_x:double (id: 5);
+  max_y:double (id: 6);
+  max_z:double (id: 7);
+  fields:[vmsgs.fbs.sensor.PointField] (id: 8);
+  point_step:uint32 (id: 9);
+  data:[uint8] (id: 10);
+}
+
+root_type PointCloudMap;

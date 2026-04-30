@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package vmsgs.proto.control;
+
+import "common/header.proto";
+
+enum OperationMode {
+  OPERATION_MODE_UNKNOWN = 0;
+  OPERATION_MODE_STOP = 1;
+  OPERATION_MODE_AUTONOMOUS = 2;
+  OPERATION_MODE_LOCAL = 3;     // remote/teleop
+  OPERATION_MODE_REMOTE = 4;
+  OPERATION_MODE_MANUAL = 5;
+}
+
+message OperationModeState {
+  vmsgs.proto.common.Header header = 1;
+  OperationMode mode = 2;
+  bool is_autoware_control_enabled = 3;
+  bool is_in_transition = 4;
+  bool is_stop_mode_available = 5;
+  bool is_autonomous_mode_available = 6;
+  bool is_local_mode_available = 7;
+  bool is_remote_mode_available = 8;
+}
+
+message ChangeOperationModeRequest {
+  OperationMode target = 1;
+}
+
+message ChangeOperationModeResponse {
+  bool success = 1;
+  string reason = 2;
+}

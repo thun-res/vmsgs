@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package vmsgs.proto.control;
+
+import "common/header.proto";
+
+// Pedal/wheel command from an external controller (remote driving, joystick).
+// Values are in normalized [-1, 1] (steering) or [0, 1] (pedals).
+message ExternalControlCommand {
+  vmsgs.proto.common.Header header = 1;
+  // Source identifier ("remote_driver", "joystick", "fail_safe", ...).
+  string source = 2;
+  float steering = 3;
+  float throttle = 4;
+  float brake = 5;
+  // Set true to send 0/0/0 as a soft override.
+  bool emergency = 6;
+}

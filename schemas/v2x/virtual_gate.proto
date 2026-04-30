@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package vmsgs.proto.v2x;
+
+import "common/header.proto";
+
+// Newer Autoware V2X concept: a "gate" is a virtual checkpoint that may be
+// granted or denied per ego, and an "area" is a region containing gates.
+// Mirrors autoware_v2x_msgs/VirtualGate*.
+
+enum VirtualGateState {
+  VIRTUAL_GATE_UNKNOWN = 0;
+  VIRTUAL_GATE_LOCKED = 1;
+  VIRTUAL_GATE_UNLOCKED = 2;
+}
+
+message VirtualGateCommand {
+  vmsgs.proto.common.Header header = 1;
+  uint64 gate_id = 2;
+  VirtualGateState desired_state = 3;
+  string requester_id = 4;
+}
+
+message VirtualGateStatus {
+  vmsgs.proto.common.Header header = 1;
+  uint64 gate_id = 2;
+  VirtualGateState state = 3;
+  // Time until next scheduled state change (s); 0 if static.
+  float time_remaining = 4;
+}
+
+message VirtualGateAreaCommand {
+  vmsgs.proto.common.Header header = 1;
+  uint64 area_id = 2;
+  // Per-gate desired states inside the area.
+  repeated VirtualGateCommand gates = 3;
+}
+
+message VirtualGateAreaStatus {
+  vmsgs.proto.common.Header header = 1;
+  uint64 area_id = 2;
+  repeated VirtualGateStatus gates = 3;
+}

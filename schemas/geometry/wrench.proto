@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package vmsgs.proto.geometry;
+
+import "geometry/vector3.proto";
+import "common/header.proto";
+
+// Force + torque acting at a point.
+message Wrench {
+  Vector3 force = 1;
+  Vector3 torque = 2;
+}
+
+message WrenchStamped {
+  vmsgs.proto.common.Header header = 1;
+  Wrench wrench = 2;
+}

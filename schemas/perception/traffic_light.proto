@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+package vmsgs.proto.perception;
+
+import "common/header.proto";
+
+enum TrafficLightColor {
+  TL_COLOR_UNKNOWN = 0;
+  TL_COLOR_RED = 1;
+  TL_COLOR_AMBER = 2;
+  TL_COLOR_GREEN = 3;
+  TL_COLOR_WHITE = 4;
+}
+
+enum TrafficLightShape {
+  TL_SHAPE_UNKNOWN = 0;
+  TL_SHAPE_CIRCLE = 1;
+  TL_SHAPE_LEFT_ARROW = 2;
+  TL_SHAPE_RIGHT_ARROW = 3;
+  TL_SHAPE_UP_ARROW = 4;
+  TL_SHAPE_DOWN_ARROW = 5;
+  TL_SHAPE_DOWN_LEFT_ARROW = 6;
+  TL_SHAPE_DOWN_RIGHT_ARROW = 7;
+  TL_SHAPE_CROSS = 8;
+}
+
+enum TrafficLightStatus {
+  TL_STATUS_UNKNOWN = 0;
+  TL_STATUS_SOLID_OFF = 1;
+  TL_STATUS_SOLID_ON = 2;
+  TL_STATUS_FLASHING = 3;
+}
+
+message TrafficLightElement {
+  TrafficLightColor color = 1;
+  TrafficLightShape shape = 2;
+  TrafficLightStatus status = 3;
+  float confidence = 4;
+}
+
+message TrafficLightGroup {
+  // Map element id (lanelet regulatory element id).
+  int64 traffic_light_group_id = 1;
+  repeated TrafficLightElement elements = 2;
+}
+
+message TrafficLightGroupArray {
+  vmsgs.proto.common.Header header = 1;
+  repeated TrafficLightGroup traffic_light_groups = 2;
+}

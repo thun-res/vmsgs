@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package vmsgs.proto.localization;
+
+import "common/header.proto";
+
+// Progress signal for the localizer's initial-pose convergence
+// (autoware_adapi_v1_msgs/LocalizationInitializationState).
+message LocalizationInitializationState {
+  enum State {
+    UNKNOWN = 0;
+    UNINITIALIZED = 1;
+    INITIALIZING = 2;
+    INITIALIZED = 3;
+  }
+  vmsgs.proto.common.Header header = 1;
+  State state = 2;
+}

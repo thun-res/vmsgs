@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package vmsgs.proto.perception;
+
+import "common/header.proto";
+
+// 2D pixel region of a traffic-light bulb produced by an upstream detector and
+// consumed by the classifier. Mirrors tier4_perception_msgs/TrafficLightRoi.
+message TrafficLightRoi {
+  message Box {
+    uint32 x_offset = 1;
+    uint32 y_offset = 2;
+    uint32 height = 3;
+    uint32 width = 4;
+  }
+  // Map regulatory-element id of the traffic light this ROI corresponds to.
+  int64 traffic_light_id = 1;
+  Box roi = 2;
+  // Detection score in [0, 1].
+  float confidence = 3;
+}
+
+message TrafficLightRoiArray {
+  vmsgs.proto.common.Header header = 1;
+  repeated TrafficLightRoi rois = 2;
+}

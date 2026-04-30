@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package vmsgs.proto.control;
+
+import "common/header.proto";
+import "control/lateral_command.proto";
+import "control/longitudinal_command.proto";
+
+// Combined lateral + longitudinal target for an Ackermann-steered vehicle.
+message AckermannControlCommand {
+  vmsgs.proto.common.Header header = 1;
+  LateralCommand lateral = 2;
+  LongitudinalCommand longitudinal = 3;
+}

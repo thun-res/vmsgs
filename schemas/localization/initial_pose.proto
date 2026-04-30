@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package vmsgs.proto.localization;
+
+import "common/header.proto";
+import "geometry/pose.proto";
+
+// Initial guess for a localizer (e.g. NDT, AMCL).
+message InitialPose {
+  vmsgs.proto.common.Header header = 1;
+  vmsgs.proto.geometry.PoseWithCovariance pose = 2;
+}

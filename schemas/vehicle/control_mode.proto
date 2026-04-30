@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package vmsgs.proto.vehicle;
+
+import "common/header.proto";
+
+enum ControlMode {
+  CONTROL_MODE_NO_COMMAND = 0;
+  CONTROL_MODE_AUTONOMOUS = 1;
+  CONTROL_MODE_AUTONOMOUS_STEER_ONLY = 2;
+  CONTROL_MODE_AUTONOMOUS_VELOCITY_ONLY = 3;
+  CONTROL_MODE_MANUAL = 4;
+  CONTROL_MODE_DISENGAGED = 5;
+  CONTROL_MODE_NOT_READY = 6;
+}
+
+message ControlModeCommand {
+  vmsgs.proto.common.Header header = 1;
+  ControlMode mode = 2;
+}
+
+message ControlModeReport {
+  vmsgs.proto.common.Header header = 1;
+  ControlMode mode = 2;
+}

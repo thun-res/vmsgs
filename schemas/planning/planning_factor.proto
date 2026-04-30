@@ -1,0 +1,84 @@
+syntax = "proto3";
+
+package vmsgs.proto.planning;
+
+import "common/header.proto";
+import "common/uuid.proto";
+import "geometry/pose.proto";
+
+// Reason why a planner produced its current decision (slow-down, stop, lane
+// change). Mirrors autoware_internal_planning_msgs/PlanningFactor +
+// SafetyFactor + tier4_planning_msgs/PlanningFactor.
+
+enum PlanningBehavior {
+  PLANNING_BEHAVIOR_NONE = 0;
+  PLANNING_BEHAVIOR_AVOIDANCE = 1;
+  PLANNING_BEHAVIOR_LANE_CHANGE = 2;
+  PLANNING_BEHAVIOR_PULL_OVER = 3;
+  PLANNING_BEHAVIOR_PULL_OUT = 4;
+  PLANNING_BEHAVIOR_GOAL_PLANNER = 5;
+  PLANNING_BEHAVIOR_INTERSECTION = 6;
+  PLANNING_BEHAVIOR_CROSSWALK = 7;
+  PLANNING_BEHAVIOR_BLIND_SPOT = 8;
+  PLANNING_BEHAVIOR_DETECTION_AREA = 9;
+  PLANNING_BEHAVIOR_NO_STOPPING_AREA = 10;
+  PLANNING_BEHAVIOR_OCCLUSION = 11;
+  PLANNING_BEHAVIOR_RUN_OUT = 12;
+  PLANNING_BEHAVIOR_TRAFFIC_LIGHT = 13;
+  PLANNING_BEHAVIOR_VIRTUAL_TRAFFIC_LIGHT = 14;
+  PLANNING_BEHAVIOR_MERGE = 15;
+  PLANNING_BEHAVIOR_NARROW_PATH = 16;
+}
+
+message ControlPoint {
+  vmsgs.proto.geometry.Pose pose = 1;
+  // Distance along the trajectory from the ego (m).
+  float distance = 2;
+  // Achieved velocity at this point (m/s).
+  float velocity = 3;
+}
+
+message SafetyFactor {
+  enum Type {
+    SAFETY_FACTOR_UNKNOWN = 0;
+    SAFETY_FACTOR_OBJECT = 1;
+    SAFETY_FACTOR_POINTCLOUD = 2;
+    SAFETY_FACTOR_USER_DEFINED = 3;
+  }
+  Type type = 1;
+  // Object UUID for OBJECT type; empty otherwise.
+  vmsgs.proto.common.UUID object_id = 2;
+  // Predicted points contributing to the factor.
+  repeated vmsgs.proto.geometry.Pose points = 3;
+  // True when the factor is currently considered unsafe.
+  bool is_safe = 4;
+  string detail = 5;
+}
+
+message SafetyFactorArray {
+  vmsgs.proto.common.Header header = 1;
+  repeated SafetyFactor factors = 2;
+  bool is_safe = 3;
+}
+
+message PlanningFactor {
+  // Module emitting this factor (e.g. "obstacle_cruise", "intersection").
+  string module = 1;
+  PlanningBehavior behavior = 2;
+  // Distance to the relevant point (m).
+  float distance = 3;
+  // Hard target velocity at the relevant point (m/s).
+  float velocity = 4;
+  // Multiple control points the planner is acting on.
+  repeated ControlPoint control_points = 5;
+  // Whether this factor is a stop / slowdown / pass.
+  bool is_driving_forward = 6;
+  // Active safety factors driving this decision.
+  SafetyFactorArray safety_factors = 7;
+  string detail = 8;
+}
+
+message PlanningFactorArray {
+  vmsgs.proto.common.Header header = 1;
+  repeated PlanningFactor factors = 2;
+}

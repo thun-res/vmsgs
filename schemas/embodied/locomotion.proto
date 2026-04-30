@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package vmsgs.proto.embodied;
+
+import "common/header.proto";
+import "geometry/twist.proto";
+import "geometry/pose.proto";
+
+enum Gait {
+  GAIT_UNKNOWN = 0;
+  GAIT_STAND = 1;
+  GAIT_WALK = 2;
+  GAIT_TROT = 3;
+  GAIT_PACE = 4;
+  GAIT_BOUND = 5;
+  GAIT_RUN = 6;
+  GAIT_CRAWL = 7;
+  GAIT_BIPEDAL_WALK = 8;
+  GAIT_BIPEDAL_RUN = 9;
+  GAIT_HOPPING = 10;
+}
+
+message LocomotionCommand {
+  vmsgs.proto.common.Header header = 1;
+  vmsgs.proto.geometry.Twist target_twist = 2;
+  Gait gait = 3;
+  // Stance height (m) for legged platforms.
+  float stance_height = 4;
+}
+
+message LocomotionState {
+  vmsgs.proto.common.Header header = 1;
+  Gait active_gait = 2;
+  vmsgs.proto.geometry.Twist achieved_twist = 3;
+  vmsgs.proto.geometry.Pose body_pose = 4;
+  // Per-leg foot contact (size: number of legs, value: 0 = swing, 1 = stance).
+  repeated uint32 foot_contact = 5 [packed = true];
+}

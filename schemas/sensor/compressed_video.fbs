@@ -1,0 +1,18 @@
+include "../common/header.fbs";
+
+namespace vmsgs.fbs.sensor;
+
+/// A single encoded video frame (e.g. H.264 NAL unit / H.265 / AV1 / VP9).
+/// `format` is one of "h264", "h265", "av1", "vp9".
+table CompressedVideo {
+  header:vmsgs.fbs.common.Header (id: 0);
+  format:string (id: 1);
+  /// True when this frame is independently decodable.
+  is_keyframe:bool (id: 2);
+  /// Optional decode timestamp distinct from presentation (header.stamp).
+  pts_ns:int64 (id: 3);
+  dts_ns:int64 (id: 4);
+  data:[uint8] (id: 5);
+}
+
+root_type CompressedVideo;

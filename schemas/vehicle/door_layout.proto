@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package vmsgs.proto.vehicle;
+
+import "common/header.proto";
+import "vehicle/door.proto";
+
+// Single physical door description (autoware_adapi_v1_msgs/DoorLayout).
+message DoorLayout {
+  // Index into vehicle/door.DoorIndex for primary id.
+  DoorIndex door = 1;
+  // Human-readable name (e.g. "front_left").
+  string name = 2;
+  // Set of capabilities supported by this door.
+  bool can_open = 3;
+  bool can_close = 4;
+  bool can_lock = 5;
+}
+
+// All doors known to the vehicle (autoware_adapi_v1_msgs/DoorStatusArray).
+message DoorStatusArray {
+  vmsgs.proto.common.Header header = 1;
+  // Per-door states aligned with `layout`.
+  repeated DoorLayout layout = 2;
+  repeated DoorState states = 3 [packed = true];
+}

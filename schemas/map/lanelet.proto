@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+package vmsgs.proto.map;
+
+import "common/header.proto";
+import "geometry/point.proto";
+
+// Plain-text Lanelet primitives mirroring lanelet2 schema (for slim lookups).
+// For the full binary map use map/fbs/lanelet_map.fbs.
+
+enum LineMarkingType {
+  LINE_MARKING_UNKNOWN = 0;
+  LINE_MARKING_SOLID = 1;
+  LINE_MARKING_DASHED = 2;
+  LINE_MARKING_DOUBLE_SOLID = 3;
+  LINE_MARKING_DOUBLE_DASHED = 4;
+  LINE_MARKING_VIRTUAL = 5;
+  LINE_MARKING_CURB = 6;
+  LINE_MARKING_GUARD_RAIL = 7;
+}
+
+message LineString {
+  uint64 id = 1;
+  LineMarkingType type = 2;
+  string subtype = 3;
+  repeated vmsgs.proto.geometry.Point points = 4;
+}
+
+message Lanelet {
+  uint64 id = 1;
+  LineString left_bound = 2;
+  LineString right_bound = 3;
+  string subtype = 4;     // "road", "crosswalk", "bicycle_lane", ...
+  string location = 5;    // "urban", "highway", ...
+  bool one_way = 6;
+  float speed_limit = 7;  // m/s
+  // Centerline is optional - clients can recompute.
+  repeated vmsgs.proto.geometry.Point centerline = 8;
+}
+
+message Crosswalk {
+  uint64 id = 1;
+  // Polygon in map frame.
+  repeated vmsgs.proto.geometry.Point points = 2;
+}
+
+message StopLine {
+  uint64 id = 1;
+  vmsgs.proto.geometry.Point start = 2;
+  vmsgs.proto.geometry.Point end = 3;
+}
+
+message TrafficSign {
+  uint64 id = 1;
+  // Sign category, e.g. "stop", "yield", "speed_limit_50".
+  string category = 2;
+  vmsgs.proto.geometry.Point position = 3;
+  float orientation_yaw = 4;
+}
+
+message HDMapPrimitives {
+  vmsgs.proto.common.Header header = 1;
+  repeated Lanelet lanelets = 2;
+  repeated Crosswalk crosswalks = 3;
+  repeated StopLine stop_lines = 4;
+  repeated TrafficSign traffic_signs = 5;
+}

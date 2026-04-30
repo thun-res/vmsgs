@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package vmsgs.proto.perception;
+
+import "common/header.proto";
+import "geometry/point.proto";
+
+enum RoadMarkingType {
+  ROAD_MARKING_UNKNOWN = 0;
+  ROAD_MARKING_LANE_LINE_SOLID = 1;
+  ROAD_MARKING_LANE_LINE_DASHED = 2;
+  ROAD_MARKING_LANE_LINE_DOUBLE = 3;
+  ROAD_MARKING_STOP_LINE = 4;
+  ROAD_MARKING_CROSSWALK = 5;
+  ROAD_MARKING_ARROW_STRAIGHT = 6;
+  ROAD_MARKING_ARROW_LEFT = 7;
+  ROAD_MARKING_ARROW_RIGHT = 8;
+  ROAD_MARKING_ARROW_LEFT_RIGHT = 9;
+  ROAD_MARKING_TEXT = 10;
+  ROAD_MARKING_BIKE_LANE = 11;
+}
+
+enum RoadMarkingColor {
+  ROAD_MARKING_COLOR_UNKNOWN = 0;
+  ROAD_MARKING_COLOR_WHITE = 1;
+  ROAD_MARKING_COLOR_YELLOW = 2;
+  ROAD_MARKING_COLOR_BLUE = 3;
+  ROAD_MARKING_COLOR_RED = 4;
+}
+
+message RoadMarking {
+  uint64 id = 1;
+  RoadMarkingType type = 2;
+  RoadMarkingColor color = 3;
+  // Polyline in `header.frame_id`.
+  repeated vmsgs.proto.geometry.Point points = 4;
+  float confidence = 5;
+}
+
+message RoadMarkingArray {
+  vmsgs.proto.common.Header header = 1;
+  repeated RoadMarking markings = 2;
+}

@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package vmsgs.proto.sensor;
+
+import "common/header.proto";
+
+message RelativeHumidity {
+  vmsgs.proto.common.Header header = 1;
+  double relative_humidity = 2;  // 0..1
+  double variance = 3;
+}

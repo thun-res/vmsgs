@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package vmsgs.proto.system;
+
+import "common/header.proto";
+
+// Minimum-Risk-Maneuver (MRM) state.
+enum MrmBehavior {
+  MRM_BEHAVIOR_NONE = 0;
+  MRM_BEHAVIOR_PULL_OVER = 1;
+  MRM_BEHAVIOR_COMFORTABLE_STOP = 2;
+  MRM_BEHAVIOR_EMERGENCY_STOP = 3;
+}
+
+enum MrmStateValue {
+  MRM_STATE_NORMAL = 0;
+  MRM_STATE_OPERATING = 1;
+  MRM_STATE_SUCCEEDED = 2;
+  MRM_STATE_FAILED = 3;
+}
+
+message MrmState {
+  vmsgs.proto.common.Header header = 1;
+  MrmStateValue state = 2;
+  MrmBehavior behavior = 3;
+  string reason = 4;
+}

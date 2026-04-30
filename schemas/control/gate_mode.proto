@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package vmsgs.proto.control;
+
+import "common/header.proto";
+
+// Switch between "AUTO" command from the planner and "EXTERNAL" command
+// from the operator/teleop. Mirrors tier4_control_msgs/GateMode +
+// ExternalCommandSelectorMode.
+
+enum GateMode {
+  GATE_MODE_AUTO = 0;
+  GATE_MODE_EXTERNAL = 1;
+}
+
+message GateModeStamped {
+  vmsgs.proto.common.Header header = 1;
+  GateMode data = 2;
+}
+
+enum ExternalCommandSelectorMode {
+  EXTERNAL_COMMAND_SELECTOR_NONE = 0;
+  EXTERNAL_COMMAND_SELECTOR_LOCAL = 1;
+  EXTERNAL_COMMAND_SELECTOR_REMOTE = 2;
+}
+
+message ExternalCommandSelectorModeStamped {
+  vmsgs.proto.common.Header header = 1;
+  ExternalCommandSelectorMode data = 2;
+}

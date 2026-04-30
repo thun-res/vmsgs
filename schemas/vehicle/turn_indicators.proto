@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package vmsgs.proto.vehicle;
+
+import "common/header.proto";
+
+enum TurnIndicatorsCode {
+  TURN_DISABLE = 0;
+  TURN_ENABLE_LEFT = 1;
+  TURN_ENABLE_RIGHT = 2;
+  TURN_NO_COMMAND = 3;
+}
+
+message TurnIndicatorsCommand {
+  vmsgs.proto.common.Header header = 1;
+  TurnIndicatorsCode command = 2;
+}
+
+message TurnIndicatorsReport {
+  vmsgs.proto.common.Header header = 1;
+  TurnIndicatorsCode report = 2;
+}

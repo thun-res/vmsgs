@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package vmsgs.proto.embodied;
+
+import "common/header.proto";
+
+enum GripperKind {
+  GRIPPER_UNKNOWN = 0;
+  GRIPPER_PARALLEL = 1;
+  GRIPPER_VACUUM = 2;
+  GRIPPER_DEXTEROUS = 3;
+  GRIPPER_MAGNETIC = 4;
+  GRIPPER_SOFT = 5;
+}
+
+message GripperCommand {
+  vmsgs.proto.common.Header header = 1;
+  GripperKind kind = 2;
+  // Normalised in [0, 1]: 0 = fully open, 1 = fully closed.
+  float position = 3;
+  // Closing force / vacuum level (N or kPa).
+  float effort = 4;
+  // For dexterous hands, per-finger position targets.
+  repeated double finger_positions = 5 [packed = true];
+}
+
+message GripperState {
+  vmsgs.proto.common.Header header = 1;
+  GripperKind kind = 2;
+  float position = 3;
+  float effort = 4;
+  bool is_grasping = 5;
+  bool is_stalled = 6;
+  // Per-finger feedback for dexterous hands.
+  repeated double finger_positions = 7 [packed = true];
+  repeated double finger_efforts = 8 [packed = true];
+}

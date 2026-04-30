@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package vmsgs.proto.sensor;
+
+import "common/header.proto";
+
+// Single-beam range reading (ultrasonic, IR, ToF).
+message Range {
+  enum RadiationType {
+    RADIATION_TYPE_UNKNOWN = 0;
+    RADIATION_TYPE_ULTRASOUND = 1;
+    RADIATION_TYPE_INFRARED = 2;
+    RADIATION_TYPE_TOF = 3;
+  }
+  vmsgs.proto.common.Header header = 1;
+  RadiationType radiation_type = 2;
+  float field_of_view = 3;  // rad
+  float min_range = 4;      // meters
+  float max_range = 5;      // meters
+  float range = 6;          // meters; outside [min,max] means out-of-range
+}

@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package vmsgs.proto.geometry;
+
+import "geometry/point.proto";
+import "common/header.proto";
+
+// Closed polygon. The boundary is implicit between the last and first point.
+message Polygon {
+  repeated Point32 points = 1;
+}
+
+message PolygonStamped {
+  vmsgs.proto.common.Header header = 1;
+  Polygon polygon = 2;
+}

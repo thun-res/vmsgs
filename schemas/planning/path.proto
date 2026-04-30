@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package vmsgs.proto.planning;
+
+import "common/header.proto";
+import "geometry/pose.proto";
+
+// Reference path point: pose + velocity bound. No accel/heading-rate target.
+message PathPoint {
+  vmsgs.proto.geometry.Pose pose = 1;
+  float longitudinal_velocity = 2;  // m/s, target speed
+  float lateral_velocity = 3;       // m/s
+  float heading_rate = 4;           // rad/s, optional
+  bool is_final = 5;
+}
+
+// Lane reference path with drivable bounds.
+message Path {
+  vmsgs.proto.common.Header header = 1;
+  repeated PathPoint points = 2;
+  // Drivable area boundary polylines (left/right), expressed in `header.frame_id`.
+  repeated vmsgs.proto.geometry.Pose left_bound = 3;
+  repeated vmsgs.proto.geometry.Pose right_bound = 4;
+}

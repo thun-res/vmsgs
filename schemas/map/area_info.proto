@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package vmsgs.proto.map;
+
+// Bounding box describing a map tile's coverage in WGS84 + Cartesian space.
+// Mirrors autoware_map_msgs/AreaInfo.
+message AreaInfo {
+  // Top-left corner.
+  double latitude_min = 1;
+  double longitude_min = 2;
+  // Bottom-right corner.
+  double latitude_max = 3;
+  double longitude_max = 4;
+  // Optional Cartesian extents (m) in the local map frame.
+  double x_min = 5;
+  double y_min = 6;
+  double x_max = 7;
+  double y_max = 8;
+}

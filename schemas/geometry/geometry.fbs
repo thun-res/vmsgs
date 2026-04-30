@@ -1,0 +1,9 @@
+// Compact FlatBuffers structs for geometry primitives, used wherever a bulk
+// payload (PointCloud, OccupancyGrid, ...) needs to embed pose/transform info
+// without a separate .fbs include cycle.
+namespace vmsgs.fbs.geometry;
+
+struct Vector3 { x:double; y:double; z:double; }
+struct Quaternion { x:double; y:double; z:double; w:double; }
+struct Pose { position:Vector3; orientation:Quaternion; }
+struct Transform { translation:Vector3; rotation:Quaternion; }

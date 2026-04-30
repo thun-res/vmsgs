@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package vmsgs.proto.common;
+
+import "common/header.proto";
+
+// Stamped scalar/array debug values (autoware_internal_debug_msgs).
+
+message BoolStamped {
+  vmsgs.proto.common.Header header = 1;
+  bool data = 2;
+}
+
+message Int32Stamped {
+  vmsgs.proto.common.Header header = 1;
+  int32 data = 2;
+}
+
+message Int64Stamped {
+  vmsgs.proto.common.Header header = 1;
+  int64 data = 2;
+}
+
+message Float32Stamped {
+  vmsgs.proto.common.Header header = 1;
+  float data = 2;
+}
+
+message Float64Stamped {
+  vmsgs.proto.common.Header header = 1;
+  double data = 2;
+}
+
+message StringStamped {
+  vmsgs.proto.common.Header header = 1;
+  string data = 2;
+}
+
+message Int32MultiArrayStamped {
+  vmsgs.proto.common.Header header = 1;
+  repeated int32 data = 2 [packed = true];
+}
+
+message Int64MultiArrayStamped {
+  vmsgs.proto.common.Header header = 1;
+  repeated int64 data = 2 [packed = true];
+}
+
+message Float32MultiArrayStamped {
+  vmsgs.proto.common.Header header = 1;
+  repeated float data = 2 [packed = true];
+}
+
+message Float64MultiArrayStamped {
+  vmsgs.proto.common.Header header = 1;
+  repeated double data = 2 [packed = true];
+}

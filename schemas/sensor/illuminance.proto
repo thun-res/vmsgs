@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package vmsgs.proto.sensor;
+
+import "common/header.proto";
+
+message Illuminance {
+  vmsgs.proto.common.Header header = 1;
+  double illuminance = 2;  // lux
+  double variance = 3;
+}

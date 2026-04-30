@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package vmsgs.proto.planning;
+
+import "common/header.proto";
+import "common/uuid.proto";
+import "geometry/pose.proto";
+
+message LaneletPrimitive {
+  uint64 id = 1;
+  string primitive_type = 2;  // "lane", "lanelet", "area"
+}
+
+message LaneletSegment {
+  // Preferred lanelet to drive in.
+  LaneletPrimitive preferred = 1;
+  // Allowed alternative lanelets at the same s along the route.
+  repeated LaneletPrimitive primitives = 2;
+}
+
+message LaneletRoute {
+  vmsgs.proto.common.Header header = 1;
+  vmsgs.proto.geometry.Pose start_pose = 2;
+  vmsgs.proto.geometry.Pose goal_pose = 3;
+  repeated LaneletSegment segments = 4;
+  vmsgs.proto.common.UUID route_uuid = 5;
+}
+
+enum RouteState {
+  ROUTE_STATE_UNKNOWN = 0;
+  ROUTE_STATE_UNSET = 1;
+  ROUTE_STATE_SET = 2;
+  ROUTE_STATE_ARRIVED = 3;
+  ROUTE_STATE_CHANGING = 4;
+}
+
+message RouteStateStamped {
+  vmsgs.proto.common.Header header = 1;
+  RouteState state = 2;
+}

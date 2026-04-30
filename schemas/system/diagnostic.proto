@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package vmsgs.proto.system;
+
+import "common/header.proto";
+import "common/key_value.proto";
+
+enum DiagnosticLevel {
+  DIAG_OK = 0;
+  DIAG_WARN = 1;
+  DIAG_ERROR = 2;
+  DIAG_STALE = 3;
+}
+
+message DiagnosticStatus {
+  DiagnosticLevel level = 1;
+  string name = 2;
+  string message = 3;
+  // Hardware id producing the report.
+  string hardware_id = 4;
+  repeated vmsgs.proto.common.KeyValue values = 5;
+}
+
+message DiagnosticArray {
+  vmsgs.proto.common.Header header = 1;
+  repeated DiagnosticStatus status = 2;
+}

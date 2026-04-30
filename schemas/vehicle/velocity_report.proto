@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package vmsgs.proto.vehicle;
+
+import "common/header.proto";
+
+// Vehicle longitudinal/lateral velocity in base_link frame.
+message VelocityReport {
+  vmsgs.proto.common.Header header = 1;
+  float longitudinal_velocity = 2;  // m/s
+  float lateral_velocity = 3;       // m/s
+  float heading_rate = 4;           // rad/s
+}

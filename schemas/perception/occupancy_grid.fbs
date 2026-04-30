@@ -1,0 +1,22 @@
+include "../common/header.fbs";
+include "../geometry/geometry.fbs";
+
+namespace vmsgs.fbs.perception;
+
+/// 2D rolling occupancy grid. Cell value semantics:
+///   -1   unknown
+///    0   free
+///   100  occupied (linearly mapped in between).
+table OccupancyGrid {
+  header:vmsgs.fbs.common.Header (id: 0);
+  /// Map resolution in m/cell.
+  resolution:float (id: 1);
+  width:uint32     (id: 2);
+  height:uint32    (id: 3);
+  /// Origin of cell (0,0) in `header.frame_id`.
+  origin:vmsgs.fbs.geometry.Pose (id: 4);
+  /// Row-major, length width*height.
+  data:[byte] (id: 5);
+}
+
+root_type OccupancyGrid;

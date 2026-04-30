@@ -1,0 +1,14 @@
+// FlatBuffers mirror of common/proto/header.proto for zero-copy bulk payloads.
+namespace vmsgs.fbs.common;
+
+struct Time {
+  sec:int64;
+  nsec:uint32;
+}
+
+table Header {
+  seq:uint64           (id: 0);
+  frame_id:string      (id: 1);
+  stamp:Time           (id: 2);
+  publish_stamp:Time   (id: 3);
+}

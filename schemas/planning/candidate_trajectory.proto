@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package vmsgs.proto.planning;
+
+import "common/header.proto";
+import "common/uuid.proto";
+import "planning/trajectory.proto";
+
+// Output of a candidate-trajectory generator (one of N parallel proposals).
+// Mirrors autoware_internal_planning_msgs/CandidateTrajectory.
+message GeneratorInfo {
+  vmsgs.proto.common.UUID generator_id = 1;
+  string generator_name = 2;
+}
+
+message CandidateTrajectory {
+  Trajectory trajectory = 1;
+  GeneratorInfo generator_info = 2;
+}
+
+message CandidateTrajectories {
+  vmsgs.proto.common.Header header = 1;
+  repeated CandidateTrajectory candidates = 2;
+}
+
+message ScoredCandidateTrajectory {
+  CandidateTrajectory candidate = 1;
+  // Lower is better unless evaluator declares otherwise.
+  float score = 2;
+  string evaluator = 3;
+}
+
+message ScoredCandidateTrajectories {
+  vmsgs.proto.common.Header header = 1;
+  repeated ScoredCandidateTrajectory scored = 2;
+}

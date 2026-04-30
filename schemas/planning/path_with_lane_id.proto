@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package vmsgs.proto.planning;
+
+import "common/header.proto";
+import "geometry/pose.proto";
+import "planning/path.proto";
+
+// Reference path point annotated with the source lanelet id(s).
+// Mirrors autoware_internal_planning_msgs/PathPointWithLaneId.
+message PathPointWithLaneId {
+  PathPoint point = 1;
+  // Lanelet ids this point belongs to (typically size 1, possibly 2 at lane merges).
+  repeated int64 lane_ids = 2 [packed = true];
+}
+
+message PathWithLaneId {
+  vmsgs.proto.common.Header header = 1;
+  repeated PathPointWithLaneId points = 2;
+  repeated vmsgs.proto.geometry.Pose left_bound = 3;
+  repeated vmsgs.proto.geometry.Pose right_bound = 4;
+}

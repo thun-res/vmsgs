@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package vmsgs.proto.vehicle;
+
+import "common/header.proto";
+
+message WheelSpeeds {
+  vmsgs.proto.common.Header header = 1;
+  // m/s, individual wheel ground speeds.
+  float front_left = 2;
+  float front_right = 3;
+  float rear_left = 4;
+  float rear_right = 5;
+}

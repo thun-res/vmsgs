@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package vmsgs.proto.planning;
+
+import "common/header.proto";
+
+enum BehaviorState {
+  BEHAVIOR_UNKNOWN = 0;
+  BEHAVIOR_LANE_FOLLOWING = 1;
+  BEHAVIOR_LANE_CHANGE_LEFT = 2;
+  BEHAVIOR_LANE_CHANGE_RIGHT = 3;
+  BEHAVIOR_TURN_LEFT = 4;
+  BEHAVIOR_TURN_RIGHT = 5;
+  BEHAVIOR_AVOIDANCE = 6;
+  BEHAVIOR_STOP = 7;
+  BEHAVIOR_GO = 8;
+  BEHAVIOR_PULL_OVER = 9;
+  BEHAVIOR_PULL_OUT = 10;
+  BEHAVIOR_PARKING = 11;
+  BEHAVIOR_REVERSE = 12;
+  BEHAVIOR_EMERGENCY = 13;
+}
+
+message BehaviorStateStamped {
+  vmsgs.proto.common.Header header = 1;
+  BehaviorState state = 2;
+  // Module name responsible for the active behavior (e.g. "obstacle_avoidance").
+  string module = 3;
+  string detail = 4;
+}

@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package vmsgs.proto.sensor;
+
+import "common/header.proto";
+import "common/time.proto";
+
+// Side-channel metadata describing the contributors to a fused point cloud
+// emitted by a multi-LiDAR concatenation node.
+// Mirrors autoware_sensing_msgs/SourcePointCloudInfo.
+message SourcePointCloudInfo {
+  string topic = 1;
+  string frame_id = 2;
+  vmsgs.proto.common.Time stamp = 3;
+  // Number of points contributed.
+  uint32 num_points = 4;
+}
+
+// Mirrors autoware_sensing_msgs/ConcatenatedPointCloudInfo.
+message ConcatenatedPointCloudInfo {
+  vmsgs.proto.common.Header header = 1;
+  uint32 total_num_points = 2;
+  repeated SourcePointCloudInfo sources = 3;
+  // True when at least one expected source was missing at concatenation time.
+  bool has_missing_source = 4;
+}

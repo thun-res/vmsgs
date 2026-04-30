@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package vmsgs.proto.sensor;
+
+import "common/header.proto";
+
+// Pinhole + distortion model parameters. Mirrors sensor_msgs/CameraInfo.
+message CameraInfo {
+  enum DistortionModel {
+    DISTORTION_MODEL_UNKNOWN = 0;
+    DISTORTION_MODEL_NONE = 1;
+    DISTORTION_MODEL_PLUMB_BOB = 2;
+    DISTORTION_MODEL_RATIONAL_POLYNOMIAL = 3;
+    DISTORTION_MODEL_EQUIDISTANT = 4;
+    DISTORTION_MODEL_KANNALA_BRANDT = 5;
+    DISTORTION_MODEL_OMNIDIRECTIONAL = 6;
+  }
+
+  message RegionOfInterest {
+    uint32 x_offset = 1;
+    uint32 y_offset = 2;
+    uint32 height = 3;
+    uint32 width = 4;
+    bool do_rectify = 5;
+  }
+
+  vmsgs.proto.common.Header header = 1;
+  uint32 height = 2;
+  uint32 width = 3;
+  DistortionModel distortion_model = 4;
+  // Length-N distortion coefficients (varies per model).
+  repeated double d = 5 [packed = true];
+  // 3x3 row-major intrinsic matrix.
+  repeated double k = 6 [packed = true];
+  // 3x3 row-major rectification matrix (stereo).
+  repeated double r = 7 [packed = true];
+  // 3x4 row-major projection matrix.
+  repeated double p = 8 [packed = true];
+  uint32 binning_x = 9;
+  uint32 binning_y = 10;
+  RegionOfInterest roi = 11;
+}

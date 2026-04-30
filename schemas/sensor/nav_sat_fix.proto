@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package vmsgs.proto.sensor;
+
+import "common/header.proto";
+
+message NavSatStatus {
+  enum Status {
+    STATUS_NO_FIX = 0;
+    STATUS_FIX = 1;
+    STATUS_SBAS_FIX = 2;
+    STATUS_GBAS_FIX = 3;
+  }
+  enum Service {
+    SERVICE_UNKNOWN = 0;
+    SERVICE_GPS = 1;
+    SERVICE_GLONASS = 2;
+    SERVICE_COMPASS = 4;
+    SERVICE_GALILEO = 8;
+    SERVICE_BEIDOU = 16;
+  }
+  Status status = 1;
+  // Bitmask over Service values.
+  uint32 service = 2;
+}
+
+// Geodetic fix from a GNSS receiver.
+message NavSatFix {
+  enum CovarianceType {
+    COVARIANCE_TYPE_UNKNOWN = 0;
+    COVARIANCE_TYPE_APPROXIMATED = 1;
+    COVARIANCE_TYPE_DIAGONAL_KNOWN = 2;
+    COVARIANCE_TYPE_KNOWN = 3;
+  }
+
+  vmsgs.proto.common.Header header = 1;
+  NavSatStatus status = 2;
+
+  double latitude = 3;   // degrees
+  double longitude = 4;  // degrees
+  double altitude = 5;   // meters above WGS84 ellipsoid
+
+  // 3x3 row-major covariance over (east, north, up) in m^2.
+  repeated double position_covariance = 6 [packed = true];
+  CovarianceType position_covariance_type = 7;
+}

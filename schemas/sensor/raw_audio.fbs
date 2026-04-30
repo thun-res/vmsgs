@@ -1,0 +1,24 @@
+include "../common/header.fbs";
+
+namespace vmsgs.fbs.sensor;
+
+enum AudioFormat : ubyte {
+  PCM_S16LE = 0,
+  PCM_S24LE = 1,
+  PCM_S32LE = 2,
+  PCM_F32LE = 3,
+  PCM_U8    = 4,
+}
+
+/// Interleaved raw audio chunk.
+table RawAudio {
+  header:vmsgs.fbs.common.Header (id: 0);
+  format:AudioFormat (id: 1);
+  sample_rate:uint32 (id: 2);
+  channels:uint32 (id: 3);
+  /// Number of frames in `data` (data_bytes = frame_count * channels * bytes_per_sample).
+  frame_count:uint32 (id: 4);
+  data:[uint8] (id: 5);
+}
+
+root_type RawAudio;

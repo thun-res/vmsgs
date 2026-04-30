@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package vmsgs.proto.embodied;
+
+import "common/header.proto";
+import "common/uuid.proto";
+
+// Natural-language command issued to the robot (text or transcribed speech).
+message NLInstruction {
+  vmsgs.proto.common.Header header = 1;
+  vmsgs.proto.common.UUID instruction_uuid = 2;
+  string text = 3;
+  // BCP-47 language tag (e.g. "zh-CN", "en-US").
+  string language = 4;
+  // Speaker / operator id; empty if not authenticated.
+  string speaker_id = 5;
+  // Confidence score from ASR; 1.0 if pure text input.
+  float confidence = 6;
+  // Optional original audio reference (URI or topic).
+  string audio_ref = 7;
+}
+
+// Robot-side reply to the operator.
+message NLResponse {
+  vmsgs.proto.common.Header header = 1;
+  vmsgs.proto.common.UUID in_reply_to = 2;
+  string text = 3;
+  string language = 4;
+  // Optional synthesized audio reference.
+  string audio_ref = 5;
+}

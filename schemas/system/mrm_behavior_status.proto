@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package vmsgs.proto.system;
+
+import "common/header.proto";
+import "system/mrm_state.proto";
+
+// Mirrors tier4_system_msgs/MrmBehaviorStatus - per-behavior MRM execution status.
+message MrmBehaviorStatus {
+  vmsgs.proto.common.Header header = 1;
+  MrmBehavior behavior = 2;
+  enum Status {
+    MRM_BEHAVIOR_STATUS_UNKNOWN = 0;
+    MRM_BEHAVIOR_STATUS_AVAILABLE = 1;
+    MRM_BEHAVIOR_STATUS_OPERATING = 2;
+    MRM_BEHAVIOR_STATUS_SUCCEEDED = 3;
+    MRM_BEHAVIOR_STATUS_FAILED = 4;
+    MRM_BEHAVIOR_STATUS_UNAVAILABLE = 5;
+  }
+  Status status = 3;
+}
+
+// Mirrors autoware_adapi_v1_msgs/MrmRequest + MrmRequestList.
+message MrmRequest {
+  string source = 1;          // "operator", "watchdog", "fault_handler"
+  MrmBehavior behavior = 2;
+  string reason = 3;
+}
+
+message MrmRequestList {
+  vmsgs.proto.common.Header header = 1;
+  repeated MrmRequest requests = 2;
+}
+
+// Mirrors autoware_adapi_v1_msgs/MrmDescription.
+message MrmDescription {
+  MrmBehavior behavior = 1;
+  string description = 2;
+}

@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package vmsgs.proto.perception;
+
+import "common/header.proto";
+import "geometry/polygon.proto";
+
+// Driveable / free-space region around the ego vehicle.
+message FreeSpace {
+  vmsgs.proto.common.Header header = 1;
+  // Outer drivable region.
+  vmsgs.proto.geometry.Polygon outer = 2;
+  // Holes (e.g. road islands, obstacles) inside the outer polygon.
+  repeated vmsgs.proto.geometry.Polygon holes = 3;
+}

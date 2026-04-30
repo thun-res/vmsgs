@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package vmsgs.proto.system;
+
+import "common/header.proto";
+import "system/diagnostic.proto";
+
+enum HazardLevel {
+  HAZARD_LEVEL_NO_FAULT = 0;
+  HAZARD_LEVEL_SAFE_FAULT = 1;
+  HAZARD_LEVEL_LATENT_FAULT = 2;
+  HAZARD_LEVEL_SINGLE_POINT_FAULT = 3;
+}
+
+message HazardStatus {
+  HazardLevel level = 1;
+  bool emergency = 2;
+  bool emergency_holding = 3;
+  bool self_recoverable = 4;
+  // Triggers grouped by hazard level.
+  repeated DiagnosticStatus diag_no_fault = 5;
+  repeated DiagnosticStatus diag_safe_fault = 6;
+  repeated DiagnosticStatus diag_latent_fault = 7;
+  repeated DiagnosticStatus diag_single_point_fault = 8;
+}
+
+message HazardStatusStamped {
+  vmsgs.proto.common.Header header = 1;
+  HazardStatus status = 2;
+}

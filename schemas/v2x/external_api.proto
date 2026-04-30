@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package vmsgs.proto.v2x;
+
+import "common/header.proto";
+import "common/status.proto";
+import "geometry/pose.proto";
+
+// Operator/cloud API: set route, engage, override.
+
+message SetRouteRequest {
+  vmsgs.proto.common.Header header = 1;
+  vmsgs.proto.geometry.Pose goal = 2;
+  repeated vmsgs.proto.geometry.Pose waypoints = 3;
+  bool allow_modification = 4;
+}
+
+message SetRouteResponse {
+  vmsgs.proto.common.Status status = 1;
+}
+
+message ClearRouteRequest {}
+
+message ClearRouteResponse {
+  vmsgs.proto.common.Status status = 1;
+}
+
+message EngageRequest {
+  bool engage = 1;
+}
+
+message EngageResponse {
+  vmsgs.proto.common.Status status = 1;
+}
+
+message OverrideRequest {
+  vmsgs.proto.common.Header header = 1;
+  bool override_active = 2;
+  string reason = 3;
+}
+
+message OverrideResponse {
+  vmsgs.proto.common.Status status = 1;
+}
