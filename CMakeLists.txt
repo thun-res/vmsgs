@@ -31,21 +31,6 @@ project(
 )
 set(PROJECT_NAMESPACE vlink::)
 
-# required
-find_package(vlink CONFIG REQUIRED)
-if(ENABLE_PROTOBUF)
-  find_package(Protobuf CONFIG REQUIRED)
-  set(protobuf_libs protobuf::libprotobuf)
-endif()
-if(ENABLE_FLATBUFFERS)
-  find_package(Flatbuffers CONFIG REQUIRED)
-  if(TARGET flatbuffers::flatbuffers_shared)
-    set(flatbuffers_libs flatbuffers::flatbuffers_shared)
-  elseif(TARGET flatbuffers::flatbuffers)
-    set(flatbuffers_libs flatbuffers::flatbuffers)
-  endif()
-endif()
-
 # common
 vlink_check()
 include(GNUInstallDirs)
@@ -72,6 +57,21 @@ if(MSVC)
   add_compile_options(/GL)
   add_link_options(/LTCG)
   add_link_options(/IGNORE:4078)
+endif()
+
+# required
+find_package(vlink CONFIG REQUIRED)
+if(ENABLE_PROTOBUF)
+  find_package(Protobuf CONFIG REQUIRED)
+  set(protobuf_libs protobuf::libprotobuf)
+endif()
+if(ENABLE_FLATBUFFERS)
+  find_package(Flatbuffers CONFIG REQUIRED)
+  if(TARGET flatbuffers::flatbuffers_shared)
+    set(flatbuffers_libs flatbuffers::flatbuffers_shared)
+  elseif(TARGET flatbuffers::flatbuffers)
+    set(flatbuffers_libs flatbuffers::flatbuffers)
+  endif()
 endif()
 
 # ipo
