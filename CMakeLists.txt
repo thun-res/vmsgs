@@ -31,9 +31,41 @@ project(
 )
 set(PROJECT_NAMESPACE vlink::)
 
+# options
+option(BUILD_SHARED_LIBS "Build shared libraries" ON)
+option(ENABLE_PROTOBUF "" ON)
+option(ENABLE_FLATBUFFERS "" ON)
+include(GNUInstallDirs)
+set(INSTALL_CONFIG_DIR
+    ${CMAKE_INSTALL_SYSCONFDIR}/${CMAKE_PROJECT_NAME}
+    CACHE STRING "Install dir for config files (relative to prefix)"
+)
+if(NOT ENABLE_PROTOBUF AND NOT ENABLE_FLATBUFFERS)
+  message(FATAL_ERROR "")
+endif()
+if(IS_ABSOLUTE "${INSTALL_CONFIG_DIR}")
+  string(REGEX REPLACE "^([A-Za-z]:)?[\\/]+" "" BUILD_CONFIG_DIR "${_dir}")
+else()
+  set(BUILD_CONFIG_DIR ${INSTALL_CONFIG_DIR})
+endif()
+
+# required
+find_package(vlink CONFIG REQUIRED)
+if(ENABLE_PROTOBUF)
+  find_package(Protobuf CONFIG REQUIRED)
+  set(protobuf_libs protobuf::libprotobuf)
+endif()
+if(ENABLE_FLATBUFFERS)
+  find_package(Flatbuffers CONFIG REQUIRED)
+  if(TARGET flatbuffers::flatbuffers_shared)
+    set(flatbuffers_libs flatbuffers::flatbuffers_shared)
+  elseif(TARGET flatbuffers::flatbuffers)
+    set(flatbuffers_libs flatbuffers::flatbuffers)
+  endif()
+endif()
+
 # common
 vlink_check()
-include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/output/bin)
@@ -59,21 +91,6 @@ if(MSVC)
   add_link_options(/IGNORE:4078)
 endif()
 
-# required
-find_package(vlink CONFIG REQUIRED)
-if(ENABLE_PROTOBUF)
-  find_package(Protobuf CONFIG REQUIRED)
-  set(protobuf_libs protobuf::libprotobuf)
-endif()
-if(ENABLE_FLATBUFFERS)
-  find_package(Flatbuffers CONFIG REQUIRED)
-  if(TARGET flatbuffers::flatbuffers_shared)
-    set(flatbuffers_libs flatbuffers::flatbuffers_shared)
-  elseif(TARGET flatbuffers::flatbuffers)
-    set(flatbuffers_libs flatbuffers::flatbuffers)
-  endif()
-endif()
-
 # ipo
 if(NOT MSVC AND NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
   include(CheckIPOSupported)
@@ -87,23 +104,6 @@ if(NOT MSVC AND NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
 endif()
 if(POLICY CMP0069)
   cmake_policy(SET CMP0069 NEW)
-endif()
-
-# options
-option(BUILD_SHARED_LIBS "Build shared libraries" ON)
-option(ENABLE_PROTOBUF "" ON)
-option(ENABLE_FLATBUFFERS "" ON)
-set(INSTALL_CONFIG_DIR
-    ${CMAKE_INSTALL_SYSCONFDIR}/${CMAKE_PROJECT_NAME}
-    CACHE STRING "Install dir for config files (relative to prefix)"
-)
-if(NOT ENABLE_PROTOBUF AND NOT ENABLE_FLATBUFFERS)
-  message(FATAL_ERROR "")
-endif()
-if(IS_ABSOLUTE "${INSTALL_CONFIG_DIR}")
-  string(REGEX REPLACE "^([A-Za-z]:)?[\\/]+" "" BUILD_CONFIG_DIR "${_dir}")
-else()
-  set(BUILD_CONFIG_DIR ${INSTALL_CONFIG_DIR})
 endif()
 
 # src
