@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package vmsgs.proto.sensor;
+
+import "common/header.proto";
+import "geometry/quaternion.proto";
+
+// Orientation reported by a GNSS-aided INS (e.g. heading + pitch from a dual-antenna
+// receiver). RMS values are 1-sigma in radians.
+message GnssInsOrientation {
+  vmsgs.proto.common.Header header = 1;
+  vmsgs.proto.geometry.Quaternion orientation = 2;
+  float rmse_rotation_x = 3;
+  float rmse_rotation_y = 4;
+  float rmse_rotation_z = 5;
+}

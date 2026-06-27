@@ -1,0 +1,15 @@
+include "../common/header.fbs";
+
+namespace vmsgs.fbs.sensor;
+
+/// Encoded audio chunk (Opus, AAC, MP3).
+table CompressedAudio {
+  header:vmsgs.fbs.common.Header (id: 0);
+  /// "opus", "aac", "mp3", "flac".
+  format:string (id: 1);
+  sample_rate:uint32 (id: 2);
+  channels:uint32 (id: 3);
+  data:[uint8] (id: 4);
+}
+
+root_type CompressedAudio;

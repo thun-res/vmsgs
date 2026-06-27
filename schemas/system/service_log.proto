@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package vmsgs.proto.system;
+
+import "common/header.proto";
+
+// Mirrors autoware_internal_debug_msgs/ServiceLog and tier4_system_msgs/ServiceLog.
+// Records one service call's lifecycle for debugging.
+message ServiceLog {
+  vmsgs.proto.common.Header header = 1;
+  enum Type {
+    SERVICE_LOG_UNKNOWN = 0;
+    SERVICE_LOG_REQUEST = 1;
+    SERVICE_LOG_RESPONSE = 2;
+    SERVICE_LOG_TIMEOUT = 3;
+    SERVICE_LOG_ERROR = 4;
+  }
+  Type type = 2;
+  string node_name = 3;
+  string service_name = 4;
+  string client_name = 5;
+  // Serialized request / response (best-effort textproto / JSON).
+  string body = 6;
+  // Sequence number used to correlate request and response.
+  uint64 sequence = 7;
+}

@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package vmsgs.proto.common;
+
+// 128-bit universally unique identifier (RFC 4122).
+message UUID {
+  // Big-endian high 64 bits.
+  uint64 high = 1;
+  // Big-endian low 64 bits.
+  uint64 low = 2;
+}

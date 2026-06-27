@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package vmsgs.proto.control;
+
+import "common/header.proto";
+
+// Longitudinal target for speed/throttle/brake controllers.
+message LongitudinalCommand {
+  vmsgs.proto.common.Header header = 1;
+  float velocity = 2;       // m/s, target longitudinal speed
+  float acceleration = 3;   // m/s^2
+  float jerk = 4;           // m/s^3, optional smoothness limit
+  // Set true to request a hard stop regardless of velocity target.
+  bool stop = 5;
+}

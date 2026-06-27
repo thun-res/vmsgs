@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package vmsgs.proto.localization;
+
+import "common/header.proto";
+import "geometry/pose.proto";
+import "geometry/twist.proto";
+import "geometry/accel.proto";
+
+// Full ego state used by an EKF/UKF filter.
+message EkfState {
+  vmsgs.proto.common.Header header = 1;
+  string child_frame_id = 2;
+  vmsgs.proto.geometry.PoseWithCovariance pose = 3;
+  vmsgs.proto.geometry.TwistWithCovariance twist = 4;
+  vmsgs.proto.geometry.AccelWithCovariance accel = 5;
+  // Optional bias estimates (length 6: ax, ay, az, gx, gy, gz).
+  repeated double imu_bias = 6 [packed = true];
+}

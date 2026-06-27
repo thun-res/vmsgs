@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package vmsgs.proto.sensor;
+
+import "common/header.proto";
+
+// Generic per-sensor health report.
+message SensorStatus {
+  enum Health {
+    HEALTH_UNKNOWN = 0;
+    HEALTH_OK = 1;
+    HEALTH_DEGRADED = 2;
+    HEALTH_FAULT = 3;
+    HEALTH_OFFLINE = 4;
+  }
+  vmsgs.proto.common.Header header = 1;
+  string sensor_id = 2;
+  Health health = 3;
+  float temperature_c = 4;   // NaN if unknown
+  float supply_voltage_v = 5;
+  string firmware_version = 6;
+  string message = 7;
+}

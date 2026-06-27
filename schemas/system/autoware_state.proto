@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package vmsgs.proto.system;
+
+import "common/header.proto";
+
+enum AutowareState {
+  AUTOWARE_STATE_UNKNOWN = 0;
+  AUTOWARE_STATE_INITIALIZING = 1;
+  AUTOWARE_STATE_WAITING_FOR_ROUTE = 2;
+  AUTOWARE_STATE_PLANNING = 3;
+  AUTOWARE_STATE_WAITING_FOR_ENGAGE = 4;
+  AUTOWARE_STATE_DRIVING = 5;
+  AUTOWARE_STATE_ARRIVED_GOAL = 6;
+  AUTOWARE_STATE_FINALIZING = 7;
+}
+
+message AutowareStateStamped {
+  vmsgs.proto.common.Header header = 1;
+  AutowareState state = 2;
+}

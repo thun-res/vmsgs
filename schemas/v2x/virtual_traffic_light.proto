@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package vmsgs.proto.v2x;
+
+import "common/header.proto";
+
+enum VirtualTrafficLightState {
+  VTL_UNKNOWN = 0;
+  VTL_STOP = 1;
+  VTL_GO = 2;
+  VTL_STOP_AND_WAIT = 3;
+  VTL_FINALIZED = 4;
+}
+
+message VirtualTrafficLightStatus {
+  uint64 id = 1;
+  VirtualTrafficLightState state = 2;
+  // Time until state change (s).
+  float time_remaining = 3;
+}
+
+message VirtualTrafficLightStatusArray {
+  vmsgs.proto.common.Header header = 1;
+  repeated VirtualTrafficLightStatus statuses = 2;
+}
+
+message VirtualTrafficLightStateRequest {
+  vmsgs.proto.common.Header header = 1;
+  uint64 id = 2;
+  VirtualTrafficLightState state = 3;
+}

@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package vmsgs.proto.control;
+
+import "common/header.proto";
+
+// Driving-pause state machine signals. Mirrors tier4_control_msgs/{IsPaused,
+// IsStartRequested, IsStopped}.
+message IsPaused {
+  vmsgs.proto.common.Header header = 1;
+  bool data = 2;
+}
+
+message IsStartRequested {
+  vmsgs.proto.common.Header header = 1;
+  bool data = 2;
+}
+
+message IsStopped {
+  vmsgs.proto.common.Header header = 1;
+  bool data = 2;
+}

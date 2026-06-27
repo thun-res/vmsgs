@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package vmsgs.proto.vehicle;
+
+import "common/header.proto";
+
+// Static vehicle parameters useful for downstream planning/control.
+message VehicleKinematics {
+  vmsgs.proto.common.Header header = 1;
+  // Distance between front and rear axles (m).
+  float wheel_base = 2;
+  // Track width front/rear (m).
+  float track_width_front = 3;
+  float track_width_rear = 4;
+  float overhang_front = 5;
+  float overhang_rear = 6;
+  // Bounding-box dimensions (m).
+  float length = 7;
+  float width = 8;
+  float height = 9;
+  // Limits.
+  float max_steer_angle = 10;          // rad
+  float max_steer_rate = 11;           // rad/s
+  float max_longitudinal_acceleration = 12;
+  float max_longitudinal_deceleration = 13;
+  float max_lateral_acceleration = 14;
+  float max_velocity = 15;             // m/s
+  // Steering ratio (steering_wheel / tire angle).
+  float steering_ratio = 16;
+}

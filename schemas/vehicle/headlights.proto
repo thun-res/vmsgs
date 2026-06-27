@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package vmsgs.proto.vehicle;
+
+import "common/header.proto";
+
+enum HeadlightsCode {
+  HEADLIGHTS_OFF = 0;
+  HEADLIGHTS_PARKING = 1;
+  HEADLIGHTS_LOW_BEAM = 2;
+  HEADLIGHTS_HIGH_BEAM = 3;
+  HEADLIGHTS_NO_COMMAND = 4;
+}
+
+message HeadlightsCommand {
+  vmsgs.proto.common.Header header = 1;
+  HeadlightsCode command = 2;
+}
+
+message HeadlightsReport {
+  vmsgs.proto.common.Header header = 1;
+  HeadlightsCode report = 2;
+}

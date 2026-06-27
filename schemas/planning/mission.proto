@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package vmsgs.proto.planning;
+
+import "common/header.proto";
+import "geometry/pose.proto";
+
+enum MissionState {
+  MISSION_UNKNOWN = 0;
+  MISSION_INITIALIZING = 1;
+  MISSION_PLANNING = 2;
+  MISSION_DRIVING = 3;
+  MISSION_ARRIVED = 4;
+  MISSION_FAILED = 5;
+  MISSION_CANCELED = 6;
+}
+
+message MissionStateStamped {
+  vmsgs.proto.common.Header header = 1;
+  MissionState state = 2;
+  string description = 3;
+}
+
+message MissionGoal {
+  vmsgs.proto.common.Header header = 1;
+  vmsgs.proto.geometry.Pose goal_pose = 2;
+  // Optional ordered intermediate waypoints.
+  repeated vmsgs.proto.geometry.Pose waypoints = 3;
+  // Hard time budget in seconds; 0 = none.
+  double deadline_sec = 4;
+}

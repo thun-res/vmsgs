@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package vmsgs.proto.sensor;
+
+import "common/header.proto";
+
+// Generic joystick / gamepad input.
+message Joy {
+  vmsgs.proto.common.Header header = 1;
+  repeated float axes = 2 [packed = true];     // [-1,1]
+  repeated int32 buttons = 3 [packed = true];  // 0/1
+}
+
+message JoyFeedback {
+  enum Type {
+    TYPE_UNKNOWN = 0;
+    TYPE_LED = 1;
+    TYPE_RUMBLE = 2;
+    TYPE_BUZZER = 3;
+  }
+  Type type = 1;
+  uint32 id = 2;
+  float intensity = 3;
+}
+
+message JoyFeedbackArray {
+  vmsgs.proto.common.Header header = 1;
+  repeated JoyFeedback array = 2;
+}

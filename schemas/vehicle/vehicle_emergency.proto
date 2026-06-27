@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package vmsgs.proto.vehicle;
+
+import "common/header.proto";
+
+// Vehicle-side emergency state (tier4_vehicle_msgs/VehicleEmergencyStamped).
+message VehicleEmergencyStamped {
+  vmsgs.proto.common.Header header = 1;
+  bool emergency = 2;
+  string reason = 3;
+}

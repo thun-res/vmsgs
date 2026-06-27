@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package vmsgs.proto.geometry;
+
+import "geometry/vector3.proto";
+import "geometry/quaternion.proto";
+import "common/header.proto";
+
+// Rigid-body transform: translation + rotation.
+message Transform {
+  Vector3 translation = 1;
+  Quaternion rotation = 2;
+}
+
+// Transform from `header.frame_id` to `child_frame_id`.
+message TransformStamped {
+  vmsgs.proto.common.Header header = 1;
+  string child_frame_id = 2;
+  Transform transform = 3;
+}

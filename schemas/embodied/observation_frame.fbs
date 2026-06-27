@@ -1,0 +1,32 @@
+include "../common/header.fbs";
+include "../sensor/image.fbs";
+include "../sensor/compressed_image.fbs";
+include "../sensor/depth_image.fbs";
+include "../sensor/point_cloud2.fbs";
+
+namespace vmsgs.fbs.embodied;
+
+/// Multimodal observation snapshot fed to a VLA / world-model.
+/// All modalities share the same `header.stamp` (synchronized fusion bundle).
+table ObservationCamera {
+  /// "head", "left_wrist", "right_wrist", ...
+  name:string (id: 0);
+  image:vmsgs.fbs.sensor.Image (id: 1);
+  /// Use `compressed` instead of `image` for bandwidth-bound channels.
+  compressed:vmsgs.fbs.sensor.CompressedImage (id: 2);
+  depth:vmsgs.fbs.sensor.DepthImage (id: 3);
+}
+
+table ObservationFrame {
+  header:vmsgs.fbs.common.Header (id: 0);
+  cameras:[ObservationCamera] (id: 1);
+  point_cloud:vmsgs.fbs.sensor.PointCloud2 (id: 2);
+  /// Proprioception vector (joint positions+velocities concatenated).
+  proprioception:[float] (id: 3);
+  /// Names of the proprioception channels (length == proprioception.length).
+  proprio_names:[string] (id: 4);
+  /// Optional natural-language goal for goal-conditioned policies.
+  goal_text:string (id: 5);
+}
+
+root_type ObservationFrame;

@@ -1,0 +1,91 @@
+syntax = "proto3";
+
+package vmsgs.proto.planning;
+
+import "common/header.proto";
+import "geometry/pose.proto";
+
+// Driver-facing reason the ego is slowing/stopping.
+// Mirrors autoware_adapi_v1_msgs/VelocityFactor.
+message VelocityFactor {
+  enum Behavior {
+    VELOCITY_BEHAVIOR_UNKNOWN = 0;
+    VELOCITY_BEHAVIOR_NONE = 1;
+    VELOCITY_BEHAVIOR_CROSSWALK = 2;
+    VELOCITY_BEHAVIOR_INTERSECTION = 3;
+    VELOCITY_BEHAVIOR_MERGE = 4;
+    VELOCITY_BEHAVIOR_NO_DRIVABLE_LANE = 5;
+    VELOCITY_BEHAVIOR_NO_STOPPING_AREA = 6;
+    VELOCITY_BEHAVIOR_REAR_CHECK = 7;
+    VELOCITY_BEHAVIOR_USER_DEFINED_DETECTION_AREA = 8;
+    VELOCITY_BEHAVIOR_RUN_OUT = 9;
+    VELOCITY_BEHAVIOR_STOP_SIGN = 10;
+    VELOCITY_BEHAVIOR_SURROUNDING_OBSTACLE = 11;
+    VELOCITY_BEHAVIOR_TRAFFIC_SIGNAL = 12;
+    VELOCITY_BEHAVIOR_VIRTUAL_TRAFFIC_LIGHT = 13;
+    VELOCITY_BEHAVIOR_WALKWAY = 14;
+    VELOCITY_BEHAVIOR_TRAJECTORY_END = 15;
+    VELOCITY_BEHAVIOR_BLIND_SPOT = 16;
+    VELOCITY_BEHAVIOR_OBSTACLE_STOP = 17;
+    VELOCITY_BEHAVIOR_GOAL_REACHED = 18;
+    VELOCITY_BEHAVIOR_EMERGENCY_STOP_OPERATION = 19;
+  }
+  enum Status {
+    VELOCITY_STATUS_UNKNOWN = 0;
+    VELOCITY_STATUS_APPROACHING = 1;
+    VELOCITY_STATUS_STOPPED = 2;
+  }
+
+  vmsgs.proto.geometry.Pose pose = 1;
+  float distance = 2;
+  Status status = 3;
+  Behavior behavior = 4;
+  string sequence = 5;
+  string detail = 6;
+}
+
+message VelocityFactorArray {
+  vmsgs.proto.common.Header header = 1;
+  repeated VelocityFactor factors = 2;
+}
+
+// Driver-facing steering decision (lane change, avoidance).
+// Mirrors autoware_adapi_v1_msgs/SteeringFactor.
+message SteeringFactor {
+  enum Behavior {
+    STEERING_BEHAVIOR_UNKNOWN = 0;
+    STEERING_BEHAVIOR_NONE = 1;
+    STEERING_BEHAVIOR_INTERSECTION = 2;
+    STEERING_BEHAVIOR_LANE_CHANGE = 3;
+    STEERING_BEHAVIOR_AVOIDANCE_PATH_CHANGE = 4;
+    STEERING_BEHAVIOR_AVOIDANCE_PATH_RETURN = 5;
+    STEERING_BEHAVIOR_GOAL_PLANNER = 6;
+    STEERING_BEHAVIOR_PULL_OUT = 7;
+    STEERING_BEHAVIOR_PULL_OVER = 8;
+  }
+  enum Direction {
+    STEERING_DIRECTION_UNKNOWN = 0;
+    STEERING_DIRECTION_LEFT = 1;
+    STEERING_DIRECTION_RIGHT = 2;
+    STEERING_DIRECTION_STRAIGHT = 3;
+  }
+  enum Status {
+    STEERING_STATUS_UNKNOWN = 0;
+    STEERING_STATUS_APPROACHING = 1;
+    STEERING_STATUS_TURNING = 2;
+  }
+
+  // Two poses define the start and end of the maneuver.
+  repeated vmsgs.proto.geometry.Pose pose = 1;
+  repeated float distance = 2 [packed = true];
+  Behavior behavior = 3;
+  Direction direction = 4;
+  Status status = 5;
+  string sequence = 6;
+  string detail = 7;
+}
+
+message SteeringFactorArray {
+  vmsgs.proto.common.Header header = 1;
+  repeated SteeringFactor factors = 2;
+}

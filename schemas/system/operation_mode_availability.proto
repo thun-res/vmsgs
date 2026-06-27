@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package vmsgs.proto.system;
+
+import "common/header.proto";
+
+// Mirrors tier4_system_msgs/OperationModeAvailability - which higher-level
+// operation modes the system can transition to right now.
+message OperationModeAvailability {
+  vmsgs.proto.common.Header header = 1;
+  bool stop = 2;
+  bool autonomous = 3;
+  bool local = 4;
+  bool remote = 5;
+  bool emergency_stop = 6;
+  bool comfortable_stop = 7;
+  bool pull_over = 8;
+}

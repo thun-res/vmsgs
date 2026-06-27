@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package vmsgs.proto.sensor;
+
+import "common/header.proto";
+
+message Temperature {
+  vmsgs.proto.common.Header header = 1;
+  double temperature = 2;  // degC
+  double variance = 3;     // 0 if unknown
+}

@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package vmsgs.proto.sensor;
+
+import "common/header.proto";
+import "common/uuid.proto";
+import "geometry/pose.proto";
+import "geometry/twist.proto";
+import "geometry/accel.proto";
+import "geometry/vector3.proto";
+
+// Per-frame radar metadata (mounting + range cell info).
+// Mirrors autoware_sensing_msgs/RadarFieldInfo + RadarInfo.
+message RadarFieldInfo {
+  // Field of view at the antenna (rad).
+  float azimuth_fov = 1;
+  float elevation_fov = 2;
+  float min_range = 3;       // m
+  float max_range = 4;       // m
+  float range_resolution = 5;
+  float doppler_resolution = 6;
+}
+
+message RadarInfo {
+  vmsgs.proto.common.Header header = 1;
+  RadarFieldInfo field = 2;
+  // Number of detection / track outputs in the matching scan / tracks message.
+  uint32 num_objects = 3;
+  string mounting_location = 4;  // "front_center", "rear_left", ...
+}
+
+// Radar-side classification confidence vector.
+// Mirrors autoware_sensing_msgs/RadarClassification.
+message RadarClassification {
+  // 0 = stationary, 1 = stopped, 2 = moving, ... (vendor-specific).
+  uint32 motion_status = 1;
+  // Per-class probability (length matches perception.ObjectLabel).
+  repeated float probabilities = 2 [packed = true];
+}
+
+// Object-level radar detection, richer than RadarTrack.
+// Mirrors autoware_sensing_msgs/RadarObject.
+message RadarObject {
+  vmsgs.proto.common.UUID object_id = 1;
+  vmsgs.proto.geometry.PoseWithCovariance kinematics_pose = 2;
+  vmsgs.proto.geometry.TwistWithCovariance kinematics_twist = 3;
+  vmsgs.proto.geometry.AccelWithCovariance kinematics_accel = 4;
+  vmsgs.proto.geometry.Vector3 size = 5;       // bbox extents (m)
+  RadarClassification classification = 6;
+  float existence_probability = 7;
+  float amplitude = 8;       // dB
+  float rcs_dbsm = 9;
+}
+
+message RadarObjects {
+  vmsgs.proto.common.Header header = 1;
+  repeated RadarObject objects = 2;
+}

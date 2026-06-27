@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package vmsgs.proto.sensor;
+
+import "common/header.proto";
+
+// Set of returns for a single beam (multi-echo LiDAR).
+message LaserEcho {
+  repeated float echoes = 1 [packed = true];
+}
+
+// Multi-echo planar laser sweep. Mirrors sensor_msgs/MultiEchoLaserScan.
+message MultiEchoLaserScan {
+  vmsgs.proto.common.Header header = 1;
+  float angle_min = 2;
+  float angle_max = 3;
+  float angle_increment = 4;
+  float time_increment = 5;
+  float scan_time = 6;
+  float range_min = 7;
+  float range_max = 8;
+  repeated LaserEcho ranges = 9;
+  repeated LaserEcho intensities = 10;
+}

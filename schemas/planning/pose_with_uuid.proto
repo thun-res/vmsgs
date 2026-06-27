@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package vmsgs.proto.planning;
+
+import "common/header.proto";
+import "common/uuid.proto";
+import "geometry/pose.proto";
+
+// Pose carrying its own UUID, used to correlate operator-set goals across
+// modules. Mirrors autoware_planning_msgs/PoseWithUuidStamped.
+message PoseWithUuidStamped {
+  vmsgs.proto.common.Header header = 1;
+  vmsgs.proto.common.UUID uuid = 2;
+  vmsgs.proto.geometry.Pose pose = 3;
+}

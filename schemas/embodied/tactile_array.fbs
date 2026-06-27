@@ -1,0 +1,28 @@
+include "../common/header.fbs";
+
+namespace vmsgs.fbs.embodied;
+
+enum TactileEncoding : ubyte {
+  /// Single-channel pressure (Pa), float32.
+  PRESSURE_F32 = 0,
+  /// Three-axis force per taxel (Fx, Fy, Fz N), float32.
+  FORCE_3F32 = 1,
+  /// 6-DoF wrench per taxel (Fx, Fy, Fz, Mx, My, Mz), float32.
+  WRENCH_6F32 = 2,
+  /// Generic 16-bit raw ADC counts.
+  RAW_U16 = 3,
+}
+
+/// Dense tactile-skin readout. Layout: row-major rows*cols taxels, stride bytes
+/// per taxel implied by encoding.
+table TactileArray {
+  header:vmsgs.fbs.common.Header (id: 0);
+  /// Logical sensor identifier (e.g. "right_palm").
+  sensor_id:string (id: 1);
+  rows:uint32 (id: 2);
+  cols:uint32 (id: 3);
+  encoding:TactileEncoding (id: 4);
+  data:[uint8] (id: 5);
+}
+
+root_type TactileArray;

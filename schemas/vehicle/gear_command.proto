@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package vmsgs.proto.vehicle;
+
+import "common/header.proto";
+
+enum GearCommandCode {
+  GEAR_NONE = 0;
+  GEAR_NEUTRAL = 1;
+  GEAR_DRIVE = 2;
+  GEAR_DRIVE_2 = 3;
+  GEAR_DRIVE_3 = 4;
+  GEAR_DRIVE_4 = 5;
+  GEAR_DRIVE_5 = 6;
+  GEAR_DRIVE_6 = 7;
+  GEAR_DRIVE_7 = 8;
+  GEAR_DRIVE_8 = 9;
+  GEAR_REVERSE = 20;
+  GEAR_REVERSE_2 = 21;
+  GEAR_PARK = 22;
+  GEAR_LOW = 23;
+  GEAR_LOW_2 = 24;
+}
+
+message GearCommand {
+  vmsgs.proto.common.Header header = 1;
+  GearCommandCode command = 2;
+}
+
+message GearReport {
+  vmsgs.proto.common.Header header = 1;
+  GearCommandCode report = 2;
+}

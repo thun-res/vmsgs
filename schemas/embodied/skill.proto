@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package vmsgs.proto.embodied;
+
+import "common/header.proto";
+import "common/uuid.proto";
+import "common/key_value.proto";
+
+enum SkillState {
+  SKILL_PENDING = 0;
+  SKILL_RUNNING = 1;
+  SKILL_SUCCEEDED = 2;
+  SKILL_FAILED = 3;
+  SKILL_CANCELED = 4;
+  SKILL_PAUSED = 5;
+}
+
+// Library-level skill (pick, place, open_door, ...).
+message SkillDescriptor {
+  string name = 1;
+  string version = 2;
+  string description = 3;
+  // JSON-Schema or proto-message FQN describing the parameters.
+  string parameters_schema = 4;
+}
+
+message SkillRequest {
+  vmsgs.proto.common.Header header = 1;
+  vmsgs.proto.common.UUID skill_uuid = 2;
+  string skill_name = 3;
+  // Free-form parameters.
+  repeated vmsgs.proto.common.KeyValue parameters = 4;
+  // Optional natural-language hint.
+  string instruction = 5;
+}
+
+message SkillFeedback {
+  vmsgs.proto.common.Header header = 1;
+  vmsgs.proto.common.UUID skill_uuid = 2;
+  SkillState state = 3;
+  float progress = 4;       // 0..1
+  string message = 5;
+  repeated vmsgs.proto.common.KeyValue metrics = 6;
+}
+
+message SkillResult {
+  vmsgs.proto.common.Header header = 1;
+  vmsgs.proto.common.UUID skill_uuid = 2;
+  SkillState terminal_state = 3;
+  string message = 4;
+  repeated vmsgs.proto.common.KeyValue outputs = 5;
+}

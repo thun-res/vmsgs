@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package vmsgs.proto.vehicle;
+
+import "common/header.proto";
+
+// Steering-wheel angle (operator-facing) as opposed to the tire angle.
+// Mirrors tier4_vehicle_msgs/SteeringWheelStatusStamped.
+message SteeringWheelStatusStamped {
+  vmsgs.proto.common.Header header = 1;
+  float steering_wheel_angle = 2;       // rad at the wheel
+  float steering_wheel_torque = 3;      // Nm
+  float steering_wheel_rotation_rate = 4; // rad/s
+}

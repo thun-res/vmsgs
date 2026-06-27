@@ -1,0 +1,26 @@
+include "../common/header.fbs";
+
+namespace vmsgs.fbs.sensor;
+
+/// Single async event from an event camera (DVS).
+struct Event {
+  /// Pixel coordinates.
+  x:uint16;
+  y:uint16;
+  /// Polarity: 0 = OFF (dimming), 1 = ON (brightening).
+  polarity:ubyte;
+  /// Padding to 8 bytes.
+  reserved:ubyte;
+  /// Timestamp delta (ns) relative to header.stamp.
+  delta_ns:uint32;
+}
+
+/// Burst of event-camera events.
+table EventArray {
+  header:vmsgs.fbs.common.Header (id: 0);
+  height:uint32 (id: 1);
+  width:uint32  (id: 2);
+  events:[Event] (id: 3);
+}
+
+root_type EventArray;

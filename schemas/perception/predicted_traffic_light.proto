@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package vmsgs.proto.perception;
+
+import "common/header.proto";
+import "perception/traffic_light.proto";
+
+// Forecast of an upcoming traffic-light state change.
+// Mirrors autoware_perception_msgs/PredictedTrafficLightState.
+message PredictedTrafficLightState {
+  // Element that will be active.
+  TrafficLightElement element = 1;
+  // Seconds from now until the predicted state takes effect.
+  float predicted_time_offset = 2;
+  // Confidence in [0, 1].
+  float confidence = 3;
+}
+
+message PredictedTrafficLightGroup {
+  int64 traffic_light_group_id = 1;
+  repeated PredictedTrafficLightState predictions = 2;
+}
+
+message PredictedTrafficLightGroupArray {
+  vmsgs.proto.common.Header header = 1;
+  repeated PredictedTrafficLightGroup groups = 2;
+}

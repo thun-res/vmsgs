@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package vmsgs.proto.tf2;
+
+import "geometry/transform.proto";
+
+// Set of transforms broadcast on the tf / tf_static topic.
+message TFMessage {
+  repeated vmsgs.proto.geometry.TransformStamped transforms = 1;
+}

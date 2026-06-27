@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package vmsgs.proto.vehicle;
+
+import "common/header.proto";
+
+enum HazardLightsCode {
+  HAZARD_DISABLE = 0;
+  HAZARD_ENABLE = 1;
+  HAZARD_NO_COMMAND = 2;
+}
+
+message HazardLightsCommand {
+  vmsgs.proto.common.Header header = 1;
+  HazardLightsCode command = 2;
+}
+
+message HazardLightsReport {
+  vmsgs.proto.common.Header header = 1;
+  HazardLightsCode report = 2;
+}

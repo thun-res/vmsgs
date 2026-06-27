@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package vmsgs.proto.vehicle;
+
+import "common/header.proto";
+
+// Low-level actuator targets (raw pedal/wheel positions).
+message ActuationCommand {
+  vmsgs.proto.common.Header header = 1;
+  float accel_cmd = 2;          // 0..1
+  float brake_cmd = 3;          // 0..1
+  float steer_cmd = 4;          // rad (steering-wheel angle)
+  // Optional gas-pedal force / brake pressure if available.
+  float steer_torque_cmd = 5;   // Nm
+}
+
+message ActuationStatus {
+  vmsgs.proto.common.Header header = 1;
+  float accel_status = 2;
+  float brake_status = 3;
+  float steer_status = 4;
+  float steer_torque_status = 5;
+}

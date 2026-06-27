@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package vmsgs.proto.common;
+
+import "common/time.proto";
+
+// Standard message header carried by every stamped message.
+//
+// Layout mirrors std_msgs/Header from ROS1/ROS2 plus a monotonic sequence and
+// an optional measurement timestamp distinct from the publish timestamp - this
+// matches vlink::zerocopy::Header used by RawData/CameraFrame/PointCloud.
+message Header {
+  // Monotonically increasing sequence number assigned by the publisher.
+  uint64 seq = 1;
+
+  // Coordinate frame this data is expressed in (e.g. "base_link", "map").
+  string frame_id = 2;
+
+  // Timestamp the data was acquired/measured at the source.
+  Time stamp = 3;
+
+  // Optional publish timestamp (when the message was put on the wire).
+  // If unset it equals `stamp`.
+  Time publish_stamp = 4;
+}

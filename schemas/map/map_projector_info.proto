@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package vmsgs.proto.map;
+
+// Defines the projection from geodetic to a local Cartesian map frame.
+message MapProjectorInfo {
+  enum ProjectorType {
+    PROJECTOR_LOCAL = 0;
+    PROJECTOR_MGRS = 1;
+    PROJECTOR_UTM = 2;
+    PROJECTOR_TRANSVERSE_MERCATOR = 3;
+    PROJECTOR_LOCAL_CARTESIAN_UTM = 4;
+  }
+
+  ProjectorType type = 1;
+  // Used by MGRS: "10TFK".
+  string mgrs_grid = 2;
+  // Used by UTM: zone (1-60), north hemisphere flag.
+  int32 utm_zone = 3;
+  bool utm_north = 4;
+  // Used by Transverse Mercator and Local-Cartesian-UTM.
+  double map_origin_latitude = 5;
+  double map_origin_longitude = 6;
+  double map_origin_altitude = 7;
+  // True when the vertical datum is WGS84 ellipsoid; false for orthometric.
+  bool vertical_datum_ellipsoid = 8;
+}

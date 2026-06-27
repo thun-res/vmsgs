@@ -1,0 +1,21 @@
+include "../common/header.fbs";
+include "../geometry/geometry.fbs";
+
+namespace vmsgs.fbs.perception;
+
+/// Multi-layer planning cost map. Each layer is row-major with `width*height` floats.
+table CostMapLayer {
+  name:string (id: 0);
+  data:[float] (id: 1);
+}
+
+table CostMap {
+  header:vmsgs.fbs.common.Header (id: 0);
+  resolution:float (id: 1);
+  width:uint32 (id: 2);
+  height:uint32 (id: 3);
+  origin:vmsgs.fbs.geometry.Pose (id: 4);
+  layers:[CostMapLayer] (id: 5);
+}
+
+root_type CostMap;

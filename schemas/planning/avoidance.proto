@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package vmsgs.proto.planning;
+
+import "common/header.proto";
+import "common/uuid.proto";
+
+enum AvoidanceDirection {
+  AVOIDANCE_NONE = 0;
+  AVOIDANCE_LEFT = 1;
+  AVOIDANCE_RIGHT = 2;
+}
+
+message AvoidanceTarget {
+  vmsgs.proto.common.UUID object_id = 1;
+  AvoidanceDirection direction = 2;
+  // Lateral offset commanded for the ego (m). Positive = left.
+  float lateral_offset = 3;
+}
+
+message AvoidanceState {
+  vmsgs.proto.common.Header header = 1;
+  bool is_avoiding = 2;
+  repeated AvoidanceTarget targets = 3;
+}

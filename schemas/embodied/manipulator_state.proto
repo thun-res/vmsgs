@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package vmsgs.proto.embodied;
+
+import "common/header.proto";
+import "geometry/pose.proto";
+import "geometry/twist.proto";
+import "geometry/wrench.proto";
+
+enum ArmStatus {
+  ARM_STATUS_UNKNOWN = 0;
+  ARM_STATUS_DISABLED = 1;
+  ARM_STATUS_IDLE = 2;
+  ARM_STATUS_MOVING = 3;
+  ARM_STATUS_HOLDING = 4;
+  ARM_STATUS_ERROR = 5;
+  ARM_STATUS_E_STOPPED = 6;
+}
+
+message ManipulatorState {
+  vmsgs.proto.common.Header header = 1;
+  // Tool-center-point pose in `header.frame_id`.
+  vmsgs.proto.geometry.Pose tcp_pose = 2;
+  vmsgs.proto.geometry.Twist tcp_twist = 3;
+  vmsgs.proto.geometry.Wrench tcp_wrench = 4;
+  ArmStatus status = 5;
+  string mode = 6;
+  bool is_collision = 7;
+  bool is_singularity = 8;
+}

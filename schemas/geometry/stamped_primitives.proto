@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package vmsgs.proto.geometry;
+
+import "common/header.proto";
+import "geometry/point.proto";
+import "geometry/quaternion.proto";
+import "geometry/vector3.proto";
+
+// Stamped variants of the basic geometry types
+// (geometry_msgs/{PointStamped, QuaternionStamped, Vector3Stamped, VelocityStamped}).
+
+message PointStamped {
+  vmsgs.proto.common.Header header = 1;
+  Point point = 2;
+}
+
+message QuaternionStamped {
+  vmsgs.proto.common.Header header = 1;
+  Quaternion quaternion = 2;
+}
+
+message Vector3Stamped {
+  vmsgs.proto.common.Header header = 1;
+  Vector3 vector = 2;
+}
+
+// Linear velocity expressed in `header.frame_id`, body in `body_frame_id`,
+// reference in `reference_frame_id`.
+message VelocityStamped {
+  vmsgs.proto.common.Header header = 1;
+  string body_frame_id = 2;
+  string reference_frame_id = 3;
+  Vector3 velocity = 4;
+}

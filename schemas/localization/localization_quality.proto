@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package vmsgs.proto.localization;
+
+import "common/header.proto";
+
+enum LocalizationLevel {
+  LOC_LEVEL_UNKNOWN = 0;
+  LOC_LEVEL_FAILED = 1;
+  LOC_LEVEL_LOW = 2;
+  LOC_LEVEL_MEDIUM = 3;
+  LOC_LEVEL_HIGH = 4;
+}
+
+// Aggregated quality summary over all localization sources.
+message LocalizationQuality {
+  vmsgs.proto.common.Header header = 1;
+  LocalizationLevel level = 2;
+  // 1-sigma estimated error (m / rad).
+  float position_rmse = 3;
+  float orientation_rmse = 4;
+  // Source-specific scores in [0,1].
+  float gnss_score = 5;
+  float lidar_score = 6;
+  float camera_score = 7;
+  float wheel_odom_score = 8;
+  string message = 9;
+}

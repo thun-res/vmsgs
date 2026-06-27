@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package vmsgs.proto.v2x;
+
+import "common/header.proto";
+
+enum V2XMessageType {
+  V2X_UNKNOWN = 0;
+  V2X_BSM = 1;          // Basic Safety Message (SAE J2735)
+  V2X_CAM = 2;          // ETSI Cooperative Awareness Message
+  V2X_DENM = 3;         // ETSI Decentralized Environmental Notification
+  V2X_SPAT = 4;         // Signal Phase and Timing
+  V2X_MAP = 5;          // Map Data
+  V2X_RSI = 6;          // Road Side Info
+  V2X_RSM = 7;          // Road Safety Message
+  V2X_PSM = 8;          // Pedestrian Safety Message
+  V2X_TIM = 9;          // Traveler Info Message
+}
+
+// Generic V2X envelope. Payload encoding is given by `encoding` ("uper", "asn1", "json", "raw").
+message V2XMessage {
+  vmsgs.proto.common.Header header = 1;
+  V2XMessageType type = 2;
+  string encoding = 3;
+  bytes payload = 4;
+  // Optional sender identification.
+  string sender_id = 5;
+}

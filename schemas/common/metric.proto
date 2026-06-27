@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package vmsgs.proto.common;
+
+import "common/header.proto";
+import "common/key_value.proto";
+
+// Generic numeric/string metric (autoware_internal_metric_msgs).
+message Metric {
+  string name = 1;
+  string value = 2;
+  string unit = 3;
+  repeated KeyValue tags = 4;
+}
+
+message MetricArray {
+  vmsgs.proto.common.Header header = 1;
+  repeated Metric metric_array = 2;
+}

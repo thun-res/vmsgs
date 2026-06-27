@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package vmsgs.proto.system;
+
+import "common/header.proto";
+
+// Mirrors autoware_internal_msgs/MissionRemainingDistanceTime.
+message MissionRemainingDistanceTime {
+  vmsgs.proto.common.Header header = 1;
+  float remaining_distance = 2;  // m
+  float remaining_time = 3;      // s
+}

@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package vmsgs.proto.common;
+
+// Semantic version of a producer. Mirrors vlink::Version.
+message Version {
+  uint32 major_ver = 1;
+  uint32 minor_ver = 2;
+  uint32 patch_ver = 3;
+  string git_hash = 4;
+  string build_tag = 5;
+}

@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package vmsgs.proto.embodied;
+
+import "common/header.proto";
+import "common/time.proto";
+import "geometry/transform.proto";
+import "geometry/twist.proto";
+import "geometry/accel.proto";
+
+// Mirrors trajectory_msgs/MultiDOFJointTrajectory{,Point} - ordered waypoints
+// for multi-DoF joints (floating base, mobile chassis).
+message MultiDOFJointTrajectoryPoint {
+  vmsgs.proto.common.Duration time_from_start = 1;
+  // Aligned with MultiDOFJointTrajectory.joint_names.
+  repeated vmsgs.proto.geometry.Transform transforms = 2;
+  repeated vmsgs.proto.geometry.Twist velocities = 3;
+  repeated vmsgs.proto.geometry.Accel accelerations = 4;
+}
+
+message MultiDOFJointTrajectory {
+  vmsgs.proto.common.Header header = 1;
+  repeated string joint_names = 2;
+  repeated MultiDOFJointTrajectoryPoint points = 3;
+}

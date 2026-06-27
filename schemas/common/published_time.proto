@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package vmsgs.proto.common;
+
+import "common/header.proto";
+import "common/time.proto";
+
+// Mirrors autoware_internal_msgs/PublishedTime: associates a publishing-side
+// timestamp with the original measurement timestamp, for end-to-end latency tracing.
+message PublishedTime {
+  vmsgs.proto.common.Header header = 1;
+  vmsgs.proto.common.Time published_stamp = 2;
+}

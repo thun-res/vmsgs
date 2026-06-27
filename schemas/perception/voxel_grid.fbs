@@ -1,0 +1,26 @@
+include "../common/header.fbs";
+include "../geometry/geometry.fbs";
+
+namespace vmsgs.fbs.perception;
+
+/// Dense 3D voxel grid (e.g. occupancy / TSDF / semantic class id per voxel).
+enum VoxelEncoding : ubyte {
+  OCCUPANCY_UINT8 = 0,
+  TSDF_FLOAT32    = 1,
+  SEMANTIC_UINT16 = 2,
+  RGB_UINT8       = 3,
+}
+
+table VoxelGrid {
+  header:vmsgs.fbs.common.Header (id: 0);
+  origin:vmsgs.fbs.geometry.Pose (id: 1);
+  resolution:float (id: 2);
+  size_x:uint32 (id: 3);
+  size_y:uint32 (id: 4);
+  size_z:uint32 (id: 5);
+  encoding:VoxelEncoding (id: 6);
+  /// Bytes per voxel implied by encoding; data length = size_x * size_y * size_z * stride.
+  data:[uint8] (id: 7);
+}
+
+root_type VoxelGrid;

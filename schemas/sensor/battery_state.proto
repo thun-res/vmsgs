@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package vmsgs.proto.sensor;
+
+import "common/header.proto";
+
+message BatteryState {
+  enum PowerSupplyStatus {
+    POWER_SUPPLY_STATUS_UNKNOWN = 0;
+    POWER_SUPPLY_STATUS_CHARGING = 1;
+    POWER_SUPPLY_STATUS_DISCHARGING = 2;
+    POWER_SUPPLY_STATUS_NOT_CHARGING = 3;
+    POWER_SUPPLY_STATUS_FULL = 4;
+  }
+  enum PowerSupplyHealth {
+    POWER_SUPPLY_HEALTH_UNKNOWN = 0;
+    POWER_SUPPLY_HEALTH_GOOD = 1;
+    POWER_SUPPLY_HEALTH_OVERHEAT = 2;
+    POWER_SUPPLY_HEALTH_DEAD = 3;
+    POWER_SUPPLY_HEALTH_OVERVOLTAGE = 4;
+    POWER_SUPPLY_HEALTH_UNSPEC_FAILURE = 5;
+    POWER_SUPPLY_HEALTH_COLD = 6;
+    POWER_SUPPLY_HEALTH_WATCHDOG_TIMER_EXPIRE = 7;
+    POWER_SUPPLY_HEALTH_SAFETY_TIMER_EXPIRE = 8;
+  }
+  enum PowerSupplyTechnology {
+    POWER_SUPPLY_TECHNOLOGY_UNKNOWN = 0;
+    POWER_SUPPLY_TECHNOLOGY_NIMH = 1;
+    POWER_SUPPLY_TECHNOLOGY_LION = 2;
+    POWER_SUPPLY_TECHNOLOGY_LIPO = 3;
+    POWER_SUPPLY_TECHNOLOGY_LIFE = 4;
+    POWER_SUPPLY_TECHNOLOGY_NICD = 5;
+    POWER_SUPPLY_TECHNOLOGY_LIMN = 6;
+  }
+
+  vmsgs.proto.common.Header header = 1;
+  float voltage = 2;        // V
+  float temperature = 3;    // degC; NaN if unknown
+  float current = 4;        // A; positive=draw, negative=charge
+  float charge = 5;         // Ah
+  float capacity = 6;       // Ah (last full)
+  float design_capacity = 7;// Ah
+  float percentage = 8;     // 0..1
+  PowerSupplyStatus power_supply_status = 9;
+  PowerSupplyHealth power_supply_health = 10;
+  PowerSupplyTechnology power_supply_technology = 11;
+  bool present = 12;
+  repeated float cell_voltage = 13 [packed = true];
+  repeated float cell_temperature = 14 [packed = true];
+  string location = 15;
+  string serial_number = 16;
+}

@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package vmsgs.proto.tf2;
+
+// Error reported by tf2 lookup operations. Mirrors tf2_msgs/TF2Error.
+message TF2Error {
+  enum Code {
+    NO_ERROR = 0;
+    LOOKUP_ERROR = 1;
+    CONNECTIVITY_ERROR = 2;
+    EXTRAPOLATION_ERROR = 3;
+    INVALID_ARGUMENT_ERROR = 4;
+    TIMEOUT_ERROR = 5;
+    TRANSFORM_ERROR = 6;
+  }
+  Code error = 1;
+  string error_string = 2;
+}

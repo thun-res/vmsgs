@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package vmsgs.proto.planning;
+
+import "common/header.proto";
+
+enum Scenario {
+  SCENARIO_UNKNOWN = 0;
+  SCENARIO_LANE_DRIVING = 1;
+  SCENARIO_PARKING = 2;
+  SCENARIO_INTERSECTION = 3;
+  SCENARIO_OBSTACLE_AVOIDANCE = 4;
+  SCENARIO_LANE_CHANGE = 5;
+  SCENARIO_PULL_OVER = 6;
+  SCENARIO_PULL_OUT = 7;
+  SCENARIO_TURNING = 8;
+  SCENARIO_EMERGENCY_STOP = 9;
+}
+
+message ScenarioStamped {
+  vmsgs.proto.common.Header header = 1;
+  Scenario active = 2;
+  repeated Scenario activated = 3;
+}

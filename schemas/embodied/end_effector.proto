@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package vmsgs.proto.embodied;
+
+import "common/header.proto";
+import "geometry/pose.proto";
+import "geometry/twist.proto";
+
+// Cartesian-space target for the end-effector / TCP.
+message EndEffectorCommand {
+  vmsgs.proto.common.Header header = 1;
+  vmsgs.proto.geometry.Pose target_pose = 2;
+  // Optional twist feed-forward (velocity & angular velocity in TCP frame).
+  vmsgs.proto.geometry.Twist target_twist = 3;
+  bool use_twist = 4;
+  // Maximum allowed Cartesian speed (m/s, rad/s).
+  float max_linear_speed = 5;
+  float max_angular_speed = 6;
+}
+
+message EndEffectorState {
+  vmsgs.proto.common.Header header = 1;
+  vmsgs.proto.geometry.Pose pose = 2;
+  vmsgs.proto.geometry.Twist twist = 3;
+}

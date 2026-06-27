@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package vmsgs.proto.v2x;
+
+import "common/header.proto";
+import "geometry/pose.proto";
+
+// Status broadcast for cooperative driving (CACC, platoon, intersection).
+message CooperativeStatus {
+  vmsgs.proto.common.Header header = 1;
+  string vehicle_id = 2;
+  vmsgs.proto.geometry.Pose pose = 3;
+  float velocity = 4;            // m/s
+  float acceleration = 5;        // m/s^2
+  float heading = 6;             // rad
+  float intended_yaw_rate = 7;   // rad/s
+  // Planned trajectory length and target.
+  float planned_distance = 8;    // m
+  string intent = 9;             // "lane_change_left", "merge", "yield", ...
+}

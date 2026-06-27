@@ -1,0 +1,25 @@
+include "../common/header.fbs";
+include "point_field.fbs";
+
+namespace vmsgs.fbs.sensor;
+
+/// Densely packed N-D point cloud (LiDAR, depth-camera, radar). Mirrors
+/// sensor_msgs/PointCloud2 layout: `height * row_step` bytes in `data`.
+table PointCloud2 {
+  header:vmsgs.fbs.common.Header (id: 0);
+  /// Vertical dimension; 1 for unordered scans.
+  height:uint32 (id: 1);
+  /// Horizontal dimension (points per row, or total points when height=1).
+  width:uint32  (id: 2);
+  fields:[PointField] (id: 3);
+  is_bigendian:bool (id: 4);
+  /// Bytes per point.
+  point_step:uint32 (id: 5);
+  /// Bytes per row = point_step * width when tightly packed.
+  row_step:uint32 (id: 6);
+  data:[uint8] (id: 7);
+  /// True if there are no invalid points (NaN, inf).
+  is_dense:bool (id: 8);
+}
+
+root_type PointCloud2;

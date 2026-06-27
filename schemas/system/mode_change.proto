@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package vmsgs.proto.system;
+
+import "common/header.proto";
+import "common/status.proto";
+
+// Generic mode-change RPC schema reused by operation_mode / control_mode / engage.
+message ModeChangeRequest {
+  // Target mode token; semantics per service.
+  uint32 target = 1;
+  string reason = 2;
+}
+
+message ModeChangeResponse {
+  vmsgs.proto.common.Header header = 1;
+  vmsgs.proto.common.Status status = 2;
+}

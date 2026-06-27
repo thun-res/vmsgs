@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package vmsgs.proto.perception;
+
+// Probability over a closed set of classes; the highest-probability label is
+// the consumer's responsibility to compute.
+enum ObjectLabel {
+  LABEL_UNKNOWN = 0;
+  LABEL_CAR = 1;
+  LABEL_TRUCK = 2;
+  LABEL_BUS = 3;
+  LABEL_TRAILER = 4;
+  LABEL_MOTORCYCLE = 5;
+  LABEL_BICYCLE = 6;
+  LABEL_PEDESTRIAN = 7;
+  LABEL_ANIMAL = 8;
+  LABEL_TRAFFIC_CONE = 9;
+  LABEL_BARRIER = 10;
+  LABEL_DEBRIS = 11;
+  LABEL_VEHICLE_OTHER = 12;
+  LABEL_LARGE_VEHICLE = 13;
+  LABEL_TRAIN = 14;
+  LABEL_EMERGENCY_VEHICLE = 15;
+}
+
+message ObjectClassification {
+  ObjectLabel label = 1;
+  float probability = 2;
+}

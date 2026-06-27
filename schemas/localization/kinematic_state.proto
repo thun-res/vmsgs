@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package vmsgs.proto.localization;
+
+import "common/header.proto";
+import "geometry/pose.proto";
+import "geometry/twist.proto";
+import "geometry/accel.proto";
+
+// Combined ego pose + twist + acceleration with covariances. Mirrors
+// autoware_localization_msgs/KinematicState.
+message KinematicState {
+  vmsgs.proto.common.Header header = 1;
+  string child_frame_id = 2;
+  vmsgs.proto.geometry.PoseWithCovariance pose_with_covariance = 3;
+  vmsgs.proto.geometry.TwistWithCovariance twist_with_covariance = 4;
+  vmsgs.proto.geometry.AccelWithCovariance accel_with_covariance = 5;
+}

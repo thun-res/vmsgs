@@ -1,0 +1,32 @@
+include "../common/header.fbs";
+
+namespace vmsgs.fbs.sensor;
+
+enum DepthEncoding : ubyte {
+  /// 16-bit unsigned, depth in millimeters.
+  UINT16_MM = 0,
+  /// 32-bit float, depth in meters.
+  FLOAT32_M = 1,
+  /// 32-bit float, inverse depth (disparity-like) in 1/m.
+  FLOAT32_INV_M = 2,
+}
+
+table DepthImage {
+  header:vmsgs.fbs.common.Header (id: 0);
+  height:uint32 (id: 1);
+  width:uint32  (id: 2);
+  encoding:DepthEncoding (id: 3);
+  /// Row stride in bytes.
+  step:uint32 (id: 4);
+  data:[uint8] (id: 5);
+  /// Optional intrinsic projection (fx, fy, cx, cy) - unset when paired with CameraInfo.
+  fx:float (id: 6);
+  fy:float (id: 7);
+  cx:float (id: 8);
+  cy:float (id: 9);
+  /// Min/max valid depth in meters; 0 = unknown.
+  depth_min:float (id: 10);
+  depth_max:float (id: 11);
+}
+
+root_type DepthImage;

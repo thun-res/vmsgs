@@ -1,0 +1,21 @@
+include "../common/header.fbs";
+include "../geometry/geometry.fbs";
+
+namespace vmsgs.fbs.map;
+
+/// 2.5D height map. `height` and `variance` are row-major float32 arrays sized width*length.
+table ElevationLayer {
+  name:string (id: 0);
+  data:[float] (id: 1);
+}
+
+table ElevationMap {
+  header:vmsgs.fbs.common.Header (id: 0);
+  resolution:float (id: 1);
+  width:uint32 (id: 2);
+  length:uint32 (id: 3);
+  origin:vmsgs.fbs.geometry.Pose (id: 4);
+  layers:[ElevationLayer] (id: 5);
+}
+
+root_type ElevationMap;
