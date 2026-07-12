@@ -1,0 +1,57 @@
+include "../common/header.fbs";
+include "object_semantics.fbs";
+
+namespace vmsgs.fbs.perception;
+
+/// One probabilistic future object path sampled at a constant time interval.
+table PredictedPath {
+  /// Future object poses in chronological order and the enclosing list frame.
+  path:[vmsgs.fbs.geometry.Pose] (id: 0);
+
+  /// Interval between adjacent poses, in signed nanoseconds.
+  time_step_ns:long (id: 1);
+
+  /// Probability assigned to this path in the inclusive range [0, 1].
+  confidence:float (id: 2);
+}
+
+/// Initial object state and all alternative probabilistic future paths.
+table PredictedObjectKinematics {
+  /// Initial pose, velocity, acceleration, and complete covariance matrices.
+  initial_state:ObjectKinematicsValue (id: 0);
+
+  /// Alternative future paths; confidence values should sum approximately to one.
+  predicted_paths:[PredictedPath] (id: 1);
+}
+
+/// Tracked object augmented with complete multi-modal future motion predictions.
+table PredictedObject {
+  /// Most-significant 64 bits of the stable source-track UUID.
+  object_id_high:ulong (id: 0);
+
+  /// Least-significant 64 bits of the stable source-track UUID.
+  object_id_low:ulong (id: 1);
+
+  /// Probability that the source object exists, in the inclusive range [0, 1].
+  existence_probability:float (id: 2);
+
+  /// Candidate semantic classes and their normalized probabilities.
+  classification:[ObjectClassificationValue] (id: 3);
+
+  /// Initial state and alternative future motion paths.
+  kinematics:PredictedObjectKinematics (id: 4);
+
+  /// Object-local extent assumed throughout the prediction horizon.
+  shape:ObjectShapeValue (id: 5);
+}
+
+/// Zero-copy predicted objects generated in one prediction cycle.
+table PredictedObjects {
+  /// Prediction timestamp in nanoseconds and common object coordinate frame.
+  header:vmsgs.fbs.common.Header (id: 0);
+
+  /// Predicted tracks; UUID pairs must be unique in this generation.
+  objects:[PredictedObject] (id: 1);
+}
+
+root_type PredictedObjects;

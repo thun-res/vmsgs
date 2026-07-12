@@ -4,18 +4,25 @@ package vmsgs.proto.vehicle;
 
 import "common/header.proto";
 
+// Stable command and feedback states for the vehicle hazard lamps.
 enum HazardLightsCode {
   HAZARD_DISABLE = 0;
   HAZARD_ENABLE = 1;
   HAZARD_NO_COMMAND = 2;
 }
 
+// Requests a hazard-lamp state.
 message HazardLightsCommand {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // Command encoded using the referenced `HazardLightsCode` contract.
   HazardLightsCode command = 2;
 }
 
+// Reports the effective hazard-lamp state.
 message HazardLightsReport {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // Report encoded using the referenced `HazardLightsCode` contract.
   HazardLightsCode report = 2;
 }

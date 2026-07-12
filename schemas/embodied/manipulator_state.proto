@@ -7,6 +7,7 @@ import "geometry/pose.proto";
 import "geometry/twist.proto";
 import "geometry/wrench.proto";
 
+// Coarse manipulator operating state suitable for supervision and UI display.
 enum ArmStatus {
   ARM_STATUS_UNKNOWN = 0;
   ARM_STATUS_DISABLED = 1;
@@ -17,14 +18,24 @@ enum ArmStatus {
   ARM_STATUS_E_STOPPED = 6;
 }
 
+// Timestamped tool-center-point motion, wrench, and manipulator health state.
 message ManipulatorState {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
   // Tool-center-point pose in `header.frame_id`.
   vmsgs.proto.geometry.Pose tcp_pose = 2;
+  // Tool-center-point linear and angular velocity in header.frame_id.
   vmsgs.proto.geometry.Twist tcp_twist = 3;
+  // Tool-center-point force in newtons and torque in newton-metres.
   vmsgs.proto.geometry.Wrench tcp_wrench = 4;
+  // Current coarse arm lifecycle and fault state.
   ArmStatus status = 5;
+  // Active manipulator control mode reported by the controller.
   string mode = 6;
+  // True when collision monitoring reports active contact or intrusion.
   bool is_collision = 7;
+  // True when the arm is at or inside its configured singularity threshold.
   bool is_singularity = 8;
+  // Stable identifier of the measured manipulator resource.
+  string manipulator_id = 9;
 }

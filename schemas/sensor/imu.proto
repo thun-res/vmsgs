@@ -9,15 +9,21 @@ import "geometry/vector3.proto";
 // 9-DoF IMU output (orientation + angular velocity + linear acceleration).
 // Set the first element of a covariance to -1 if that quantity is unknown.
 message Imu {
+  // Measurement timestamp in nanoseconds and IMU coordinate frame.
   vmsgs.proto.common.Header header = 1;
 
+  // Unit-quaternion orientation of the IMU frame relative to its reference frame.
   vmsgs.proto.geometry.Quaternion orientation = 2;
   // Length 9; row-major.
   repeated double orientation_covariance = 3 [packed = true];
 
+  // Angular velocity about IMU frame axes, in radians per second.
   vmsgs.proto.geometry.Vector3 angular_velocity = 4;
+  // Row-major 3x3 angular-velocity covariance; exactly nine values.
   repeated double angular_velocity_covariance = 5 [packed = true];
 
+  // Proper linear acceleration along IMU frame axes, in metres per second squared.
   vmsgs.proto.geometry.Vector3 linear_acceleration = 6;
+  // Row-major 3x3 linear-acceleration covariance; exactly nine values.
   repeated double linear_acceleration_covariance = 7 [packed = true];
 }

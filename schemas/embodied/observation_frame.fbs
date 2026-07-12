@@ -11,15 +11,21 @@ namespace vmsgs.fbs.embodied;
 table ObservationCamera {
   /// "head", "left_wrist", "right_wrist", ...
   name:string (id: 0);
+  /// Optional uncompressed image captured by this camera.
   image:vmsgs.fbs.sensor.Image (id: 1);
   /// Use `compressed` instead of `image` for bandwidth-bound channels.
   compressed:vmsgs.fbs.sensor.CompressedImage (id: 2);
+  /// Optional metric depth image registered to the camera stream.
   depth:vmsgs.fbs.sensor.DepthImage (id: 3);
 }
 
+/// Synchronized, zero-copy observation bundle consumed by embodied policies.
 table ObservationFrame {
+  /// Timestamp, sequence number, and coordinate frame shared by this payload.
   header:vmsgs.fbs.common.Header (id: 0);
+  /// Named camera observations; camera names must be unique in the frame.
   cameras:[ObservationCamera] (id: 1);
+  /// Optional point cloud synchronized to header.stamp and expressed in header.frame_id.
   point_cloud:vmsgs.fbs.sensor.PointCloud2 (id: 2);
   /// Proprioception vector (joint positions+velocities concatenated).
   proprioception:[float] (id: 3);

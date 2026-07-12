@@ -2,7 +2,9 @@ syntax = "proto3";
 
 package vmsgs.proto.common;
 
-// Generic outcome code shared by services and reports.
+// Canonical operation outcome categories shared by services and reports.
+// Numeric values are stable wire identifiers and broadly follow RPC status
+// conventions; application-specific detail belongs in Status.sub_code.
 enum StatusCode {
   STATUS_OK = 0;
   STATUS_CANCELLED = 1;
@@ -23,9 +25,14 @@ enum StatusCode {
   STATUS_UNAUTHENTICATED = 16;
 }
 
+// Machine-readable outcome plus optional operator-facing diagnostic context.
 message Status {
+  // Canonical outcome category; STATUS_OK indicates successful completion.
   StatusCode code = 1;
+
+  // Human-readable detail suitable for logs and operator interfaces.
   string message = 2;
+
   // Optional vendor-specific sub-code (e.g. ECU error code).
   int32 sub_code = 3;
 }

@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package vmsgs.proto.perception;
+
+import "common/header.proto";
+import "geometry/point.proto";
+
+// Geometric and semantic description of one detected parking space.
+message ParkingSlot {
+  // Parking-space orientation relative to its access aisle.
+  enum Type {
+    // Geometry is available but the parking-space type is unknown.
+    UNKNOWN = 0;
+
+    // Long axis is approximately parallel to the access aisle.
+    PARALLEL = 1;
+
+    // Long axis is approximately perpendicular to the access aisle.
+    PERPENDICULAR = 2;
+
+    // Long axis has an oblique angle to the access aisle.
+    ANGLED = 3;
+  }
+
+  // Stable tracker or map identifier; zero may denote an unassigned ID.
+  uint64 id = 1;
+
+  // Classified parking-space orientation.
+  Type type = 2;
+
+  // Ordered boundary corners, in metres; normally exactly four points.
+  repeated vmsgs.proto.geometry.Point corners = 3;
+
+  // Detection confidence in the inclusive range [0, 1].
+  float confidence = 4;
+
+  // True when an object is believed to occupy the space.
+  bool occupied = 5;
+
+  // Space heading about the frame z axis, in radians.
+  float heading = 6;
+
+  // Coordinate frame of corners and heading when no enclosing header exists.
+  string frame_id = 7;
+}
+
+// Parking spaces produced together by one detector or map query.
+message ParkingSlots {
+  // Observation timestamp in nanoseconds and common slot coordinate frame.
+  vmsgs.proto.common.Header header = 1;
+
+  // Detected spaces; individual frame_id values may override header.frame_id.
+  repeated ParkingSlot slots = 2;
+}

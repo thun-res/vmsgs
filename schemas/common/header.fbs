@@ -1,14 +1,19 @@
-// FlatBuffers mirror of common/proto/header.proto for zero-copy bulk payloads.
+/// Transport metadata shared by zero-copy and high-rate FlatBuffers payloads.
+/// Absolute timestamps are direct unsigned nanoseconds; no nested Time object is
+/// used, so readers can access timing metadata without an extra indirection.
 namespace vmsgs.fbs.common;
 
-struct Time {
-  sec:int64;
-  nsec:uint32;
-}
-
+/// Header metadata attached to one transported payload.
 table Header {
-  seq:uint64           (id: 0);
-  frame_id:string      (id: 1);
-  stamp:Time           (id: 2);
-  publish_stamp:Time   (id: 3);
+  /// Publisher-assigned sequence number, monotonically increasing per stream.
+  seq:uint64 (id: 0);
+
+  /// Coordinate frame in which the payload is expressed, such as "map".
+  frame_id:string (id: 1);
+
+  /// Source acquisition or measurement time in nanoseconds.
+  stamp:uint64 (id: 2);
+
+  /// Time the message entered the transport in nanoseconds; may equal stamp.
+  publish_stamp:uint64 (id: 3);
 }

@@ -1,0 +1,38 @@
+include "../common/header.fbs";
+
+namespace vmsgs.fbs.embodied;
+
+/// Low-latency output of a vision-language-action policy. The action producer
+/// must publish a versioned action_space_id so consumers can interpret values.
+table VLAAction {
+  /// Policy inference timestamp in nanoseconds and action reference frame.
+  header:vmsgs.fbs.common.Header (id: 0);
+  /// Most-significant 64 bits of the current episode UUID.
+  episode_high:ulong (id: 1);
+  /// Least-significant 64 bits of the current episode UUID.
+  episode_low:ulong (id: 2);
+  /// Zero-based observation/action step index within the episode.
+  step:ulong (id: 3);
+  /// Continuous action vector interpreted using action_space_id.
+  action:[float] (id: 4);
+  /// Versioned definition of action ordering, units, bounds, and frame.
+  action_space_id:string (id: 5);
+  /// Optional discrete policy tokens before action decoding.
+  action_tokens:[int] (id: 6);
+  /// Optional human-readable label for a discrete or hybrid action.
+  discrete_label:string (id: 7);
+  /// Optional per-token or per-action log probabilities.
+  log_prob:[float] (id: 8);
+  /// Whether this action declares the current episode complete.
+  is_terminal:bool (id: 9);
+  /// Most-significant 64 bits of the correlated inference request UUID.
+  request_high:ulong (id: 10);
+  /// Least-significant 64 bits of the correlated inference request UUID.
+  request_low:ulong (id: 11);
+  /// Zero-based position within a multi-step action horizon.
+  horizon_step:uint (id: 12);
+  /// Last timestamp in nanoseconds at which this action remains valid.
+  valid_until_stamp:ulong (id: 13);
+}
+
+root_type VLAAction;

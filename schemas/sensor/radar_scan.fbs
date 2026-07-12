@@ -4,16 +4,17 @@ namespace vmsgs.fbs.sensor;
 
 /// Single radar reflection (range/angle/Doppler).
 struct RadarReturn {
-  range:float;        // m
-  azimuth:float;      // rad
-  elevation:float;    // rad
-  doppler_velocity:float; // m/s, positive = approaching
-  amplitude:float;    // dB
+  range:float;             // m
+  azimuth:float;           // rad
+  elevation:float;         // rad
+  doppler_velocity:float;  // m/s, positive = approaching
+  amplitude:float;         // dB
 }
 
+/// High-rate radar detections generated from one scan acquisition.
 table RadarScan {
-  header:vmsgs.fbs.common.Header (id: 0);
-  returns:[RadarReturn]            (id: 1);
+  header:vmsgs.fbs.common.Header (id: 0);  // Scan time and radar coordinate frame.
+  returns:[RadarReturn] (id: 1);  // Detections in sensor-defined scan order.
 }
 
 root_type RadarScan;

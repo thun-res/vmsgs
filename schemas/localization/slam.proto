@@ -1,0 +1,146 @@
+syntax = "proto3";
+
+package vmsgs.proto.localization;
+
+import "common/header.proto";
+import "geometry/pose.proto";
+
+// Source of a constraint in a SLAM pose graph.
+enum PoseGraphConstraintType {
+  POSE_GRAPH_CONSTRAINT_UNKNOWN = 0;
+  POSE_GRAPH_CONSTRAINT_ODOMETRY = 1;
+  POSE_GRAPH_CONSTRAINT_LOCAL = 2;
+  POSE_GRAPH_CONSTRAINT_LOOP_CLOSURE = 3;
+  POSE_GRAPH_CONSTRAINT_GNSS = 4;
+  POSE_GRAPH_CONSTRAINT_LANDMARK = 5;
+}
+
+// Lifecycle state of a mapping or localization-only SLAM system.
+enum SlamState {
+  SLAM_STATE_UNKNOWN = 0;
+  SLAM_STATE_UNINITIALIZED = 1;
+  SLAM_STATE_INITIALIZING = 2;
+  SLAM_STATE_TRACKING = 3;
+  SLAM_STATE_RELOCALIZING = 4;
+  SLAM_STATE_LOST = 5;
+  SLAM_STATE_OPTIMIZING = 6;
+  SLAM_STATE_PAUSED = 7;
+  SLAM_STATE_ERROR = 8;
+}
+
+// Optimized pose and storage references for one SLAM keyframe.
+message SlamKeyframe {
+  // Monotonically assigned keyframe identifier within one map session.
+  uint64 id = 1;
+
+  // Sensor acquisition time as an absolute unsigned nanosecond timestamp.
+  uint64 stamp = 2;
+
+  // Optimized keyframe pose and row-major 6x6 uncertainty in graph.header.frame_id.
+  vmsgs.proto.geometry.PoseWithCovariance pose = 3;
+
+  // Sensor frame from which the keyframe observations were captured.
+  string sensor_frame_id = 4;
+
+  // Submap containing this keyframe; zero is valid when the system has one submap.
+  uint64 submap_id = 5;
+
+  // URI of the associated point cloud, image bundle, or descriptor payload.
+  string observation_uri = 6;
+
+  // True when optimization must keep this keyframe pose fixed.
+  bool fixed = 7;
+}
+
+// Relative-pose constraint connecting two keyframes in a pose graph.
+message PoseGraphConstraint {
+  // Source keyframe identifier.
+  uint64 from_id = 1;
+
+  // Destination keyframe identifier.
+  uint64 to_id = 2;
+
+  // Destination pose relative to the source and row-major 6x6 uncertainty.
+  vmsgs.proto.geometry.PoseWithCovariance relative_pose = 3;
+
+  // Sensor or algorithm that produced this constraint.
+  PoseGraphConstraintType type = 4;
+
+  // Normalized matching confidence in [0, 1]; zero means unavailable.
+  float confidence = 5;
+
+  // True when the optimizer currently accepts this constraint as an inlier.
+  bool active = 6;
+}
+
+// Versioned complete or incremental SLAM pose-graph update.
+message PoseGraph {
+  // Publication timestamp in nanoseconds and global graph coordinate frame.
+  vmsgs.proto.common.Header header = 1;
+
+  // Stable map or SLAM session identifier.
+  string map_id = 2;
+
+  // Monotonically increasing graph revision used to order updates.
+  uint64 revision = 3;
+
+  // Keyframes included in this snapshot or incremental update.
+  repeated SlamKeyframe keyframes = 4;
+
+  // Constraints whose endpoint identifiers reference known keyframes.
+  repeated PoseGraphConstraint constraints = 5;
+
+  // True when this message is a patch over the preceding revision.
+  bool is_incremental = 6;
+}
+
+// Newly accepted loop closure and its effect on graph optimization.
+message LoopClosure {
+  // Detection timestamp in nanoseconds and global graph coordinate frame.
+  vmsgs.proto.common.Header header = 1;
+
+  // Graph revision in which this closure was accepted.
+  uint64 graph_revision = 2;
+
+  // Loop-closure constraint between the matched keyframes.
+  PoseGraphConstraint constraint = 3;
+
+  // Translation magnitude of the resulting global correction, in metres.
+  double correction_translation = 4;
+
+  // Rotation magnitude of the resulting global correction, in radians.
+  double correction_rotation = 5;
+}
+
+// Compact operational and optimization status of a SLAM system.
+message SlamStatus {
+  // Status timestamp in nanoseconds and global localization frame.
+  vmsgs.proto.common.Header header = 1;
+
+  // Current SLAM lifecycle state.
+  SlamState state = 2;
+
+  // Stable map or session currently loaded.
+  string map_id = 3;
+
+  // Latest published graph revision.
+  uint64 graph_revision = 4;
+
+  // Active submap identifier used for local scan matching.
+  uint64 active_submap_id = 5;
+
+  // Number of keyframes in the current graph.
+  uint64 keyframe_count = 6;
+
+  // Number of active graph constraints.
+  uint64 constraint_count = 7;
+
+  // Timestamp of the most recently accepted loop closure, in nanoseconds.
+  uint64 last_loop_closure_stamp = 8;
+
+  // Latest local tracking confidence in the inclusive range [0, 1].
+  float tracking_confidence = 9;
+
+  // Human-readable diagnostic detail; control logic uses state and confidence.
+  string message = 10;
+}

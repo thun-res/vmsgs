@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package vmsgs.proto.system;
+
+import "common/header.proto";
+
+// High-level lifecycle of an autonomous system from startup through mission
+// execution and shutdown. This state is platform-neutral and does not encode
+// vehicle control ownership, subsystem health, or localization readiness.
+enum AutonomyLifecycleState {
+  // Lifecycle state is unavailable, not initialized, or cannot be determined.
+  AUTONOMY_LIFECYCLE_STATE_UNKNOWN = 0;
+
+  // Autonomous-system components are starting and validating dependencies.
+  AUTONOMY_LIFECYCLE_STATE_INITIALIZING = 1;
+
+  // Initialization completed and the system is waiting for a mission or route.
+  AUTONOMY_LIFECYCLE_STATE_WAITING_FOR_MISSION = 2;
+
+  // A mission has been accepted and a feasible plan is being prepared.
+  AUTONOMY_LIFECYCLE_STATE_PLANNING = 3;
+
+  // A valid plan exists and the system is waiting for execution authorization.
+  AUTONOMY_LIFECYCLE_STATE_WAITING_FOR_ENGAGE = 4;
+
+  // The autonomous mission is actively executing.
+  AUTONOMY_LIFECYCLE_STATE_EXECUTING = 5;
+
+  // The mission goal or task-defined completion condition has been reached.
+  AUTONOMY_LIFECYCLE_STATE_MISSION_COMPLETED = 6;
+
+  // The active mission is being stopped and runtime resources are being released.
+  AUTONOMY_LIFECYCLE_STATE_FINALIZING = 7;
+
+  // The lifecycle has stopped normally and no mission is active.
+  AUTONOMY_LIFECYCLE_STATE_IDLE = 8;
+
+  // Execution is paused while retaining sufficient state to resume the mission.
+  AUTONOMY_LIFECYCLE_STATE_PAUSED = 9;
+
+  // A lifecycle-level failure prevents normal mission execution.
+  AUTONOMY_LIFECYCLE_STATE_ERROR = 10;
+}
+
+// Timestamped snapshot of the platform-neutral autonomy lifecycle.
+message AutonomyLifecycleStateStamped {
+  // Time in nanoseconds at which the state became observable.
+  vmsgs.proto.common.Header header = 1;
+
+  // Current lifecycle state, valid until superseded by a newer snapshot.
+  AutonomyLifecycleState state = 2;
+
+  // Stable mission identifier; empty when no mission is associated with state.
+  string mission_id = 3;
+
+  // Human-readable transition reason intended for diagnostics and operators.
+  string reason = 4;
+}

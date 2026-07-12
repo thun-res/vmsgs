@@ -9,50 +9,63 @@ import "geometry/twist.proto";
 import "geometry/accel.proto";
 import "geometry/vector3.proto";
 
-// Per-frame radar metadata (mounting + range cell info).
-// Mirrors autoware_sensing_msgs/RadarFieldInfo + RadarInfo.
+// Per-frame radar metadata describing mounting and measurement resolution.
 message RadarFieldInfo {
   // Field of view at the antenna (rad).
   float azimuth_fov = 1;
-  float elevation_fov = 2;
-  float min_range = 3;       // m
-  float max_range = 4;       // m
-  float range_resolution = 5;
-  float doppler_resolution = 6;
+  float elevation_fov = 2;       // Total vertical antenna field of view, in radians.
+  float min_range = 3;           // m
+  float max_range = 4;           // m
+  float range_resolution = 5;    // Radial range-cell spacing, in metres.
+  float doppler_resolution = 6;  // Radial velocity-bin spacing, in m/s.
 }
 
+// Radar-specific quality and return measurements associated with an object.
 message RadarInfo {
-  vmsgs.proto.common.Header header = 1;
-  RadarFieldInfo field = 2;
+  vmsgs.proto.common.Header header = 1;  // Metadata time and radar frame.
+  RadarFieldInfo field = 2;              // Field of view, range, and resolution limits.
   // Number of detection / track outputs in the matching scan / tracks message.
   uint32 num_objects = 3;
   string mounting_location = 4;  // "front_center", "rear_left", ...
 }
 
-// Radar-side classification confidence vector.
-// Mirrors autoware_sensing_msgs/RadarClassification.
+// Radar target motion state relative to the ego sensor.
+enum RadarMotionStatus {
+  RADAR_MOTION_UNKNOWN = 0;
+  RADAR_MOTION_STATIONARY = 1;
+  RADAR_MOTION_STOPPED = 2;
+  RADAR_MOTION_MOVING = 3;
+  RADAR_MOTION_CROSSING = 4;
+  RADAR_MOTION_APPROACHING = 5;
+  RADAR_MOTION_RECEDING = 6;
+}
+
+// Radar-side motion classification and semantic confidence vector.
 message RadarClassification {
-  // 0 = stationary, 1 = stopped, 2 = moving, ... (vendor-specific).
-  uint32 motion_status = 1;
+  // Target motion state relative to the ego sensor.
+  RadarMotionStatus motion_status = 1;
   // Per-class probability (length matches perception.ObjectLabel).
   repeated float probabilities = 2 [packed = true];
 }
 
-// Object-level radar detection, richer than RadarTrack.
-// Mirrors autoware_sensing_msgs/RadarObject.
+// Rich object-level radar output carrying full pose/twist/accel covariance,
+// amplitude, and motion classification. Use RadarTrack (radar_tracks.proto) for
+// the lightweight, covariance-free track representation.
 message RadarObject {
-  vmsgs.proto.common.UUID object_id = 1;
-  vmsgs.proto.geometry.PoseWithCovariance kinematics_pose = 2;
-  vmsgs.proto.geometry.TwistWithCovariance kinematics_twist = 3;
-  vmsgs.proto.geometry.AccelWithCovariance kinematics_accel = 4;
-  vmsgs.proto.geometry.Vector3 size = 5;       // bbox extents (m)
-  RadarClassification classification = 6;
-  float existence_probability = 7;
-  float amplitude = 8;       // dB
-  float rcs_dbsm = 9;
+  vmsgs.proto.common.UUID object_id = 1;                          // Stable 128-bit radar track identity.
+  vmsgs.proto.geometry.PoseWithCovariance kinematics_pose = 2;    // Pose and 6x6 uncertainty.
+  vmsgs.proto.geometry.TwistWithCovariance kinematics_twist = 3;  // Velocity and uncertainty.
+  vmsgs.proto.geometry.AccelWithCovariance kinematics_accel = 4;  // Acceleration and uncertainty.
+  vmsgs.proto.geometry.Vector3 size = 5;                          // bbox extents (m)
+  RadarClassification classification = 6;                         // Motion state and class probabilities.
+  float existence_probability = 7;                                // Target existence probability in [0, 1].
+  float amplitude = 8;                                            // dB
+  float rcs_dbsm = 9;                                             // Radar cross section in dB relative to one square metre.
 }
 
+// Radar objects produced together from one timestamped observation.
 message RadarObjects {
-  vmsgs.proto.common.Header header = 1;
+  vmsgs.proto.common.Header header = 1;  // Observation time and target frame.
+  // Radar targets observed in this cycle; ordering is producer-defined.
   repeated RadarObject objects = 2;
 }

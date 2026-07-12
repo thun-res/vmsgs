@@ -1,0 +1,187 @@
+syntax = "proto3";
+package vmsgs.proto.embodied;
+import "common/header.proto";
+import "common/duration.proto";
+import "common/status.proto";
+import "common/uuid.proto";
+import "geometry/point.proto";
+import "geometry/vector3.proto";
+import "geometry/quaternion.proto";
+import "embodied/robot_state.proto";
+import "embodied/joint_trajectory.proto";
+import "embodied/multi_dof_joint_trajectory.proto";
+
+// Weighted position interval allowed for one joint during motion planning.
+message JointConstraint {
+  // Joint name that must exist in the referenced robot model.
+  string joint_name = 1;
+  // Target joint position in the addressed hardware interface's unit (rad or m).
+  double position = 2;
+  // Allowed positive deviation in the same physical unit as `position`.
+  double tolerance_above = 3;
+  // Allowed negative deviation magnitude in the same physical unit as `position`.
+  double tolerance_below = 4;
+  // Non-negative relative cost weight used by the planner.
+  double weight = 5;
+}
+// Axis-aligned Cartesian tolerance around a target point for one robot link.
+message PositionConstraint {
+  // Robot link constrained to lie near the target position.
+  string link_name = 1;
+  // Coordinate-frame identifier used to interpret spatial values.
+  string frame_id = 2;
+  // Desired link position in frame_id, in metres.
+  vmsgs.proto.geometry.Point target = 3;
+  // Symmetric admissible position error [x, y, z], in metres.
+  vmsgs.proto.geometry.Vector3 tolerance = 4;
+  // Non-negative relative cost weight used by the planner.
+  double weight = 5;
+}
+// Per-axis angular tolerance around a target link orientation.
+message OrientationConstraint {
+  // Robot link constrained to the target orientation.
+  string link_name = 1;
+  // Coordinate-frame identifier used to interpret spatial values.
+  string frame_id = 2;
+  // Desired unit-quaternion orientation of link_name relative to frame_id.
+  vmsgs.proto.geometry.Quaternion orientation = 3;
+  // Maximum absolute rotation about the x axis, in radians.
+  double absolute_x_axis_tolerance = 4;
+  // Maximum absolute rotation about the y axis, in radians.
+  double absolute_y_axis_tolerance = 5;
+  // Maximum absolute rotation about the z axis, in radians.
+  double absolute_z_axis_tolerance = 6;
+  // Non-negative relative cost weight used by the planner.
+  double weight = 7;
+}
+// Named conjunction of joint, position, and orientation constraints.
+message MotionConstraints {
+  // Name of this constraint set.
+  string name = 1;
+  // Joint constraints combined conjunctively; joint names must be unique.
+  repeated JointConstraint joint = 2;
+  // Cartesian position constraints combined conjunctively.
+  repeated PositionConstraint position = 3;
+  // Cartesian orientation constraints combined conjunctively.
+  repeated OrientationConstraint orientation = 4;
+}
+
+// Axis-aligned workspace bounds limiting Cartesian planning exploration.
+message WorkspaceParameters {
+  // Coordinate frame shared by minimum and maximum corners.
+  string frame_id = 1;
+
+  // Inclusive minimum x, y, and z coordinates in metres.
+  vmsgs.proto.geometry.Point minimum = 2;
+
+  // Inclusive maximum x, y, and z coordinates in metres.
+  vmsgs.proto.geometry.Point maximum = 3;
+}
+
+// Visibility requirement between a sensor origin and a target point.
+message VisibilityConstraint {
+  // Coordinate frame containing target and sensor geometry.
+  string frame_id = 1;
+
+  // Target point that must remain visible.
+  vmsgs.proto.geometry.Point target = 2;
+
+  // Sensor mounting link used by the visibility evaluator.
+  string sensor_link = 3;
+
+  // Maximum permitted viewing angle in radians.
+  double max_view_angle = 4;
+
+  // Maximum permitted target-to-sensor distance in metres; zero is unbounded.
+  double max_range = 5;
+
+  // Non-negative relative cost weight.
+  double weight = 6;
+}
+
+// Ordered constraint sets that a trajectory must satisfy along its path.
+message TrajectoryConstraints {
+  // Constraint sets evaluated in trajectory order.
+  repeated MotionConstraints constraints = 1;
+}
+
+// Execution and replanning options shared by planning/manipulation requests.
+message PlanningOptions {
+  // True to return a plan without executing it.
+  bool plan_only = 1;
+
+  // True to permit sensor look-around before or during planning.
+  bool look_around = 2;
+
+  // True to permit automatic replanning after a recoverable failure.
+  bool replan = 3;
+
+  // Maximum replanning attempts; zero selects the server default.
+  uint32 replan_attempts = 4;
+
+  // Delay between replanning attempts.
+  vmsgs.proto.common.Duration replan_delay = 5;
+}
+// Synchronized single-DOF and multi-DOF trajectories for a robot motion.
+message RobotTrajectory {
+  // Time-parameterized trajectory for single-degree-of-freedom joints.
+  JointTrajectory joint_trajectory = 1;
+  // Time-parameterized trajectory for floating or planar joints.
+  MultiDOFJointTrajectory multi_dof_trajectory = 2;
+}
+// Vendor-neutral request for collision-aware robot motion planning.
+message MotionPlanRequest {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
+  vmsgs.proto.common.Header header = 1;
+  // Planning or kinematic joint-group name defined by the robot model.
+  string group_name = 2;
+  // Planning-pipeline identifier used to select the planner implementation.
+  string pipeline_id = 3;
+  // Planner algorithm identifier understood by the motion-planning server.
+  string planner_id = 4;
+  // Complete or partial robot state from which planning begins.
+  RobotState start_state = 5;
+  // Alternative goal sets; satisfying any one set completes the motion goal.
+  repeated MotionConstraints goal_constraints = 6;
+  // Constraints that every state along the planned path must satisfy.
+  MotionConstraints path_constraints = 7;
+  // Maximum number of independent planning attempts; zero selects the implementation default.
+  uint32 num_planning_attempts = 8;
+  // Maximum wall-clock planning duration.
+  vmsgs.proto.common.Duration allowed_planning_time = 9;
+  // Velocity-limit scale in the inclusive range (0, 1]; zero selects the planner default.
+  double max_velocity_scaling_factor = 10;
+  // Acceleration-limit scale in the inclusive range (0, 1]; zero selects the planner default.
+  double max_acceleration_scaling_factor = 11;
+  // Client-generated identifier used to correlate the response.
+  vmsgs.proto.common.UUID request_id = 12;
+
+  // Cartesian workspace bounds; empty bounds select the robot-model default.
+  WorkspaceParameters workspace = 13;
+
+  // Visibility requirements applied alongside other constraints.
+  repeated VisibilityConstraint visibility_constraints = 14;
+
+  // Ordered constraints sampled along the candidate trajectory.
+  TrajectoryConstraints trajectory_constraints = 15;
+
+  // Execution and replanning behavior.
+  PlanningOptions options = 16;
+}
+// Planned trajectory, start state, timing, and portable result status.
+message MotionPlanResponse {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
+  vmsgs.proto.common.Header header = 1;
+  // Portable success or failure status and diagnostic detail.
+  vmsgs.proto.common.Status status = 2;
+  // Normalized start state used by the planner for the returned trajectory.
+  RobotState trajectory_start = 5;
+  // Planned single-DOF and multi-DOF motion, sharing the response frame.
+  RobotTrajectory trajectory = 6;
+  // Wall-clock time consumed by planning, in seconds.
+  double planning_time = 7;
+  // Planner algorithm identifier understood by the motion-planning server.
+  string planner_id = 8;
+  // Identifier copied from the corresponding request.
+  vmsgs.proto.common.UUID request_id = 9;
+}

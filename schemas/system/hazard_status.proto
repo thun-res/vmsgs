@@ -5,6 +5,7 @@ package vmsgs.proto.system;
 import "common/header.proto";
 import "system/diagnostic.proto";
 
+// Functional-safety hazard classification, ordered by increasing criticality.
 enum HazardLevel {
   HAZARD_LEVEL_NO_FAULT = 0;
   HAZARD_LEVEL_SAFE_FAULT = 1;
@@ -12,19 +13,38 @@ enum HazardLevel {
   HAZARD_LEVEL_SINGLE_POINT_FAULT = 3;
 }
 
+// Aggregated safety assessment and the diagnostic evidence behind its level.
 message HazardStatus {
+  // Highest active hazard classification.
   HazardLevel level = 1;
+
+  // True when immediate emergency handling is requested.
   bool emergency = 2;
+
+  // True while the system intentionally maintains an emergency stop condition.
   bool emergency_holding = 3;
+
+  // True when automatic recovery is permitted without operator intervention.
   bool self_recoverable = 4;
+
   // Triggers grouped by hazard level.
   repeated DiagnosticStatus diag_no_fault = 5;
+
+  // Diagnostics classified as safe faults.
   repeated DiagnosticStatus diag_safe_fault = 6;
+
+  // Diagnostics classified as latent faults.
   repeated DiagnosticStatus diag_latent_fault = 7;
+
+  // Diagnostics classified as single-point faults.
   repeated DiagnosticStatus diag_single_point_fault = 8;
 }
 
+// Timestamped hazard assessment, valid until a newer assessment arrives.
 message HazardStatusStamped {
+  // Assessment and publication time metadata.
   vmsgs.proto.common.Header header = 1;
+
+  // Aggregated hazard status at header.stamp.
   HazardStatus status = 2;
 }

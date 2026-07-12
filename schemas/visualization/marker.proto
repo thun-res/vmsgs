@@ -1,0 +1,124 @@
+syntax = "proto3";
+
+package vmsgs.proto.visualization;
+
+import "common/color.proto";
+import "common/duration.proto";
+import "common/header.proto";
+import "common/key_value.proto";
+import "geometry/point.proto";
+import "geometry/pose.proto";
+import "geometry/vector3.proto";
+
+// Display primitive managed by the stable identity pair (ns, id).
+// Geometry is expressed in header.frame_id unless frame_locked requests that
+// the renderer continuously re-evaluate the frame transform.
+message Marker {
+  // Primitive geometry and interpretation of points and scale.
+  enum Type {
+    // Arrow whose shaft and head are controlled by scale or two points.
+    ARROW = 0;
+
+    // Box centered at pose with full extents from scale.
+    CUBE = 1;
+
+    // Ellipsoid centered at pose with diameters from scale.
+    SPHERE = 2;
+
+    // Cylinder centered at pose with diameter and height from scale.
+    CYLINDER = 3;
+
+    // Connected polyline using points in order.
+    LINE_STRIP = 4;
+
+    // Independent line segments using consecutive point pairs.
+    LINE_LIST = 5;
+
+    // Cubes centered at points and sharing pose, scale, and color.
+    CUBE_LIST = 6;
+
+    // Spheres centered at points and sharing pose, scale, and color.
+    SPHERE_LIST = 7;
+
+    // Rendered points whose size is set by scale.
+    POINTS = 8;
+
+    // Text billboard that faces the active view.
+    TEXT_VIEW_FACING = 9;
+
+    // Mesh loaded from mesh_resource and transformed by pose.
+    MESH_RESOURCE = 10;
+
+    // Independent triangles using consecutive groups of three points.
+    TRIANGLE_LIST = 11;
+  }
+
+  // Lifecycle operation applied to the marker identity.
+  enum Action {
+    // Create a marker or replace an existing marker with the same identity.
+    ADD = 0;
+
+    // Update an existing marker; renderers may treat this identically to ADD.
+    MODIFY = 1;
+
+    // Remove the marker identified by ns and id.
+    DELETE = 2;
+
+    // Remove every marker in the target display context.
+    DELETE_ALL = 3;
+  }
+
+  // Marker timestamp in nanoseconds and geometry coordinate frame.
+  vmsgs.proto.common.Header header = 1;
+
+  // Application namespace used with id to form a stable marker identity.
+  string ns = 2;
+
+  // Marker identity within ns; may be reused after deletion.
+  int32 id = 3;
+
+  // Geometry interpretation for this marker.
+  Type type = 4;
+
+  // Lifecycle operation requested from the renderer.
+  Action action = 5;
+
+  // Primitive origin and orientation in header.frame_id.
+  vmsgs.proto.geometry.Pose pose = 6;
+
+  // Type-dependent dimensions, normally in metres along x, y, and z.
+  vmsgs.proto.geometry.Vector3 scale = 7;
+
+  // Uniform RGBA color; each channel is conventionally in [0, 1].
+  vmsgs.proto.common.ColorRGBA color = 8;
+
+  // Visibility duration after receipt; unset means persistent.
+  vmsgs.proto.common.Duration lifetime = 9;
+
+  // Whether pose remains attached to header.frame_id as that frame moves.
+  bool frame_locked = 10;
+
+  // Type-dependent vertices in header.frame_id, ordered as documented by Type.
+  repeated vmsgs.proto.geometry.Point points = 11;
+
+  // Optional per-point colors; empty uses color, otherwise length matches points.
+  repeated vmsgs.proto.common.ColorRGBA colors = 12;
+
+  // UTF-8 content used by TEXT_VIEW_FACING.
+  string text = 13;
+
+  // URI of mesh data used by MESH_RESOURCE.
+  string mesh_resource = 14;
+
+  // Whether a mesh renderer should prefer materials embedded in the resource.
+  bool mesh_use_embedded_materials = 15;
+
+  // Extensible renderer or application attributes without changing geometry.
+  repeated vmsgs.proto.common.KeyValue metadata = 16;
+}
+
+// Batch of marker lifecycle operations intended to be applied atomically.
+message MarkerArray {
+  // Operations in application order; later entries may replace earlier IDs.
+  repeated Marker markers = 1;
+}

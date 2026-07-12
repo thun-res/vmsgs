@@ -4,8 +4,9 @@ package vmsgs.proto.sensor;
 
 import "common/header.proto";
 
+// Absolute fluid pressure measurement with scalar variance.
 message FluidPressure {
-  vmsgs.proto.common.Header header = 1;
-  double fluid_pressure = 2;  // Pa
-  double variance = 3;        // 0 if unknown
+  vmsgs.proto.common.Header header = 1;  // Measurement time and pressure-sensor frame.
+  double fluid_pressure = 2;             // Pa
+  double variance = 3;                   // 0 if unknown
 }

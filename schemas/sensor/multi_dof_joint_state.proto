@@ -7,12 +7,16 @@ import "geometry/transform.proto";
 import "geometry/twist.proto";
 import "geometry/wrench.proto";
 
-// Mirrors sensor_msgs/MultiDOFJointState - state of multi-DoF joints
+// State of multi-DoF joints
 // (e.g. floating-base / mobile-base / spherical wrist).
 message MultiDOFJointState {
-  vmsgs.proto.common.Header header = 1;
+  vmsgs.proto.common.Header header = 1;  // Measurement time and common parent frame.
+  // Ordered multi-DOF joint names shared by all vectors below.
   repeated string joint_names = 2;
+  // Joint transforms aligned one-to-one with joint_names.
   repeated vmsgs.proto.geometry.Transform transforms = 3;
+  // Joint twists aligned one-to-one with joint_names when populated.
   repeated vmsgs.proto.geometry.Twist twist = 4;
+  // Joint wrenches aligned one-to-one with joint_names when populated.
   repeated vmsgs.proto.geometry.Wrench wrench = 5;
 }

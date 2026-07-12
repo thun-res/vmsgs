@@ -5,6 +5,7 @@ package vmsgs.proto.perception;
 import "common/header.proto";
 import "geometry/point.proto";
 
+// Physical or regulatory interpretation of a lane boundary.
 enum LaneBoundaryType {
   LANE_BOUNDARY_UNKNOWN = 0;
   LANE_BOUNDARY_SOLID = 1;
@@ -16,23 +17,35 @@ enum LaneBoundaryType {
   LANE_BOUNDARY_VIRTUAL = 7;
 }
 
+// Sampled lane boundary geometry with semantic boundary type.
 message LaneBoundary {
+  // Stable detector or map identifier for this boundary.
   uint64 id = 1;
+  // Semantic marking or road-edge type.
   LaneBoundaryType type = 2;
+  // Ordered boundary polyline points in metres in the enclosing frame.
   repeated vmsgs.proto.geometry.Point points = 3;
+  // Detection confidence in [0, 1].
   float confidence = 4;
 }
 
+// Drivable lane segment bounded by left and right sampled curves.
 message LaneSegment {
+  // Stable lane identifier for the track or map lifetime.
   uint64 id = 1;
+  // Left boundary when travelling in the lane's forward direction.
   LaneBoundary left_boundary = 2;
+  // Right boundary when travelling in the lane's forward direction.
   LaneBoundary right_boundary = 3;
   // Optional centerline.
   repeated vmsgs.proto.geometry.Point centerline = 4;
   float speed_limit = 5;  // m/s
 }
 
+// Lane segments observed or selected in one common coordinate frame.
 message LaneSegments {
+  // Observation timestamp in nanoseconds and common lane coordinate frame.
   vmsgs.proto.common.Header header = 1;
+  // Observed lane segments; IDs should be unique in this snapshot.
   repeated LaneSegment lanes = 2;
 }

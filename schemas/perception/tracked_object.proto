@@ -10,29 +10,45 @@ import "geometry/accel.proto";
 import "perception/shape.proto";
 import "perception/object_classification.proto";
 
+// Filtered pose and motion estimate maintained by an object tracker.
 message TrackedObjectKinematics {
+  // Indicates whether orientation is usable and whether its sign is ambiguous.
   enum OrientationAvailability {
     UNAVAILABLE = 0;
     SIGN_UNKNOWN = 1;
     AVAILABLE = 2;
   }
 
+  // Filtered object-center pose and 6x6 uncertainty in the list frame.
   vmsgs.proto.geometry.PoseWithCovariance pose_with_covariance = 1;
+  // Whether orientation is unavailable, sign-ambiguous, or fully resolved.
   OrientationAvailability orientation_availability = 2;
+  // Filtered linear and angular velocity with 6x6 uncertainty.
   vmsgs.proto.geometry.TwistWithCovariance twist_with_covariance = 3;
+  // Filtered linear and angular acceleration with 6x6 uncertainty.
   vmsgs.proto.geometry.AccelWithCovariance acceleration = 4;
+  // True when the tracker classifies the object as stationary at this update.
   bool is_stationary = 5;
 }
 
+// Persistent object track with identity, geometry, and classification.
 message TrackedObject {
+  // Stable 128-bit identity retained for the lifetime of this track.
   vmsgs.proto.common.UUID object_id = 1;
+  // Probability that the tracked object exists, in [0, 1].
   float existence_probability = 2;
+  // Candidate semantic classes associated with the current track.
   repeated ObjectClassification classification = 3;
+  // Current filtered motion estimate.
   TrackedObjectKinematics kinematics = 4;
+  // Current object-local geometric extent and footprint.
   Shape shape = 5;
 }
 
+// Object tracks updated in one timestamped tracker cycle.
 message TrackedObjects {
+  // Tracker update timestamp in nanoseconds and common coordinate frame.
   vmsgs.proto.common.Header header = 1;
+  // Active tracks at this update; IDs should be unique in the array.
   repeated TrackedObject objects = 2;
 }

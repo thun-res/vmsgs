@@ -7,6 +7,7 @@ import "geometry/polygon.proto";
 
 // Driveable / free-space region around the ego vehicle.
 message FreeSpace {
+  // Observation timestamp in nanoseconds and frame shared by all polygons.
   vmsgs.proto.common.Header header = 1;
   // Outer drivable region.
   vmsgs.proto.geometry.Polygon outer = 2;

@@ -4,6 +4,7 @@ package vmsgs.proto.planning;
 
 import "common/header.proto";
 
+// High-level maneuver currently selected by the behavior planner.
 enum BehaviorState {
   BEHAVIOR_UNKNOWN = 0;
   BEHAVIOR_LANE_FOLLOWING = 1;
@@ -21,10 +22,14 @@ enum BehaviorState {
   BEHAVIOR_EMERGENCY = 13;
 }
 
+// Timestamped behavior selection with responsible module and diagnostic detail.
 message BehaviorStateStamped {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // State encoded using the referenced `BehaviorState` contract.
   BehaviorState state = 2;
   // Module name responsible for the active behavior (e.g. "obstacle_avoidance").
   string module = 3;
+  // Optional human-readable detail for diagnostics and operator displays.
   string detail = 4;
 }

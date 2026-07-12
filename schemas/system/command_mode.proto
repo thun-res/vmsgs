@@ -5,21 +5,35 @@ package vmsgs.proto.system;
 import "common/header.proto";
 
 // Multi-source command mode (MRM, autonomous, manual override, remote, ...).
-// Mirrors tier4_system_msgs/CommandMode*.
+// Supports platform-defined autonomous, manual, remote, and safety command sources.
 
+// Availability decision for one implementation-defined command mode.
 message CommandModeAvailabilityItem {
-  uint32 mode = 1;       // implementation-defined enum value
+  // Stable mode identifier defined by the deployment's command arbiter.
+  uint32 mode = 1;
+
+  // True when the mode can be activated at the report time.
   bool available = 2;
+
+  // Human-readable reason when unavailable; may be empty when available.
   string reason = 3;
 }
 
+// Timestamped availability set for all command modes known to the publisher.
 message CommandModeAvailability {
+  // Time when availability was evaluated.
   vmsgs.proto.common.Header header = 1;
+
+  // One item per known mode; mode identifiers should be unique.
   repeated CommandModeAvailabilityItem items = 2;
 }
 
+// Runtime activation state for one command mode.
 message CommandModeStatusItem {
+  // Stable implementation-defined mode identifier.
   uint32 mode = 1;
+
+  // Lifecycle state of a command mode from disabled through failure.
   enum Status {
     COMMAND_MODE_UNKNOWN = 0;
     COMMAND_MODE_DISABLED = 1;
@@ -27,28 +41,49 @@ message CommandModeStatusItem {
     COMMAND_MODE_TRANSITION = 3;
     COMMAND_MODE_FAILED = 4;
   }
+
+  // Current mode lifecycle state.
   Status status = 2;
+
+  // Optional operator-facing transition or failure detail.
   string detail = 3;
 }
 
+// Timestamped runtime status set for the command arbiter.
 message CommandModeStatus {
+  // Time when mode states were sampled.
   vmsgs.proto.common.Header header = 1;
+
+  // One status per known mode; mode identifiers should be unique.
   repeated CommandModeStatusItem items = 2;
 }
 
+// Requested activation policy for one command mode.
 message CommandModeRequestItem {
+  // Stable implementation-defined mode identifier.
   uint32 mode = 1;
+
+  // True when this request may supersede the autonomous command source.
   bool autonomous_override = 2;
 }
 
+// Atomic batch of command-mode requests evaluated by the command arbiter.
 message CommandModeRequest {
+  // Request creation and publication metadata.
   vmsgs.proto.common.Header header = 1;
+
+  // Requested modes; duplicate identifiers should be rejected by consumers.
   repeated CommandModeRequestItem items = 2;
 }
 
+// Identifies the source whose commands currently control the vehicle or robot.
 message CommandSourceStatus {
+  // Time when source arbitration was observed.
   vmsgs.proto.common.Header header = 1;
+
   // Identifier of the active command source ("autonomous", "remote", "manual").
   string source = 2;
+
+  // True when autonomous actuator commands are accepted by the arbiter.
   bool autonomous_control_enabled = 3;
 }

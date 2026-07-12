@@ -7,12 +7,20 @@ import "geometry/pose.proto";
 import "geometry/twist.proto";
 import "geometry/accel.proto";
 
-// Combined ego pose + twist + acceleration with covariances. Mirrors
-// autoware_localization_msgs/KinematicState.
+// Combined estimator-independent ego pose, twist, and acceleration state.
 message KinematicState {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // Child coordinate frame in which the body motion is expressed.
   string child_frame_id = 2;
+  // Body pose in header.frame_id with row-major 6x6 position/orientation covariance.
   vmsgs.proto.geometry.PoseWithCovariance pose_with_covariance = 3;
+  // Body linear and angular velocity with row-major 6x6 covariance.
   vmsgs.proto.geometry.TwistWithCovariance twist_with_covariance = 4;
+  // Body linear and angular acceleration with row-major 6x6 covariance.
   vmsgs.proto.geometry.AccelWithCovariance accel_with_covariance = 5;
+
+  // Optional IMU bias estimate ordered [ax, ay, az, gx, gy, gz], in m/s^2 and rad/s.
+  // The vector is empty when the active estimator does not expose bias estimates.
+  repeated double imu_bias = 6 [packed = true];
 }

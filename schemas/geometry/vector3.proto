@@ -4,7 +4,10 @@ package vmsgs.proto.geometry;
 
 // 3D direction vector (no positional meaning).
 message Vector3 {
+  // Component along the containing frame x axis; units are context-defined.
   double x = 1;
+  // Component along the containing frame y axis; units match x.
   double y = 2;
+  // Component along the containing frame z axis; units match x.
   double z = 3;
 }

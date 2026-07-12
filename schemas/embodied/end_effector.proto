@@ -8,18 +8,30 @@ import "geometry/twist.proto";
 
 // Cartesian-space target for the end-effector / TCP.
 message EndEffectorCommand {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // Pose expressed in the coordinate frame identified by the enclosing header.
   vmsgs.proto.geometry.Pose target_pose = 2;
   // Optional twist feed-forward (velocity & angular velocity in TCP frame).
   vmsgs.proto.geometry.Twist target_twist = 3;
+  // True when target_twist provides a velocity feed-forward.
   bool use_twist = 4;
-  // Maximum allowed Cartesian speed (m/s, rad/s).
+  // Maximum allowed Cartesian linear speed, in metres per second.
   float max_linear_speed = 5;
+  // Maximum allowed angular speed, in radians per second; zero selects controller default.
   float max_angular_speed = 6;
+  // Stable identifier of the addressed tool or end-effector resource.
+  string end_effector_id = 7;
 }
 
+// Measured end-effector pose, wrench, and operational state.
 message EndEffectorState {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // Pose expressed in the coordinate frame identified by the enclosing header.
   vmsgs.proto.geometry.Pose pose = 2;
+  // Measured linear and angular end-effector velocity in header.frame_id.
   vmsgs.proto.geometry.Twist twist = 3;
+  // Stable identifier of the measured tool or end-effector resource.
+  string end_effector_id = 4;
 }

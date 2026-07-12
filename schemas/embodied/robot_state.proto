@@ -11,18 +11,23 @@ import "embodied/gripper.proto";
 
 // Aggregated whole-body state of an embodied robot (mobile base + manipulators).
 message RobotState {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // Stable identifier of this robot or platform.
   string robot_id = 2;
   // Base pose in world / map frame.
   vmsgs.proto.geometry.Pose base_pose = 3;
+  // Base linear and angular velocity expressed in the base motion frame.
   vmsgs.proto.geometry.Twist base_twist = 4;
   // Articulated-body joints.
   vmsgs.proto.sensor.JointState joints = 5;
   // Per-arm states (e.g. dual-arm humanoid).
   repeated ManipulatorState arms = 6;
+  // End-effector gripper states in the platform's stable gripper ordering.
   repeated GripperState grippers = 7;
   // Battery / health summary.
   float battery_percentage = 8;
-  string operating_mode = 9;     // "idle", "teleop", "autonomous", ...
+  string operating_mode = 9;  // "idle", "teleop", "autonomous", ...
+  // True while an emergency stop prevents commanded robot motion.
   bool is_estopped = 10;
 }

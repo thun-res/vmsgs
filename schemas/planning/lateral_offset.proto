@@ -5,8 +5,8 @@ package vmsgs.proto.planning;
 import "common/header.proto";
 
 // Lateral offset request applied on top of the reference path.
-// Mirrors tier4_planning_msgs/LateralOffset.
 message LateralOffset {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
   // Offset in m, positive = left of the reference path.
   float lateral_offset = 2;

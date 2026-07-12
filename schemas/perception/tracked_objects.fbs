@@ -1,0 +1,42 @@
+include "../common/header.fbs";
+include "object_semantics.fbs";
+
+namespace vmsgs.fbs.perception;
+
+/// Persistent object track preserving identity, classification, uncertainty, and shape.
+table TrackedObject {
+  /// Most-significant 64 bits of the stable protobuf object UUID.
+  object_id_high:ulong (id: 0);
+
+  /// Least-significant 64 bits of the stable protobuf object UUID.
+  object_id_low:ulong (id: 1);
+
+  /// Probability that this tracked object exists, in the inclusive range [0, 1].
+  existence_probability:float (id: 2);
+
+  /// Candidate semantic classes; probabilities follow protobuf ordering.
+  classification:[ObjectClassificationValue] (id: 3);
+
+  /// Filtered pose, velocity, acceleration, and their complete covariance matrices.
+  kinematics:ObjectKinematicsValue (id: 4);
+
+  /// Signed 32-bit orientation-availability enum from TrackedObjectKinematics.
+  orientation_availability:int (id: 5);
+
+  /// True when the tracker classifies the object as stationary at this update.
+  is_stationary:bool (id: 6);
+
+  /// Current object-local geometric extent and footprint.
+  shape:ObjectShapeValue (id: 7);
+}
+
+/// Zero-copy object tracks updated in one timestamped tracker cycle.
+table TrackedObjects {
+  /// Tracker update timestamp in nanoseconds and common object coordinate frame.
+  header:vmsgs.fbs.common.Header (id: 0);
+
+  /// Active tracks for this update; UUID pairs must be unique in the vector.
+  objects:[TrackedObject] (id: 1);
+}
+
+root_type TrackedObjects;

@@ -4,7 +4,7 @@ package vmsgs.proto.system;
 
 import "common/header.proto";
 
-// Minimum-Risk-Maneuver (MRM) state.
+// Minimum-risk maneuver selected to move the system toward a safe condition.
 enum MrmBehavior {
   MRM_BEHAVIOR_NONE = 0;
   MRM_BEHAVIOR_PULL_OVER = 1;
@@ -12,6 +12,7 @@ enum MrmBehavior {
   MRM_BEHAVIOR_EMERGENCY_STOP = 3;
 }
 
+// Execution lifecycle of the currently selected minimum-risk maneuver.
 enum MrmStateValue {
   MRM_STATE_NORMAL = 0;
   MRM_STATE_OPERATING = 1;
@@ -19,9 +20,17 @@ enum MrmStateValue {
   MRM_STATE_FAILED = 3;
 }
 
+// Timestamped aggregate state of minimum-risk maneuver handling.
 message MrmState {
+  // Time when the state was observed.
   vmsgs.proto.common.Header header = 1;
+
+  // Current execution lifecycle, valid until superseded.
   MrmStateValue state = 2;
+
+  // Selected behavior; NONE when no minimum-risk maneuver is active.
   MrmBehavior behavior = 3;
+
+  // Human-readable trigger, transition, or failure explanation.
   string reason = 4;
 }

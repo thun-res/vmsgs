@@ -7,17 +7,28 @@ import "common/header.proto";
 
 // Mass distribution: mass, center of mass, and (xx,xy,xz,yy,yz,zz) of the inertia tensor.
 message Inertia {
+  // Total rigid-body mass, in kilograms; must be non-negative.
   double m = 1;
+  // Center of mass relative to the reference origin, in metres.
   Vector3 com = 2;
+  // Inertia tensor xx element about the center of mass, in kg*m^2.
   double ixx = 3;
+  // Symmetric inertia tensor xy element, in kg*m^2.
   double ixy = 4;
+  // Symmetric inertia tensor xz element, in kg*m^2.
   double ixz = 5;
+  // Inertia tensor yy element, in kg*m^2.
   double iyy = 6;
+  // Symmetric inertia tensor yz element, in kg*m^2.
   double iyz = 7;
+  // Inertia tensor zz element, in kg*m^2.
   double izz = 8;
 }
 
+// Timestamped rigid-body inertia expressed in header.frame_id.
 message InertiaStamped {
+  // Measurement timestamp in nanoseconds and inertia reference frame.
   vmsgs.proto.common.Header header = 1;
+  // Mass properties expressed about the origin of header.frame_id.
   Inertia inertia = 2;
 }

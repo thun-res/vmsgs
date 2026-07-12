@@ -4,40 +4,64 @@ package vmsgs.proto.v2x;
 
 import "common/header.proto";
 
-// Newer Autoware V2X concept: a "gate" is a virtual checkpoint that may be
-// granted or denied per ego, and an "area" is a region containing gates.
-// Mirrors autoware_v2x_msgs/VirtualGate*.
+// A virtual gate is a mapped checkpoint whose passage state may be granted or
+// denied for a participant; an area groups gates for atomic control/reporting.
 
+// Requested or observed passage state of a virtual gate.
 enum VirtualGateState {
   VIRTUAL_GATE_UNKNOWN = 0;
   VIRTUAL_GATE_LOCKED = 1;
   VIRTUAL_GATE_UNLOCKED = 2;
 }
 
+// Reliable request to place one virtual gate in a desired state.
 message VirtualGateCommand {
+  // Command creation timestamp in nanoseconds and map frame context.
   vmsgs.proto.common.Header header = 1;
+
+  // Stable map identifier of the target gate; zero may mean unassigned.
   uint64 gate_id = 2;
+
+  // State the infrastructure should apply until replaced or expired.
   VirtualGateState desired_state = 3;
+
+  // Stable identity of the requesting vehicle, operator, or service.
   string requester_id = 4;
 }
 
+// Current state and next scheduled transition of one virtual gate.
 message VirtualGateStatus {
+  // Observation timestamp in nanoseconds and map frame context.
   vmsgs.proto.common.Header header = 1;
+
+  // Stable map identifier of the reported gate.
   uint64 gate_id = 2;
+
+  // Currently observed or granted gate state.
   VirtualGateState state = 3;
   // Time until next scheduled state change (s); 0 if static.
   float time_remaining = 4;
 }
 
+// Command applied to a mapped area containing one or more virtual gates.
 message VirtualGateAreaCommand {
+  // Command-batch timestamp in nanoseconds and map frame context.
   vmsgs.proto.common.Header header = 1;
+
+  // Stable map identifier of the target area.
   uint64 area_id = 2;
   // Per-gate desired states inside the area.
   repeated VirtualGateCommand gates = 3;
 }
 
+// Aggregated current state of a mapped virtual-gate area.
 message VirtualGateAreaStatus {
+  // Observation timestamp in nanoseconds and map frame context.
   vmsgs.proto.common.Header header = 1;
+
+  // Stable map identifier of the reported area.
   uint64 area_id = 2;
+
+  // Current member-gate states; gate IDs should be unique in this snapshot.
   repeated VirtualGateStatus gates = 3;
 }

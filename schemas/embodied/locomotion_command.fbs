@@ -1,0 +1,15 @@
+include "../common/header.fbs";
+include "hot_path_types.fbs";
+namespace vmsgs.fbs.embodied;
+/// Desired legged-base motion and gait.
+table LocomotionCommand {
+  /// Command timestamp and base frame.
+  header:vmsgs.fbs.common.Header (id: 0);
+  /// Desired linear and angular velocity.
+  target_twist:Twist (id: 1);
+  /// Numeric protobuf Gait.
+  gait:uint8 (id: 2);
+  /// Stance height in metres.
+  stance_height:float (id: 3);
+}
+root_type LocomotionCommand;

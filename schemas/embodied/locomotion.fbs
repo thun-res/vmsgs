@@ -1,0 +1,18 @@
+include "../common/header.fbs";
+include "../geometry/geometry.fbs";
+include "hot_path_types.fbs";
+namespace vmsgs.fbs.embodied;
+/// Achieved locomotion and foot contacts.
+table LocomotionState {
+  /// Measurement timestamp and frame.
+  header:vmsgs.fbs.common.Header (id: 0);
+  /// Numeric active protobuf Gait.
+  active_gait:uint8 (id: 1);
+  /// Achieved linear and angular velocity.
+  achieved_twist:Twist (id: 2);
+  /// Body pose in header.frame_id.
+  body_pose:vmsgs.fbs.geometry.Pose (id: 3);
+  /// Per-leg contact: 0 swing, 1 stance.
+  foot_contact:[uint32] (id: 4);
+}
+root_type LocomotionState;

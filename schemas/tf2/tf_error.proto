@@ -2,8 +2,9 @@ syntax = "proto3";
 
 package vmsgs.proto.tf2;
 
-// Error reported by tf2 lookup operations. Mirrors tf2_msgs/TF2Error.
+// Error reported by transform (tf2) lookup operations.
 message TF2Error {
+  // Stable error categories that callers may use for retry or fallback logic.
   enum Code {
     NO_ERROR = 0;
     LOOKUP_ERROR = 1;
@@ -13,6 +14,10 @@ message TF2Error {
     TIMEOUT_ERROR = 5;
     TRANSFORM_ERROR = 6;
   }
+
+  // Machine-readable lookup outcome; NO_ERROR indicates success.
   Code error = 1;
+
+  // Human-readable failure detail, empty when error is NO_ERROR.
   string error_string = 2;
 }

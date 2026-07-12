@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package vmsgs.proto.common;
+
+// Signed time interval for delays, timeouts, and trajectory-relative timing.
+// Absolute timestamps use a direct uint64 nanosecond value instead of this type.
+message Duration {
+  // Whole seconds. Negative intervals use the same sign for sec and nsec.
+  int64 sec = 1;
+
+  // Fractional nanoseconds, normalized to the range (-1e9, 1e9).
+  int32 nsec = 2;
+}

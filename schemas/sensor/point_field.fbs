@@ -1,5 +1,6 @@
 namespace vmsgs.fbs.sensor;
 
+/// Scalar storage type used by one channel in a binary point record.
 enum PointFieldType : ubyte {
   UNKNOWN = 0,
   INT8    = 1,
@@ -10,12 +11,14 @@ enum PointFieldType : ubyte {
   UINT32  = 6,
   FLOAT32 = 7,
   FLOAT64 = 8,
+  INT64 = 9,
+  UINT64 = 10,
 }
 
 /// Description of a single channel inside the packed point-cloud byte buffer.
 table PointField {
-  name:string         (id: 0);
-  offset:uint32       (id: 1);
-  datatype:PointFieldType (id: 2);
-  count:uint32        (id: 3);
+  name:string (id: 0);  // Semantic channel name such as x, intensity, or ring.
+  offset:uint32 (id: 1);  // Byte offset from the beginning of one point record.
+  datatype:PointFieldType (id: 2);  // Scalar representation stored at offset.
+  count:uint32 (id: 3);  // Number of adjacent scalars; normally one.
 }

@@ -1,0 +1,23 @@
+include "../common/header.fbs";
+
+namespace vmsgs.fbs.embodied;
+
+/// Zero-copy incremental joint command for servo and jogging controllers.
+table JointJog {
+  /// Command timestamp in nanoseconds and robot reference frame.
+  header:vmsgs.fbs.common.Header (id: 0);
+
+  /// Ordered joint names shared by displacement and velocity vectors.
+  joint_names:[string] (id: 1);
+
+  /// Joint increments in radians or metres; empty or joint_names length.
+  displacements:[double] (id: 2);
+
+  /// Joint velocities in radians/s or metres/s; empty or joint_names length.
+  velocities:[double] (id: 3);
+
+  /// Command validity duration in signed nanoseconds; zero selects controller default.
+  duration_ns:long (id: 4);
+}
+
+root_type JointJog;

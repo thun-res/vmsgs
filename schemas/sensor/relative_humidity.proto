@@ -4,8 +4,9 @@ package vmsgs.proto.sensor;
 
 import "common/header.proto";
 
+// Relative humidity fraction in [0, 1] with scalar variance.
 message RelativeHumidity {
-  vmsgs.proto.common.Header header = 1;
-  double relative_humidity = 2;  // 0..1
-  double variance = 3;
+  vmsgs.proto.common.Header header = 1;  // Measurement time and sensor frame.
+  double relative_humidity = 2;          // 0..1
+  double variance = 3;                   // Variance of the dimensionless humidity fraction.
 }

@@ -4,8 +4,12 @@ package vmsgs.proto.geometry;
 
 // Hamilton quaternion: w + xi + yj + zk. Identity = (0,0,0,1).
 message Quaternion {
+  // Quaternion x component; a valid rotation quaternion has unit norm.
   double x = 1;
+  // Quaternion y component; a valid rotation quaternion has unit norm.
   double y = 2;
+  // Quaternion z component; a valid rotation quaternion has unit norm.
   double z = 3;
+  // Quaternion scalar component; identity rotation is conventionally [0,0,0,1].
   double w = 4;
 }

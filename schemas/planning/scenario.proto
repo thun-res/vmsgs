@@ -4,6 +4,7 @@ package vmsgs.proto.planning;
 
 import "common/header.proto";
 
+// Mutually exclusive planning contexts that select specialized planner stacks.
 enum Scenario {
   SCENARIO_UNKNOWN = 0;
   SCENARIO_LANE_DRIVING = 1;
@@ -17,8 +18,12 @@ enum Scenario {
   SCENARIO_EMERGENCY_STOP = 9;
 }
 
+// Active scenario and the set of scenario modules currently activated.
 message ScenarioStamped {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // Active encoded using the referenced `Scenario` contract.
   Scenario active = 2;
+  // Scenario modules currently activated.
   repeated Scenario activated = 3;
 }

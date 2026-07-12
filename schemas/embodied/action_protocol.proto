@@ -1,0 +1,147 @@
+syntax = "proto3";
+
+package vmsgs.proto.embodied;
+
+import "common/action.proto";
+import "common/duration.proto";
+import "common/header.proto";
+import "common/uuid.proto";
+import "embodied/controller_state.proto";
+import "embodied/joint_trajectory.proto";
+import "embodied/motion_plan.proto";
+
+// Reliable acknowledgement that an action server accepted or rejected a goal.
+message ActionGoalResponse {
+  // Goal identifier supplied by the action client.
+  vmsgs.proto.common.UUID goal_id = 1;
+  // True when the server accepted the goal for execution.
+  bool accepted = 2;
+  // Human-readable rejection or acknowledgement detail.
+  string message = 3;
+}
+
+// Goal for executing a time-parameterized multi-joint trajectory.
+message FollowJointTrajectoryGoal {
+  // Client-generated identifier used for feedback, result, and cancellation.
+  vmsgs.proto.common.UUID goal_id = 1;
+  // Desired trajectory; point vectors follow trajectory.joint_names ordering.
+  JointTrajectory trajectory = 2;
+  // Maximum permitted tracking error during execution, per named joint.
+  repeated JointTolerance path_tolerance = 3;
+  // Maximum permitted final error, per named joint.
+  repeated JointTolerance goal_tolerance = 4;
+  // Additional time allowed after the final point to meet goal tolerances.
+  vmsgs.proto.common.Duration goal_time_tolerance = 5;
+}
+
+// Periodic execution feedback for a FollowJointTrajectory goal.
+message FollowJointTrajectoryFeedback {
+  // Feedback time in nanoseconds and trajectory reference frame.
+  vmsgs.proto.common.Header header = 1;
+  // Identifier of the goal producing this feedback.
+  vmsgs.proto.common.UUID goal_id = 2;
+  // Current action lifecycle state.
+  vmsgs.proto.common.GoalStatusCode status = 3;
+  // Joint ordering shared by desired, actual, and error vectors.
+  repeated string joint_names = 4;
+  // Time-interpolated command at the feedback instant.
+  JointTrajectoryPoint desired = 5;
+  // Measured joint state at the feedback instant.
+  JointTrajectoryPoint actual = 6;
+  // desired - actual using the same units as the source vectors.
+  JointTrajectoryPoint error = 7;
+}
+
+// Terminal outcome of a FollowJointTrajectory goal.
+message FollowJointTrajectoryResult {
+  // Identifier of the completed goal.
+  vmsgs.proto.common.UUID goal_id = 1;
+  // Terminal lifecycle state; normally succeeded, canceled, or aborted.
+  vmsgs.proto.common.GoalStatusCode status = 2;
+  // Implementation-independent numeric result code; zero indicates no error.
+  int32 error_code = 3;
+  // Human-readable diagnostic suitable for logs, not control logic.
+  string error_string = 4;
+}
+
+// Goal for a single-degree-of-freedom gripper command.
+message GripperGoal {
+  // Client-generated identifier used for feedback and the final result.
+  vmsgs.proto.common.UUID goal_id = 1;
+  // Desired gripper position in the hardware interface's declared unit.
+  double position = 2;
+  // Maximum absolute effort; zero means use the controller default limit.
+  double max_effort = 3;
+}
+
+// Periodic state feedback while a gripper goal executes.
+message GripperFeedback {
+  // Measurement time in nanoseconds and gripper reference frame.
+  vmsgs.proto.common.Header header = 1;
+  // Identifier of the goal producing this feedback.
+  vmsgs.proto.common.UUID goal_id = 2;
+  // Current action lifecycle state.
+  vmsgs.proto.common.GoalStatusCode status = 3;
+  // Measured gripper position in the declared hardware-interface unit.
+  double position = 4;
+  // Measured or estimated actuator effort.
+  double effort = 5;
+  // True when motion stopped before reaching the requested position.
+  bool stalled = 6;
+  // True when position and effort satisfy the controller goal criteria.
+  bool reached_goal = 7;
+}
+
+// Terminal outcome and final state of a gripper goal.
+message GripperResult {
+  // Identifier of the completed goal.
+  vmsgs.proto.common.UUID goal_id = 1;
+  // Terminal lifecycle state.
+  vmsgs.proto.common.GoalStatusCode status = 2;
+  // Final measured gripper position.
+  double position = 3;
+  // Final measured or estimated effort.
+  double effort = 4;
+  // Whether execution ended because the gripper stalled.
+  bool stalled = 5;
+  // Whether the requested goal criteria were reached.
+  bool reached_goal = 6;
+}
+
+// Goal for executing a previously planned robot trajectory without replanning.
+message ExecuteTrajectoryGoal {
+  // Client-generated identifier used for feedback, result, and cancellation.
+  vmsgs.proto.common.UUID goal_id = 1;
+  // Joint and multi-DOF trajectory to execute as one synchronized motion.
+  RobotTrajectory trajectory = 2;
+  // Names of controllers preferred for execution; empty selects configured defaults.
+  repeated string controllers = 3;
+}
+
+// Periodic state while an ExecuteTrajectory goal is running.
+message ExecuteTrajectoryFeedback {
+  // Feedback timestamp and trajectory reference frame.
+  vmsgs.proto.common.Header header = 1;
+  // Identifier of the goal producing this feedback.
+  vmsgs.proto.common.UUID goal_id = 2;
+  // Current action lifecycle state.
+  vmsgs.proto.common.GoalStatusCode status = 3;
+  // Zero-based trajectory segment or controller-defined execution stage.
+  uint32 stage = 4;
+  // Normalized completion estimate in the inclusive range [0, 1].
+  double progress = 5;
+  // Human-readable execution state suitable for operator displays.
+  string message = 6;
+}
+
+// Terminal outcome of an ExecuteTrajectory goal.
+message ExecuteTrajectoryResult {
+  // Identifier of the completed goal.
+  vmsgs.proto.common.UUID goal_id = 1;
+  // Terminal lifecycle state; normally succeeded, canceled, or aborted.
+  vmsgs.proto.common.GoalStatusCode status = 2;
+  // Machine-readable execution result code; zero denotes success.
+  int32 error_code = 3;
+  // Human-readable diagnostic suitable for logs, not control logic.
+  string message = 4;
+}

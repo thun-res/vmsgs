@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+package vmsgs.proto.shape;
+
+import "geometry/point.proto";
+
+// Triangle face referencing three entries in Mesh.vertices.
+message MeshTriangle {
+  // Index of the first vertex; must be smaller than the vertex array length.
+  uint32 vertex_index_0 = 1;
+
+  // Index of the second vertex; winding order defines the face normal.
+  uint32 vertex_index_1 = 2;
+
+  // Index of the third vertex; winding order must be consistent per mesh.
+  uint32 vertex_index_2 = 3;
+}
+
+// Triangular surface mesh expressed in the coordinate frame of its container.
+message Mesh {
+  // Triangle topology; every index references vertices below.
+  repeated MeshTriangle triangles = 1;
+
+  // Vertex positions, in metres.
+  repeated vmsgs.proto.geometry.Point vertices = 2;
+
+  // Optional URI of the source mesh; empty when vertices are authoritative.
+  string resource_uri = 3;
+}
+
+// Infinite plane represented by the equation ax + by + cz + d = 0.
+message Plane {
+  // Coefficients [a, b, c, d]; exactly four values are expected.
+  repeated double coefficients = 1 [packed = true];
+}
+
+// Compact collision or perception primitive with type-dependent dimensions.
+message SolidPrimitive {
+  // Geometric primitive kind controlling dimensions and polygon interpretation.
+  enum Type {
+    // Type was not provided; consumers must not infer a dimension layout.
+    UNKNOWN = 0;
+
+    // Box dimensions are [x, y, z] full lengths, in metres.
+    BOX = 1;
+
+    // Sphere dimensions contain [radius], in metres.
+    SPHERE = 2;
+
+    // Cylinder dimensions are [height, radius], in metres.
+    CYLINDER = 3;
+
+    // Cone dimensions are [height, radius], in metres.
+    CONE = 4;
+
+    // Prism uses polygon as its base and dimensions[0] as height, in metres.
+    PRISM = 5;
+  }
+
+  // Primitive kind.
+  Type type = 1;
+
+  // Type-dependent dimensions in metres, using the layouts documented above.
+  repeated double dimensions = 2 [packed = true];
+
+  // Ordered base vertices for PRISM; unused for other primitive types.
+  repeated vmsgs.proto.geometry.Point polygon = 3;
+}

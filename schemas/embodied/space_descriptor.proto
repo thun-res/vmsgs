@@ -1,0 +1,107 @@
+syntax = "proto3";
+
+package vmsgs.proto.embodied;
+
+// Scalar representation used by a tensor or action-space element.
+enum ScalarType {
+  SCALAR_TYPE_UNKNOWN = 0;
+  SCALAR_TYPE_BOOL = 1;
+  SCALAR_TYPE_INT32 = 2;
+  SCALAR_TYPE_INT64 = 3;
+  SCALAR_TYPE_UINT8 = 4;
+  SCALAR_TYPE_FLOAT16 = 5;
+  SCALAR_TYPE_FLOAT32 = 6;
+  SCALAR_TYPE_FLOAT64 = 7;
+  SCALAR_TYPE_STRING = 8;
+}
+
+// Geometric representation used by an orientation-valued element.
+enum RotationRepresentation {
+  ROTATION_REPRESENTATION_UNKNOWN = 0;
+  ROTATION_REPRESENTATION_QUATERNION_XYZW = 1;
+  ROTATION_REPRESENTATION_AXIS_ANGLE = 2;
+  ROTATION_REPRESENTATION_ROTATION_VECTOR = 3;
+  ROTATION_REPRESENTATION_EULER_XYZ = 4;
+  ROTATION_REPRESENTATION_CONTINUOUS_6D = 5;
+}
+
+// Semantic contract for one named scalar or contiguous vector slice.
+message SpaceElement {
+  // Stable element name, unique within the enclosing descriptor.
+  string name = 1;
+
+  // Zero-based scalar offset in a flattened vector representation.
+  uint64 offset = 2;
+
+  // Number of consecutive scalar values occupied by this element.
+  uint64 size = 3;
+
+  // Physical unit using a stable unit symbol; empty means dimensionless.
+  string unit = 4;
+
+  // Inclusive lower bounds; one value broadcasts to every scalar.
+  repeated double lower_bound = 5 [packed = true];
+
+  // Inclusive upper bounds; one value broadcasts to every scalar.
+  repeated double upper_bound = 6 [packed = true];
+
+  // Mean used to normalize values; empty means no mean normalization.
+  repeated double normalization_mean = 7 [packed = true];
+
+  // Scale or standard deviation used for normalization; values must be nonzero.
+  repeated double normalization_scale = 8 [packed = true];
+
+  // Coordinate frame for spatial values; empty for non-spatial elements.
+  string frame_id = 9;
+
+  // Orientation representation when this element contains a rotation.
+  RotationRepresentation rotation = 10;
+}
+
+// Versioned, machine-readable tensor or flattened action-space contract.
+message SpaceDescriptor {
+  // Stable identifier referenced by EpisodeStep and VLAAction.
+  string id = 1;
+
+  // Monotonically versioned schema identifier.
+  string version = 2;
+
+  // Scalar representation shared by flattened elements.
+  ScalarType scalar_type = 3;
+
+  // Tensor dimensions in outermost-to-innermost order.
+  repeated uint64 shape = 4 [packed = true];
+
+  // Ordered semantic slices; offsets and sizes must not overlap.
+  repeated SpaceElement elements = 5;
+
+  // Nominal production or control frequency in hertz; zero means unspecified.
+  double frequency_hz = 6;
+
+  // URI of an external authoritative specification, if one exists.
+  string specification_uri = 7;
+
+  // Content checksum of the external specification for reproducibility.
+  string specification_checksum = 8;
+}
+
+// Static robot contract used to interpret observations and actions.
+message RobotEmbodimentDescriptor {
+  // Stable robot model identifier.
+  string model_id = 1;
+
+  // Hardware/model revision.
+  string version = 2;
+
+  // URI of URDF, SDF, MJCF, or another authoritative model resource.
+  string model_uri = 3;
+
+  // Ordered controllable joint names used by model-level vectors.
+  repeated string joint_names = 4;
+
+  // Observation space contract.
+  SpaceDescriptor observation_space = 5;
+
+  // Action space contract.
+  SpaceDescriptor action_space = 6;
+}

@@ -5,56 +5,102 @@ package vmsgs.proto.system;
 import "common/header.proto";
 import "system/diagnostic.proto";
 
-// Hierarchical diagnostics aggregator. A graph is a DAG over diag nodes
-// (modules). Each node has child links and a leaf status. Mirrors
-// autoware_adapi_v1_msgs/Diag* + tier4_system_msgs/Diag*.
+// Hierarchical diagnostics aggregator. A graph is a DAG over component nodes;
+// each node has child links and leaf diagnostic statuses.
 
+// Static identity of one internal graph node representing an aggregated module.
 message DiagNodeStruct {
+  // Dense graph-local index referenced by status records and links.
   uint32 index = 1;
+
+  // Stable hierarchical component path.
   string path = 2;
 }
 
+// Directed parent-to-child edge in the diagnostic dependency graph.
 message DiagLinkStruct {
+  // Index of the parent node in DiagGraphStruct.nodes.
   uint32 parent = 1;
+
+  // Index of the child node in DiagGraphStruct.nodes.
   uint32 child = 2;
 }
 
+// Static identity of one leaf diagnostic check.
 message DiagLeafStruct {
+  // Dense graph-local index referenced by DiagLeafStatus.
   uint32 index = 1;
+
+  // Stable hierarchical component path containing this check.
   string path = 2;
+
+  // Human-readable diagnostic check name.
   string name = 3;
 }
 
 // Static structure of the diag graph; published once at startup.
 message DiagGraphStruct {
+  // Publication metadata; structure normally has a long lifecycle.
   vmsgs.proto.common.Header header = 1;
+
+  // Generation identifier used to join this structure with status updates.
   uint64 graph_id = 2;
+
+  // Node definitions; indices must be unique within this graph generation.
   repeated DiagNodeStruct nodes = 3;
+
+  // Directed edges; referenced node indices must exist in nodes.
   repeated DiagLinkStruct links = 4;
+
+  // Leaf definitions; indices must be unique within this graph generation.
   repeated DiagLeafStruct leaves = 5;
 }
 
 // Per-tick statuses keyed off the structure's indices.
+// Runtime severity for one graph node.
 message DiagNodeStatus {
+  // Node index from the matching DiagGraphStruct.
   uint32 index = 1;
+
+  // Aggregated severity of this node and its active descendants.
   DiagnosticLevel level = 2;
 }
 
+// Runtime severity and participation state for one graph edge.
 message DiagLinkStatus {
+  // Link index in producer-defined DiagGraphStruct.links order.
   uint32 index = 1;
+
+  // Severity propagated through the link.
   DiagnosticLevel level = 2;
+
+  // True when this dependency contributes to the current aggregation.
   bool used = 3;
 }
 
+// Runtime diagnostic payload for one graph leaf.
 message DiagLeafStatus {
+  // Leaf index from the matching DiagGraphStruct.
   uint32 index = 1;
+
+  // Full diagnostic result for the leaf check.
   DiagnosticStatus status = 2;
 }
 
+// Complete runtime update associated with one static graph generation.
 message DiagGraphStatus {
+  // Sampling and publication metadata.
   vmsgs.proto.common.Header header = 1;
+
+  // Must match the graph_id of the corresponding DiagGraphStruct.
   uint64 graph_id = 2;
+
+  // Node updates; at most one entry per node index.
   repeated DiagNodeStatus nodes = 3;
+
+  // Link updates; at most one entry per link index.
   repeated DiagLinkStatus links = 4;
+
+  // Leaf updates; at most one entry per leaf index.
   repeated DiagLeafStatus leaves = 5;
 }

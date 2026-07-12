@@ -4,6 +4,7 @@ package vmsgs.proto.vehicle;
 
 import "common/header.proto";
 
+// Stable commanded and reported transmission positions.
 enum GearCommandCode {
   GEAR_NONE = 0;
   GEAR_NEUTRAL = 1;
@@ -22,12 +23,18 @@ enum GearCommandCode {
   GEAR_LOW_2 = 24;
 }
 
+// Requests a transmission gear selection.
 message GearCommand {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // Command encoded using the referenced `GearCommandCode` contract.
   GearCommandCode command = 2;
 }
 
+// Reports the transmission gear that is physically selected.
 message GearReport {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // Report encoded using the referenced `GearCommandCode` contract.
   GearCommandCode report = 2;
 }

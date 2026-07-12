@@ -1,0 +1,32 @@
+include "../common/header.fbs";
+
+namespace vmsgs.fbs.embodied;
+
+/// One named hardware-interface sample for a joint.
+table InterfaceValue {
+  /// Stable interface name such as position, velocity, effort, or temperature.
+  name:string (id: 0);
+
+  /// Scalar sample in the unit defined by the named hardware interface.
+  value:double (id: 1);
+}
+
+/// All reported hardware-interface samples for one robot joint.
+table JointInterfaceState {
+  /// Joint name matching the robot description and protobuf representation.
+  joint_name:string (id: 0);
+
+  /// Available samples; interface names must be unique within this joint.
+  interfaces:[InterfaceValue] (id: 1);
+}
+
+/// Zero-copy dynamic joint-state snapshot equivalent to the protobuf message.
+table DynamicJointState {
+  /// Sample timestamp in nanoseconds and robot reference frame.
+  header:vmsgs.fbs.common.Header (id: 0);
+
+  /// Per-joint interface values; joint names must be unique in this snapshot.
+  joints:[JointInterfaceState] (id: 1);
+}
+
+root_type DynamicJointState;

@@ -1,0 +1,15 @@
+include "../common/header.fbs";
+
+namespace vmsgs.fbs.vehicle;
+
+/// Linear ground speeds for an arbitrary number of named vehicle wheels.
+table WheelLinearSpeedReport {
+  /// Measurement timestamp and vehicle body frame.
+  header:vmsgs.fbs.common.Header (id: 0);
+  /// Ordered wheel names; each name corresponds to the speed at the same index.
+  wheel_names:[string] (id: 1);
+  /// Ground speeds in metres per second; length must equal wheel_names length.
+  speeds:[float] (id: 2);
+}
+
+root_type WheelLinearSpeedReport;

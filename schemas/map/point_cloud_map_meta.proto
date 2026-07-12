@@ -5,16 +5,19 @@ package vmsgs.proto.map;
 import "map/area_info.proto";
 
 // Tile-level metadata for a partitioned point-cloud map.
-// Mirrors autoware_map_msgs/PointCloudMapCellMetaData.
 message PointCloudMapCellMetaData {
+  // Area encoded using the referenced `AreaInfo` contract.
   AreaInfo area = 1;
+  // Version number of this point-cloud map tile.
   uint64 version = 2;
 }
 
 // Same as above but carries the tile's external string id.
 // Mirrors PointCloudMapCellMetaDataWithID.
 message PointCloudMapCellMetaDataWithID {
+  // Stable identifier of this point-cloud map tile.
   string cell_id = 1;
+  // Metadata encoded using the referenced `PointCloudMapCellMetaData` contract.
   PointCloudMapCellMetaData metadata = 2;
 }
 
@@ -22,17 +25,21 @@ message PointCloudMapCellMetaDataWithID {
 // Use point_cloud_map.fbs for the actual point-cloud bytes.
 // Mirrors PointCloudMapCellWithID.
 message PointCloudMapCellWithID {
+  // Stable identifier of this point-cloud map tile.
   string cell_id = 1;
   // URL/path/topic from which to fetch this tile's point cloud.
   string cell_uri = 2;
+  // Metadata encoded using the referenced `PointCloudMapCellMetaData` contract.
   PointCloudMapCellMetaData metadata = 3;
 }
 
 // Top-level point-cloud-map manifest.
-// Mirrors autoware_map_msgs/PointCloudMapMetaData.
 message PointCloudMapMetaData {
-  string format = 1;       // "pcd", "vmap_pcd", ...
+  string format = 1;  // "pcd", "vmap_pcd", ...
+  // Version identifier of this point-cloud map manifest.
   string version = 2;
+  // Map projection identifier (e.g. "MGRS:10TFK", "UTM:54N").
   string projector = 3;
+  // Per-tile metadata for every point-cloud tile in this manifest.
   repeated PointCloudMapCellMetaDataWithID metadata_list = 4;
 }

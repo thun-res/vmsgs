@@ -1,0 +1,380 @@
+syntax = "proto3";
+
+package vmsgs.proto.embodied;
+
+import "common/header.proto";
+import "common/key_value.proto";
+import "common/status.proto";
+import "common/uuid.proto";
+import "geometry/pose.proto";
+
+// Operating state used by multi-robot fleet and facility coordinators.
+enum RobotMode {
+  ROBOT_MODE_UNKNOWN = 0;
+  ROBOT_MODE_IDLE = 1;
+  ROBOT_MODE_MOVING = 2;
+  ROBOT_MODE_CHARGING = 3;
+  ROBOT_MODE_WAITING = 4;
+  ROBOT_MODE_PAUSED = 5;
+  ROBOT_MODE_EMERGENCY = 6;
+  ROBOT_MODE_ERROR = 7;
+}
+
+// Fleet-visible state of one robot without vendor-specific hardware details.
+message FleetRobotState {
+  // Stable robot name unique within fleet_name.
+  string robot_name = 1;
+  // Current map or building level containing pose.
+  string map_name = 2;
+  // Robot pose in the map coordinate frame.
+  vmsgs.proto.geometry.Pose pose = 3;
+  // Current coordination mode.
+  RobotMode mode = 4;
+  // Battery state of charge in the inclusive range [0, 1].
+  float battery_soc = 5;
+  // Active task identifier; empty while no coordinated task is running.
+  string task_id = 6;
+}
+
+// Periodic state snapshot of all robots managed by one fleet adapter.
+message FleetState {
+  // Snapshot timestamp in nanoseconds and common map frame.
+  vmsgs.proto.common.Header header = 1;
+  // Stable fleet identifier.
+  string fleet_name = 2;
+  // Robots in implementation-defined order; names must be unique.
+  repeated FleetRobotState robots = 3;
+}
+
+// Reliable path assignment for one fleet robot.
+message FleetPathRequest {
+  // Coordinator-generated request identifier used for replacement/cancel.
+  vmsgs.proto.common.UUID request_id = 1;
+  // Target fleet and robot.
+  string fleet_name = 2;
+  // Stable robot name unique within `fleet_name`.
+  string robot_name = 3;
+  // Map-frame waypoints in traversal order.
+  repeated vmsgs.proto.geometry.PoseStamped waypoints = 4;
+  // Field 5 previously duplicated PathCancelRequest and must not be reused.
+  reserved 5;
+  reserved "cancel";
+}
+
+// Reliable acknowledgement that a fleet path assignment was accepted or rejected.
+message FleetPathResponse {
+  // Identifier copied from the corresponding path request.
+  vmsgs.proto.common.UUID request_id = 1;
+  // True when the fleet adapter accepted the assignment for processing.
+  bool accepted = 2;
+  // Human-readable rejection or acknowledgement detail.
+  string message = 3;
+}
+
+// Reliable command for a building door or other binary access barrier.
+message FacilityDoorCommand {
+  // Stable facility door identifier.
+  string door_name = 1;
+  // True requests opening; false requests closing.
+  bool open = 2;
+  // Request identifier used to correlate facility feedback.
+  vmsgs.proto.common.UUID request_id = 3;
+}
+
+// Observed state of a facility door.
+message FacilityDoorState {
+  // Observation timestamp in nanoseconds.
+  vmsgs.proto.common.Header header = 1;
+  // Stable facility door identifier.
+  string door_name = 2;
+  // Normalized opening fraction in [0, 1].
+  float position = 3;
+  // True when the door controller reports a blocking fault.
+  bool faulted = 4;
+  // Most recent command identifier reflected by this state; zero if unrelated.
+  vmsgs.proto.common.UUID request_id = 5;
+}
+
+// Reliable request to call or control a building lift.
+message FacilityLiftCommand {
+  // Stable lift identifier.
+  string lift_name = 1;
+  // Requested destination floor or level name.
+  string destination = 2;
+  // True requests holding the lift door open for robot ingress or egress.
+  bool hold_door = 3;
+  // Request identifier used to correlate lift state.
+  vmsgs.proto.common.UUID request_id = 4;
+}
+
+// Observed position, door, and fault state of a building lift.
+message FacilityLiftState {
+  // Observation timestamp in nanoseconds.
+  vmsgs.proto.common.Header header = 1;
+  // Stable lift identifier within the facility coordinator.
+  string lift_name = 2;
+  // Name of the floor or building level where the lift car is currently located.
+  string current_floor = 3;
+  // Normalized door opening fraction in [0, 1].
+  float door_position = 4;
+  // True when the lift controller reports a blocking fault.
+  bool faulted = 5;
+  // Most recent command identifier reflected by this state; zero if unrelated.
+  vmsgs.proto.common.UUID request_id = 6;
+}
+
+// Lifecycle shared by bids, dispatches, paths, and facility requests.
+enum CoordinationStatus {
+  COORDINATION_STATUS_UNKNOWN = 0;
+  COORDINATION_STATUS_PENDING = 1;
+  COORDINATION_STATUS_ACTIVE = 2;
+  COORDINATION_STATUS_COMPLETED = 3;
+  COORDINATION_STATUS_CANCELED = 4;
+  COORDINATION_STATUS_FAILED = 5;
+}
+
+// Reliable announcement inviting fleets to bid on a task.
+message BidNotice {
+  // Coordinator-generated task identity shared by the bidding lifecycle.
+  vmsgs.proto.common.UUID task_id = 1;
+  // Versioned task category understood by eligible fleet adapters.
+  string category = 2;
+  // Earliest permitted start as an absolute uint64 nanosecond timestamp.
+  uint64 earliest_start_stamp = 3;
+  // Task-specific, low-volume parameters with unique keys.
+  repeated vmsgs.proto.common.KeyValue parameters = 4;
+}
+
+// Reliable fleet proposal responding to one bid notice.
+message BidProposal {
+  // Task identity copied from the corresponding notice.
+  vmsgs.proto.common.UUID task_id = 1;
+  // Fleet offering to execute the task.
+  string fleet_name = 2;
+  // Non-negative cost comparable across proposals for this task.
+  double cost = 3;
+  // Estimated finish as an absolute uint64 nanosecond timestamp.
+  uint64 finish_stamp = 4;
+  // Proposal identity used by the award message.
+  vmsgs.proto.common.UUID proposal_id = 5;
+}
+
+// Reliable award selecting one proposal for execution.
+message BidAward {
+  // Awarded task identity.
+  vmsgs.proto.common.UUID task_id = 1;
+  // Selected proposal identity.
+  vmsgs.proto.common.UUID proposal_id = 2;
+  // Fleet expected to acknowledge and execute the award.
+  string fleet_name = 3;
+}
+
+// Reliable request dispatching an awarded task to a fleet.
+message DispatchRequest {
+  // Unique dispatch identity used for acknowledgement and status.
+  vmsgs.proto.common.UUID dispatch_id = 1;
+  // Awarded task identity.
+  vmsgs.proto.common.UUID task_id = 2;
+  // Target fleet name.
+  string fleet_name = 3;
+  // True requests cancellation of this dispatch instead of execution.
+  bool cancel = 4;
+}
+
+// Reliable acknowledgement of a dispatch request.
+message DispatchAck {
+  // Dispatch identity copied from the request.
+  vmsgs.proto.common.UUID dispatch_id = 1;
+  // True when the target accepted the request for processing.
+  bool accepted = 2;
+  // Human-readable acceptance or rejection detail.
+  string message = 3;
+}
+
+// Durable state update for an accepted dispatch.
+message DispatchStatus {
+  // Status observation timestamp in nanoseconds.
+  vmsgs.proto.common.Header header = 1;
+  // Dispatch identity whose lifecycle is reported.
+  vmsgs.proto.common.UUID dispatch_id = 2;
+  // Current lifecycle state, valid until superseded.
+  CoordinationStatus status = 3;
+  // Normalized completion fraction in the inclusive range [0, 1].
+  float progress = 4;
+  // Human-readable transition or failure detail.
+  string message = 5;
+}
+
+// Reliable request to cancel an active fleet path.
+message PathCancelRequest {
+  // Path request identity originally assigned by the coordinator.
+  vmsgs.proto.common.UUID request_id = 1;
+  // Operator or coordinator reason recorded for diagnostics.
+  string reason = 2;
+}
+
+// Reliable terminal outcome of a fleet path assignment.
+message PathResult {
+  // Path request identity whose execution ended.
+  vmsgs.proto.common.UUID request_id = 1;
+  // Terminal lifecycle state; completed, canceled, or failed is expected.
+  CoordinationStatus status = 2;
+  // Portable outcome and diagnostic detail.
+  vmsgs.proto.common.Status result = 3;
+}
+
+// One traffic-schedule participant controlled by a fleet adapter.
+message TrafficParticipant {
+  // Schedule-assigned participant identifier.
+  uint64 participant_id = 1;
+  // Stable participant name within owner.
+  string name = 2;
+  // Fleet, facility, or service responsible for this participant.
+  string owner = 3;
+  // Circular footprint radius in metres used for conflict checks.
+  float footprint_radius = 4;
+}
+
+// Time-parameterized route through one map level.
+message TrafficRoute {
+  // Stable route identity within one itinerary version.
+  uint64 route_id = 1;
+  // Building level or map containing every waypoint.
+  string map_name = 2;
+  // Ordered poses; each header stamp is an absolute uint64 nanosecond arrival time.
+  repeated vmsgs.proto.geometry.PoseStamped waypoints = 3;
+}
+
+// Versioned traffic schedule for one participant.
+message TrafficItinerary {
+  // Publication timestamp in nanoseconds.
+  vmsgs.proto.common.Header header = 1;
+  // Participant whose planned occupancy is described.
+  uint64 participant_id = 2;
+  // Monotonically increasing itinerary version for replacement ordering.
+  uint64 version = 3;
+  // Routes active in this itinerary; route IDs must be unique.
+  repeated TrafficRoute routes = 4;
+}
+
+// Negotiation proposal for resolving a traffic conflict.
+message TrafficNegotiation {
+  // Conflict or negotiation-table identity.
+  uint64 conflict_id = 1;
+  // Participant submitting this proposal.
+  uint64 participant_id = 2;
+  // Parent proposal version; zero denotes the negotiation root.
+  uint64 parent_version = 3;
+  // Proposed replacement itinerary.
+  TrafficItinerary itinerary = 4;
+  // True when the participant rejects this branch without a replacement.
+  bool rejected = 5;
+}
+
+// Named building level and its transform relative to the facility frame.
+message BuildingLevel {
+  // Stable level name referenced by routes and graph vertices.
+  string name = 1;
+  // Elevation above facility datum in metres.
+  double elevation = 2;
+  // Level origin expressed in the facility coordinate frame.
+  vmsgs.proto.geometry.Pose origin = 3;
+}
+
+// Directed navigation-graph vertex on one building level.
+message NavGraphVertex {
+  // Dense graph-local vertex index.
+  uint64 id = 1;
+  // Building level containing pose.
+  string level_name = 2;
+  // Vertex pose in the level coordinate frame.
+  vmsgs.proto.geometry.Pose pose = 3;
+  // Optional stable semantic name such as a waypoint or charger.
+  string name = 4;
+}
+
+// Directed connection between two navigation vertices.
+message NavGraphEdge {
+  // Source vertex identifier.
+  uint64 from_id = 1;
+  // Destination vertex identifier.
+  uint64 to_id = 2;
+  // Traversal cost in non-negative coordinator-defined units.
+  double cost = 3;
+}
+
+// Static facility navigation graph and building-level catalog.
+message BuildingNavGraph {
+  // Publication timestamp in nanoseconds and facility frame.
+  vmsgs.proto.common.Header header = 1;
+  // Stable facility or graph name.
+  string name = 2;
+  // Building levels with unique names.
+  repeated BuildingLevel levels = 3;
+  // Graph vertices with unique IDs.
+  repeated NavGraphVertex vertices = 4;
+  // Directed edges whose endpoints must reference vertices.
+  repeated NavGraphEdge edges = 5;
+}
+
+// Facility-wide emergency mode distributed reliably to all participants.
+message FacilityEmergency {
+  // Emergency transition timestamp in nanoseconds.
+  vmsgs.proto.common.Header header = 1;
+  // True activates emergency behavior; false clears it.
+  bool active = 2;
+  // Stable emergency category, for example fire or evacuation.
+  string category = 3;
+  // Human-readable operator instruction.
+  string message = 4;
+}
+
+// Reliable request for a dispenser or ingestor transaction.
+message WorkcellRequest {
+  // Unique transaction identity.
+  vmsgs.proto.common.UUID request_id = 1;
+  // Stable dispenser or ingestor device name.
+  string device_name = 2;
+  // Target fleet robot receiving or delivering the payload.
+  string robot_name = 3;
+  // Requested item identifiers; ordering may describe compartment order.
+  repeated string items = 4;
+}
+
+// Durable dispenser or ingestor transaction state.
+message WorkcellStatus {
+  // Observation timestamp in nanoseconds.
+  vmsgs.proto.common.Header header = 1;
+  // Transaction identity copied from the request.
+  vmsgs.proto.common.UUID request_id = 2;
+  // Current transaction lifecycle state.
+  CoordinationStatus status = 3;
+  // Human-readable progress or failure detail.
+  string message = 4;
+}
+
+// Reliable charger reservation request or release.
+message ChargerReservationRequest {
+  // Unique reservation transaction identity.
+  vmsgs.proto.common.UUID reservation_id = 1;
+  // Stable charger name.
+  string charger_name = 2;
+  // Robot for which the charger is reserved.
+  string robot_name = 3;
+  // Reservation start as an absolute uint64 nanosecond timestamp.
+  uint64 start_stamp = 4;
+  // Reservation end as an absolute uint64 nanosecond timestamp.
+  uint64 end_stamp = 5;
+  // True releases an existing reservation instead of creating one.
+  bool release = 6;
+}
+
+// Reliable outcome of a charger reservation transaction.
+message ChargerReservationResponse {
+  // Reservation identity copied from the request.
+  vmsgs.proto.common.UUID reservation_id = 1;
+  // True when the reservation or release was accepted.
+  bool accepted = 2;
+  // Portable rejection or success detail.
+  vmsgs.proto.common.Status status = 3;
+}

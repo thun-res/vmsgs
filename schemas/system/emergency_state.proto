@@ -4,6 +4,7 @@ package vmsgs.proto.system;
 
 import "common/header.proto";
 
+// Lifecycle state of emergency handling and the minimum-risk maneuver.
 enum EmergencyState {
   EMERGENCY_STATE_NORMAL = 0;
   EMERGENCY_STATE_OVERRIDE_REQUESTING = 1;
@@ -12,7 +13,11 @@ enum EmergencyState {
   EMERGENCY_STATE_MRM_FAILED = 4;
 }
 
+// Timestamped emergency-state snapshot, valid until superseded.
 message EmergencyStateStamped {
+  // Time at which this emergency state was observed.
   vmsgs.proto.common.Header header = 1;
+
+  // Current emergency-handling state.
   EmergencyState state = 2;
 }

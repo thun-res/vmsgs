@@ -11,13 +11,21 @@ enum VoxelEncoding : ubyte {
   RGB_UINT8       = 3,
 }
 
+/// Sparse or dense three-dimensional voxel occupancy representation.
 table VoxelGrid {
+  /// Grid generation timestamp in nanoseconds and world coordinate frame.
   header:vmsgs.fbs.common.Header (id: 0);
+  /// Pose of voxel (0, 0, 0) in header.frame_id.
   origin:vmsgs.fbs.geometry.Pose (id: 1);
+  /// Cubic voxel edge length in metres; must be positive.
   resolution:float (id: 2);
+  /// Voxel count along the local x axis.
   size_x:uint32 (id: 3);
+  /// Voxel count along the local y axis.
   size_y:uint32 (id: 4);
+  /// Voxel count along the local z axis.
   size_z:uint32 (id: 5);
+  /// Scalar or packed representation used by data.
   encoding:VoxelEncoding (id: 6);
   /// Bytes per voxel implied by encoding; data length = size_x * size_y * size_z * stride.
   data:[uint8] (id: 7);

@@ -1,0 +1,30 @@
+include "../common/header.fbs";
+include "../geometry/geometry.fbs";
+
+namespace vmsgs.fbs.sensor;
+
+/// Zero-copy inertial measurement matching the protobuf Imu field semantics.
+table Imu {
+  /// Measurement timestamp in nanoseconds and IMU coordinate frame.
+  header:vmsgs.fbs.common.Header (id: 0);
+
+  /// Estimated sensor orientation as an x-y-z-w quaternion.
+  orientation:vmsgs.fbs.geometry.Quaternion (id: 1);
+
+  /// Row-major 3x3 orientation covariance; exactly nine values when present.
+  orientation_covariance:[double] (id: 2);
+
+  /// Angular velocity in radians per second along IMU frame axes.
+  angular_velocity:vmsgs.fbs.geometry.Vector3 (id: 3);
+
+  /// Row-major 3x3 angular-velocity covariance; exactly nine values when present.
+  angular_velocity_covariance:[double] (id: 4);
+
+  /// Linear acceleration in metres per second squared along IMU frame axes.
+  linear_acceleration:vmsgs.fbs.geometry.Vector3 (id: 5);
+
+  /// Row-major 3x3 acceleration covariance; exactly nine values when present.
+  linear_acceleration_covariance:[double] (id: 6);
+}
+
+root_type Imu;

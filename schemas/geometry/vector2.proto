@@ -2,7 +2,10 @@ syntax = "proto3";
 
 package vmsgs.proto.geometry;
 
+// Two-dimensional Cartesian vector in the coordinate frame of its container.
 message Vector2 {
+  // Component along the containing frame x axis; units are context-defined.
   double x = 1;
+  // Component along the containing frame y axis; units match x.
   double y = 2;
 }

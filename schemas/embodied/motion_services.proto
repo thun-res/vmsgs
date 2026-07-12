@@ -1,0 +1,118 @@
+syntax = "proto3";
+
+package vmsgs.proto.embodied;
+
+import "common/header.proto";
+import "common/status.proto";
+import "common/uuid.proto";
+import "embodied/motion_plan.proto";
+import "embodied/planning_scene.proto";
+import "embodied/robot_state.proto";
+import "geometry/pose.proto";
+
+// Request for a collision-aware Cartesian end-effector path through waypoints.
+message CartesianPathRequest {
+  // Request timestamp and coordinate frame used by waypoints.
+  vmsgs.proto.common.Header header = 1;
+  // Planning group containing the controlled end-effector link.
+  string group_name = 2;
+  // Robot-model link whose pose must follow the Cartesian waypoints.
+  string link_name = 3;
+  // Robot state from which path interpolation begins.
+  RobotState start_state = 4;
+  // End-effector poses in traversal order, expressed in header.frame_id.
+  repeated vmsgs.proto.geometry.Pose waypoints = 5;
+  // Maximum Cartesian translation between interpolation samples, in metres.
+  double max_step = 6;
+  // Maximum permitted normalized joint-space jump; zero disables jump checking.
+  double jump_threshold = 7;
+  // True to reject interpolated states that collide with the planning scene.
+  bool avoid_collisions = 8;
+  // Constraints that every interpolated state must satisfy.
+  MotionConstraints path_constraints = 9;
+  // Client-generated identifier copied into the response.
+  vmsgs.proto.common.UUID request_id = 10;
+}
+
+// Result of Cartesian path interpolation and optional collision checking.
+message CartesianPathResponse {
+  // Response timestamp and trajectory coordinate frame.
+  vmsgs.proto.common.Header header = 1;
+  // Fraction of requested waypoint path completed, in the range [0, 1].
+  double fraction = 2;
+  // Collision-free trajectory for the successfully interpolated path prefix.
+  RobotTrajectory trajectory = 3;
+  // State used as the first trajectory state after request normalization.
+  RobotState start_state = 4;
+  // Portable interpolation status and diagnostic detail.
+  vmsgs.proto.common.Status status = 5;
+  // Identifier copied from the corresponding request.
+  vmsgs.proto.common.UUID request_id = 7;
+}
+
+// Selects portions of a planning scene returned by a query.
+message PlanningSceneComponents {
+  // Bit mask selecting scene components; bit assignments are defined below.
+  uint64 components = 1;
+
+  // Component bit values that may be combined in `components`.
+  enum Component {
+    COMPONENT_NONE = 0;
+    COMPONENT_SCENE_SETTINGS = 1;
+    COMPONENT_ROBOT_STATE = 2;
+    COMPONENT_ATTACHED_OBJECTS = 4;
+    COMPONENT_WORLD_OBJECTS = 8;
+    COMPONENT_ALLOWED_COLLISIONS = 16;
+    COMPONENT_ALL = 31;
+  }
+}
+
+// Query for a consistent snapshot of selected planning-scene components.
+message GetPlanningSceneRequest {
+  // Requested scene components; zero requests the implementation default set.
+  PlanningSceneComponents components = 1;
+  // Client-generated identifier copied into the response.
+  vmsgs.proto.common.UUID request_id = 2;
+}
+
+// Planning-scene snapshot returned for a component query.
+message GetPlanningSceneResponse {
+  // Selected scene data; omitted components retain protobuf defaults.
+  PlanningScene scene = 1;
+  // Portable query status and diagnostic detail.
+  vmsgs.proto.common.Status status = 2;
+  // Identifier copied from the corresponding request.
+  vmsgs.proto.common.UUID request_id = 4;
+}
+
+// One motion-planning request and the blend radius leading into the next item.
+message MotionSequenceItem {
+  // Complete planning request for this sequence segment.
+  MotionPlanRequest request = 1;
+  // Cartesian blend radius in metres; zero requires an exact segment boundary.
+  double blend_radius = 2;
+}
+
+// Ordered motion requests planned as one continuous sequence.
+message MotionSequenceRequest {
+  // Sequence request timestamp and common planning frame.
+  vmsgs.proto.common.Header header = 1;
+  // Segments in execution order; adjacent nonzero blend radii must not overlap.
+  repeated MotionSequenceItem items = 2;
+  // Client-generated identifier copied into the response.
+  vmsgs.proto.common.UUID request_id = 3;
+}
+
+// Planned trajectories corresponding one-to-one with sequence request items.
+message MotionSequenceResponse {
+  // Response timestamp and trajectory coordinate frame.
+  vmsgs.proto.common.Header header = 1;
+  // Planned segment trajectories in the same order as request.items.
+  repeated RobotTrajectory trajectories = 2;
+  // Portable sequence-planning status and diagnostic detail.
+  vmsgs.proto.common.Status status = 3;
+  // Total wall-clock planning duration in seconds.
+  double planning_time = 5;
+  // Identifier copied from the corresponding request.
+  vmsgs.proto.common.UUID request_id = 6;
+}

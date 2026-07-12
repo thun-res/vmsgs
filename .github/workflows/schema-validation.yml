@@ -1,0 +1,86 @@
+name: Schema Validation
+
+# Standalone schema compilation checks. Only protoc and flatc are required —
+# this workflow does NOT depend on vlink, CMake, or the C++ build, so it stays
+# green even when the downstream integration changes.
+
+on:
+  push:
+    branches: [master, main]
+    paths:
+      - "schemas/**"
+      - ".github/workflows/schema-validation.yml"
+  pull_request:
+    paths:
+      - "schemas/**"
+      - ".github/workflows/schema-validation.yml"
+  workflow_dispatch: {}
+
+jobs:
+  validate:
+    name: Compile Protobuf & FlatBuffers schemas
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install protoc and flatc
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            protobuf-compiler flatbuffers-compiler
+          echo "protoc: $(protoc --version)"    # >= 3.15 required (proto3 optional)
+          echo "flatc:  $(flatc --version)"
+
+      - name: Validate Protobuf schemas
+        run: |
+          mapfile -t PROTOS < <(find schemas -name '*.proto' | sort)
+          echo "Found ${#PROTOS[@]} .proto files"
+          [ "${#PROTOS[@]}" -gt 0 ] || { echo "::error::no .proto files found"; exit 1; }
+          mkdir -p build/schema-check
+          # Compiling to a descriptor set validates syntax, imports, package
+          # names, field-number uniqueness and type references in one pass,
+          # without needing any language back-end.
+          protoc --proto_path=schemas \
+                 --include_imports \
+                 --descriptor_set_out=build/schema-check/schemas.desc \
+                 "${PROTOS[@]}"
+          echo "✓ All ${#PROTOS[@]} Protobuf schemas compiled"
+
+      - name: Validate FlatBuffers schemas
+        run: |
+          mapfile -t FBS < <(find schemas -name '*.fbs' | sort)
+          echo "Found ${#FBS[@]} .fbs files"
+          [ "${#FBS[@]}" -gt 0 ] || { echo "::error::no .fbs files found"; exit 1; }
+          mkdir -p build/schema-check/fbs
+          fail=0
+          for f in "${FBS[@]}"; do
+            if ! flatc --cpp -o build/schema-check/fbs -I schemas "$f"; then
+              echo "::error file=$f::flatc failed to compile $f"
+              fail=1
+            fi
+          done
+          [ "$fail" -eq 0 ] && echo "✓ All ${#FBS[@]} FlatBuffers schemas compiled"
+          exit "$fail"
+
+      - name: Check package / namespace matches directory
+        run: |
+          bad=0
+          while IFS= read -r f; do
+            dir=$(basename "$(dirname "$f")")
+            pkg=$(grep -m1 -oE 'package[[:space:]]+[A-Za-z0-9_.]+' "$f" | awk '{print $2}')
+            if [ "$pkg" != "vmsgs.proto.$dir" ]; then
+              echo "::error file=$f::package '$pkg' should be 'vmsgs.proto.$dir'"
+              bad=1
+            fi
+          done < <(find schemas -name '*.proto')
+          while IFS= read -r f; do
+            dir=$(basename "$(dirname "$f")")
+            ns=$(grep -m1 -oE 'namespace[[:space:]]+[A-Za-z0-9_.]+' "$f" | awk '{print $2}' | tr -d ';')
+            if [ "$ns" != "vmsgs.fbs.$dir" ]; then
+              echo "::error file=$f::namespace '$ns' should be 'vmsgs.fbs.$dir'"
+              bad=1
+            fi
+          done < <(find schemas -name '*.fbs')
+          [ "$bad" -eq 0 ] && echo "✓ All package / namespace declarations match their directory"
+          exit "$bad"

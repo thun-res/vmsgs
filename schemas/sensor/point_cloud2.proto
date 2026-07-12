@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+package vmsgs.proto.sensor;
+
+import "common/header.proto";
+
+// Describes one named channel within each binary point record.
+message PointField {
+  // Scalar storage type used by this channel.
+  enum Datatype {
+    // Storage type is unspecified and the field cannot be decoded safely.
+    UNKNOWN = 0;
+    INT8 = 1;
+    UINT8 = 2;
+    INT16 = 3;
+    UINT16 = 4;
+    INT32 = 5;
+    UINT32 = 6;
+    FLOAT32 = 7;
+    FLOAT64 = 8;
+    INT64 = 9;
+    UINT64 = 10;
+  }
+
+  // Semantic channel name, such as "x", "intensity", or "ring".
+  string name = 1;
+
+  // Byte offset from the beginning of one point record.
+  uint32 offset = 2;
+
+  // Scalar representation at offset.
+  Datatype datatype = 3;
+
+  // Number of adjacent scalars in this channel; normally one.
+  uint32 count = 4;
+}
+
+// Organized or unorganized point cloud stored as interleaved binary records.
+// This representation preserves arbitrary sensor-specific channels while
+// keeping the payload contiguous for efficient transport and recording.
+message PointCloud2 {
+  // Acquisition timestamp in nanoseconds and frame containing point geometry.
+  vmsgs.proto.common.Header header = 1;
+
+  // Number of point rows; one denotes an unorganized cloud.
+  uint32 height = 2;
+
+  // Points per row; total point capacity is height * width.
+  uint32 width = 3;
+
+  // Ordered binary channel descriptors; ranges must fit within point_step.
+  repeated PointField fields = 4;
+
+  // True when multibyte scalar values use big-endian byte order.
+  bool is_bigendian = 5;
+
+  // Size of one complete point record, in bytes.
+  uint32 point_step = 6;
+
+  // Size of one row including padding, in bytes; at least width * point_step.
+  uint32 row_step = 7;
+
+  // Row-major point bytes; size must be at least height * row_step.
+  bytes data = 8;
+
+  // True only when every point is finite and valid.
+  bool is_dense = 9;
+}

@@ -1,0 +1,30 @@
+include "../common/header.fbs";
+include "../geometry/geometry.fbs";
+
+namespace vmsgs.fbs.localization;
+
+/// Zero-copy robot pose and twist estimate matching protobuf Odometry semantics.
+table Odometry {
+  /// Measurement timestamp in nanoseconds and pose coordinate frame.
+  header:vmsgs.fbs.common.Header (id: 0);
+
+  /// Coordinate frame in which the twist is expressed.
+  child_frame_id:string (id: 1);
+
+  /// Estimated child-frame pose in header.frame_id.
+  pose:vmsgs.fbs.geometry.Pose (id: 2);
+
+  /// Row-major 6x6 pose covariance; exactly 36 values when present.
+  pose_covariance:[double] (id: 3);
+
+  /// Linear velocity in metres per second.
+  linear_velocity:vmsgs.fbs.geometry.Vector3 (id: 4);
+
+  /// Angular velocity in radians per second.
+  angular_velocity:vmsgs.fbs.geometry.Vector3 (id: 5);
+
+  /// Row-major 6x6 twist covariance; exactly 36 values when present.
+  twist_covariance:[double] (id: 6);
+}
+
+root_type Odometry;

@@ -1,0 +1,35 @@
+include "../common/header.fbs";
+
+namespace vmsgs.fbs.embodied;
+
+/// Controller interface or combination of interfaces used by a joint command.
+enum JointCommandMode : ubyte {
+  UNKNOWN = 0,
+  POSITION = 1,
+  VELOCITY = 2,
+  EFFORT = 3,
+  HYBRID = 4,
+}
+
+/// Zero-copy joint command matching the protobuf JointCommand semantics.
+table JointCommand {
+  /// Command timestamp in nanoseconds and robot reference frame.
+  header:vmsgs.fbs.common.Header (id: 0);
+
+  /// Ordered joint names shared by all populated command vectors.
+  joint_names:[string] (id: 1);
+
+  /// Position targets in radians or metres; length equals joint_names when used.
+  positions:[double] (id: 2);
+
+  /// Velocity targets in joint position units per second.
+  velocities:[double] (id: 3);
+
+  /// Effort targets in newton-metres or newtons according to joint type.
+  effort:[double] (id: 4);
+
+  /// Active command interface mode.
+  mode:JointCommandMode (id: 5);
+}
+
+root_type JointCommand;

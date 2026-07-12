@@ -4,12 +4,12 @@ namespace vmsgs.fbs.sensor;
 
 /// Encoded audio chunk (Opus, AAC, MP3).
 table CompressedAudio {
-  header:vmsgs.fbs.common.Header (id: 0);
+  header:vmsgs.fbs.common.Header (id: 0);  // Capture time in nanoseconds and audio source frame.
   /// "opus", "aac", "mp3", "flac".
   format:string (id: 1);
-  sample_rate:uint32 (id: 2);
-  channels:uint32 (id: 3);
-  data:[uint8] (id: 4);
+  sample_rate:uint32 (id: 2);  // Samples per second for each decoded channel, in hertz.
+  channels:uint32 (id: 3);  // Number of interleaved decoded audio channels.
+  data:[uint8] (id: 4);  // Complete codec packet or access-unit bytes.
 }
 
 root_type CompressedAudio;

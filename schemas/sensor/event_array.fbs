@@ -6,10 +6,10 @@ namespace vmsgs.fbs.sensor;
 struct Event {
   /// Pixel coordinates.
   x:uint16;
-  y:uint16;
+  y:uint16;  // Zero-based pixel row from the image upper edge.
   /// Polarity: 0 = OFF (dimming), 1 = ON (brightening).
   polarity:ubyte;
-  /// Padding to 8 bytes.
+  /// Reserved padding byte kept after polarity for alignment and future use.
   reserved:ubyte;
   /// Timestamp delta (ns) relative to header.stamp.
   delta_ns:uint32;
@@ -17,10 +17,10 @@ struct Event {
 
 /// Burst of event-camera events.
 table EventArray {
-  header:vmsgs.fbs.common.Header (id: 0);
-  height:uint32 (id: 1);
-  width:uint32  (id: 2);
-  events:[Event] (id: 3);
+  header:vmsgs.fbs.common.Header (id: 0);  // Batch time in nanoseconds and optical frame.
+  height:uint32 (id: 1);  // Event-sensor pixel rows.
+  width:uint32 (id: 2);  // Event-sensor pixel columns.
+  events:[Event] (id: 3);  // Events ordered by nondecreasing timestamp offset.
 }
 
 root_type EventArray;

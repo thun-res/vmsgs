@@ -1,12 +1,12 @@
 # VMsgs
 
-![](https://img.shields.io/badge/version-v1.0.0-informational.svg) ![](https://img.shields.io/badge/language-C++17-informational.svg) ![](https://img.shields.io/badge/license-MIT-informational.svg)
+![](https://img.shields.io/badge/version-v2.0.0-informational.svg) ![](https://img.shields.io/badge/language-C++17-informational.svg) ![](https://img.shields.io/badge/license-MIT-informational.svg)
 
 English | [中文](README.md)
 
 **VMsgs** is the standard message-definition repository that accompanies the [VLink](https://github.com/thun-res/vlink) communication middleware. Targeting autonomous driving and embodied intelligence, it provides a set of type-safe message models spanning perception, planning, localization, control, map, vehicle, system, V2X and more — together with the standard topic (Topic / URL) conventions that go with them — so that upstream and downstream modules communicate through a single shared contract instead of each redefining its own data structures.
 
-The current release ships **13 domains** and **174 schema files** (151 Protobuf, 23 FlatBuffers), built as the C++ library `vlink::vmsgs` that business projects can link directly.
+The current release ships **16 domains** and **237 schema files** (178 Protobuf, 59 FlatBuffers), built as the C++ library `vlink::vmsgs` that business projects can link directly.
 
 ---
 
@@ -32,7 +32,7 @@ Schemas live under `schemas/`, organized by domain, in the namespaces `vmsgs.pro
 | tf2 | `schemas/tf2/` | TF transform messages and error codes |
 | sensor | `schemas/sensor/` | Image / point cloud / IMU / GNSS / radar / lidar / audio-video raw data |
 | perception | `schemas/perception/` | Detected/tracked/predicted objects, traffic lights, lanes, free space, occupancy grid |
-| localization | `schemas/localization/` | Odometry, kinematic state, EKF state, initialization and quality |
+| localization | `schemas/localization/` | Odometry, kinematic state, initialization, quality, scan matching and relocalization |
 | map | `schemas/map/` | Lanelet map, point-cloud map, elevation map, occupancy-grid map and metadata |
 | planning | `schemas/planning/` | Route, path, trajectory, behavior state, mission, avoidance, velocity limits, etc. |
 | control | `schemas/control/` | Ackermann command, lateral/longitudinal control, control horizon, operation mode |
@@ -40,6 +40,9 @@ Schemas live under `schemas/`, organized by domain, in the namespaces `vmsgs.pro
 | system | `schemas/system/` | Diagnostics, heartbeat, MRM, emergency state, resource usage, logs |
 | v2x | `schemas/v2x/` | V2X messages, cooperative status, virtual traffic light, infrastructure command |
 | embodied | `schemas/embodied/` | Joint trajectory, manipulator/end-effector, skill, VLA action, tactile, RGBD/observation frame |
+| navigation | `schemas/navigation/` | Geometric paths, navigation goals, and sparse grid cells |
+| shape | `schemas/shape/` | Collision bodies, triangle meshes, planes, and solid primitives |
+| visualization | `schemas/visualization/` | Markers and batched visualization primitives |
 
 **Choosing a Serialization Format:**
 
@@ -113,7 +116,7 @@ VMsgs implements `vlink::SchemaPluginBase` in `src/schema_plugin_impl.cc`, regis
 
 ```
 vmsgs/
-├── schemas/          message definitions for 13 domains (.proto / .fbs)
+├── schemas/          message definitions for 16 domains (.proto / .fbs)
 │   ├── common/       base types (Header, time, UUID, status…)
 │   ├── geometry/     geometric primitives
 │   ├── sensor/       raw sensor data
@@ -126,6 +129,9 @@ vmsgs/
 │   ├── system/       system / diagnostics / MRM
 │   ├── v2x/          vehicle-to-everything
 │   ├── embodied/     embodied intelligence
+│   ├── navigation/   navigation paths and goals
+│   ├── shape/        shared shape and collision geometry
+│   ├── visualization/ visualization primitives
 │   └── tf2/          coordinate transforms
 ├── include/
 │   ├── macros.h      topic-URL accessor macros

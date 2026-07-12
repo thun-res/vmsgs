@@ -2,8 +2,13 @@ syntax = "proto3";
 
 package vmsgs.proto.common;
 
-// Free-form name/value pair. Used by DiagnosticStatus and metadata containers.
+// Free-form textual attribute used by diagnostics, metrics, and metadata.
+// Keys should be stable within an API; values are intentionally untyped for
+// interoperability and must not carry secrets in externally visible streams.
 message KeyValue {
+  // Attribute name; non-empty and unique within its containing collection.
   string key = 1;
+
+  // UTF-8 textual representation of the attribute value.
   string value = 2;
 }

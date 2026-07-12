@@ -6,5 +6,7 @@ import "geometry/transform.proto";
 
 // Set of transforms broadcast on the tf / tf_static topic.
 message TFMessage {
+  // Transforms in one broadcast batch; each nested header carries a direct
+  // nanosecond timestamp and parent frame, and child frame IDs should be unique.
   repeated vmsgs.proto.geometry.TransformStamped transforms = 1;
 }

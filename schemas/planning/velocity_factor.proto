@@ -6,8 +6,8 @@ import "common/header.proto";
 import "geometry/pose.proto";
 
 // Driver-facing reason the ego is slowing/stopping.
-// Mirrors autoware_adapi_v1_msgs/VelocityFactor.
 message VelocityFactor {
+  // Semantic behavior that caused the longitudinal speed intervention.
   enum Behavior {
     VELOCITY_BEHAVIOR_UNKNOWN = 0;
     VELOCITY_BEHAVIOR_NONE = 1;
@@ -30,28 +30,38 @@ message VelocityFactor {
     VELOCITY_BEHAVIOR_GOAL_REACHED = 18;
     VELOCITY_BEHAVIOR_EMERGENCY_STOP_OPERATION = 19;
   }
+  // Current progress of the ego vehicle relative to the intervention point.
   enum Status {
     VELOCITY_STATUS_UNKNOWN = 0;
     VELOCITY_STATUS_APPROACHING = 1;
     VELOCITY_STATUS_STOPPED = 2;
   }
 
+  // Pose expressed in the coordinate frame identified by the enclosing header.
   vmsgs.proto.geometry.Pose pose = 1;
+  // Distance from the ego vehicle to the intervention point, in metres.
   float distance = 2;
+  // Status encoded using the referenced `Status` contract.
   Status status = 3;
+  // Behavior encoded using the referenced `Behavior` contract.
   Behavior behavior = 4;
+  // Stable sequence text interpreted by the enclosing public contract.
   string sequence = 5;
+  // Optional human-readable detail for diagnostics and operator displays.
   string detail = 6;
 }
 
+// Timestamped longitudinal intervention factors for driver-facing reporting.
 message VelocityFactorArray {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // Longitudinal intervention factors reported for this planning cycle.
   repeated VelocityFactor factors = 2;
 }
 
 // Driver-facing steering decision (lane change, avoidance).
-// Mirrors autoware_adapi_v1_msgs/SteeringFactor.
 message SteeringFactor {
+  // Semantic behavior that caused the lateral maneuver.
   enum Behavior {
     STEERING_BEHAVIOR_UNKNOWN = 0;
     STEERING_BEHAVIOR_NONE = 1;
@@ -63,12 +73,14 @@ message SteeringFactor {
     STEERING_BEHAVIOR_PULL_OUT = 7;
     STEERING_BEHAVIOR_PULL_OVER = 8;
   }
+  // Lateral direction of the reported steering maneuver.
   enum Direction {
     STEERING_DIRECTION_UNKNOWN = 0;
     STEERING_DIRECTION_LEFT = 1;
     STEERING_DIRECTION_RIGHT = 2;
     STEERING_DIRECTION_STRAIGHT = 3;
   }
+  // Current progress of the ego vehicle through the steering maneuver.
   enum Status {
     STEERING_STATUS_UNKNOWN = 0;
     STEERING_STATUS_APPROACHING = 1;
@@ -77,15 +89,24 @@ message SteeringFactor {
 
   // Two poses define the start and end of the maneuver.
   repeated vmsgs.proto.geometry.Pose pose = 1;
+  // Distances (m) to the maneuver start and end, aligned one-to-one with pose.
   repeated float distance = 2 [packed = true];
+  // Behavior encoded using the referenced `Behavior` contract.
   Behavior behavior = 3;
+  // Direction encoded using the referenced `Direction` contract.
   Direction direction = 4;
+  // Status encoded using the referenced `Status` contract.
   Status status = 5;
+  // Stable sequence text interpreted by the enclosing public contract.
   string sequence = 6;
+  // Optional human-readable detail for diagnostics and operator displays.
   string detail = 7;
 }
 
+// Timestamped lateral maneuver factors for driver-facing reporting.
 message SteeringFactorArray {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // Lateral maneuver factors reported for this planning cycle.
   repeated SteeringFactor factors = 2;
 }

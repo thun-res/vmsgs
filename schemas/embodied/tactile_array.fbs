@@ -2,26 +2,34 @@ include "../common/header.fbs";
 
 namespace vmsgs.fbs.embodied;
 
+/// Scalar representation used by each tactile sample in the payload.
 enum TactileEncoding : ubyte {
+  /// Encoding was not specified or is not recognized.
+  UNKNOWN = 0,
   /// Single-channel pressure (Pa), float32.
-  PRESSURE_F32 = 0,
+  PRESSURE_F32 = 1,
   /// Three-axis force per taxel (Fx, Fy, Fz N), float32.
-  FORCE_3F32 = 1,
+  FORCE_3F32 = 2,
   /// 6-DoF wrench per taxel (Fx, Fy, Fz, Mx, My, Mz), float32.
-  WRENCH_6F32 = 2,
+  WRENCH_6F32 = 3,
   /// Generic 16-bit raw ADC counts.
-  RAW_U16 = 3,
+  RAW_U16 = 4,
 }
 
 /// Dense tactile-skin readout. Layout: row-major rows*cols taxels, stride bytes
 /// per taxel implied by encoding.
 table TactileArray {
+  /// Timestamp, sequence number, and coordinate frame shared by this payload.
   header:vmsgs.fbs.common.Header (id: 0);
   /// Logical sensor identifier (e.g. "right_palm").
   sensor_id:string (id: 1);
+  /// Number of tactile taxel rows in the row-major sample matrix.
   rows:uint32 (id: 2);
+  /// Number of tactile taxel columns; sample count must equal rows multiplied by cols.
   cols:uint32 (id: 3);
+  /// Scalar layout and bytes per taxel used to decode data.
   encoding:TactileEncoding (id: 4);
+  /// Row-major taxel bytes; length equals rows*cols*bytes_per_taxel(encoding).
   data:[uint8] (id: 5);
 }
 

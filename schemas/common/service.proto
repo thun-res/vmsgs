@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package vmsgs.proto.common;
+
+import "common/status.proto";
+
+// Explicit empty request or response for trigger-style RPC contracts.
+message Empty {}
+
+// Result of a trigger operation.
+message TriggerResponse {
+  // Canonical operation outcome and optional diagnostic context.
+  Status status = 1;
+}
+
+// Request to enable or disable a binary capability.
+message SetBoolRequest {
+  // Desired capability state.
+  bool value = 1;
+}
+
+// Result of a binary capability request.
+message SetBoolResponse {
+  // Canonical operation outcome and optional diagnostic context.
+  Status status = 1;
+}

@@ -1,0 +1,21 @@
+syntax = "proto3";
+package vmsgs.proto.sensor;
+
+// Axis-aligned image region measured in pixels from the image's upper-left
+// corner. An all-zero region means that the complete image is valid.
+message RegionOfInterest {
+  // Horizontal offset of the left edge, in pixels.
+  uint32 x_offset = 1;
+
+  // Vertical offset of the top edge, in pixels.
+  uint32 y_offset = 2;
+
+  // Region height in pixels.
+  uint32 height = 3;
+
+  // Region width in pixels.
+  uint32 width = 4;
+
+  // Whether a camera pipeline should rectify this region before use.
+  bool do_rectify = 5;
+}

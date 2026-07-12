@@ -1,0 +1,70 @@
+syntax = "proto3";
+
+package vmsgs.proto.localization;
+
+import "common/header.proto";
+import "common/duration.proto";
+import "common/status.proto";
+import "common/uuid.proto";
+import "geometry/pose.proto";
+import "localization/initial_pose.proto";
+
+// Reliable request to recover localization against an existing map.
+message RelocalizationRequest {
+  // Request publication time in nanoseconds and target global map frame.
+  vmsgs.proto.common.Header header = 1;
+
+  // Client-generated identifier copied into progress and result messages.
+  vmsgs.proto.common.UUID request_id = 2;
+
+  // Optional initial search pose and uncertainty; omitted means global search.
+  InitialPose initial_guess = 3;
+
+  // Stable map or localization session to search.
+  string map_id = 4;
+
+  // Maximum search duration; unset selects the server default.
+  vmsgs.proto.common.Duration timeout = 5;
+
+  // Preferred algorithm or sensor source; empty lets the server choose.
+  string method = 6;
+}
+
+// Periodic progress from an active relocalization request.
+message RelocalizationProgress {
+  // Progress timestamp in nanoseconds and target global map frame.
+  vmsgs.proto.common.Header header = 1;
+
+  // Identifier of the request producing this update.
+  vmsgs.proto.common.UUID request_id = 2;
+
+  // Search completion fraction in the inclusive range [0, 1].
+  float progress = 3;
+
+  // Best pose candidate and row-major 6x6 uncertainty found so far.
+  vmsgs.proto.geometry.PoseWithCovariance candidate_pose = 4;
+
+  // Normalized candidate matching confidence in [0, 1].
+  float confidence = 5;
+}
+
+// Reliable terminal outcome of a relocalization request.
+message RelocalizationResult {
+  // Result publication time in nanoseconds and global map frame.
+  vmsgs.proto.common.Header header = 1;
+
+  // Identifier copied from the corresponding request.
+  vmsgs.proto.common.UUID request_id = 2;
+
+  // Portable success or failure status and diagnostic detail.
+  vmsgs.proto.common.Status status = 3;
+
+  // Recovered body pose and row-major 6x6 uncertainty in header.frame_id.
+  vmsgs.proto.geometry.PoseWithCovariance pose = 4;
+
+  // Final normalized matching confidence in the inclusive range [0, 1].
+  float confidence = 5;
+
+  // Map or session against which localization was recovered.
+  string map_id = 6;
+}

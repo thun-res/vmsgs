@@ -5,6 +5,7 @@ package vmsgs.proto.system;
 import "common/header.proto";
 import "common/key_value.proto";
 
+// Severity of a diagnostic condition, ordered from healthy to unavailable.
 enum DiagnosticLevel {
   DIAG_OK = 0;
   DIAG_WARN = 1;
@@ -12,16 +13,29 @@ enum DiagnosticLevel {
   DIAG_STALE = 3;
 }
 
+// Health report for one hardware or software component.
 message DiagnosticStatus {
+  // Highest active severity represented by this report.
   DiagnosticLevel level = 1;
+
+  // Stable hierarchical component or check name.
   string name = 2;
+
+  // Human-readable summary of the current condition.
   string message = 3;
+
   // Hardware id producing the report.
   string hardware_id = 4;
+
+  // Optional structured attributes; keys should be unique within this report.
   repeated vmsgs.proto.common.KeyValue values = 5;
 }
 
+// Batch of component diagnostics sampled in one reporting cycle.
 message DiagnosticArray {
+  // Sampling and publication metadata for the batch.
   vmsgs.proto.common.Header header = 1;
+
+  // Component reports; names should be unique within the array.
   repeated DiagnosticStatus status = 2;
 }

@@ -1,0 +1,114 @@
+syntax = "proto3";
+
+package vmsgs.proto.common;
+
+// Describes one named dimension of a dense row-major multidimensional array.
+message MultiArrayDimension {
+  // Human-readable axis name, for example "height", "width", or "channel".
+  string label = 1;
+
+  // Number of elements along this dimension.
+  uint64 size = 2;
+
+  // Number of scalar elements to advance to increment this dimension once.
+  uint64 stride = 3;
+}
+
+// Layout shared by all scalar array payloads below.
+message MultiArrayLayout {
+  // Dimensions ordered from outermost to innermost.
+  repeated MultiArrayDimension dim = 1;
+
+  // Scalar-element offset from the start of data to the first logical element.
+  uint64 data_offset = 2;
+}
+
+// Signed 8-bit dense array; bytes use two's-complement bit representation.
+message Int8MultiArray {
+  // Shape, strides, and logical data offset.
+  MultiArrayLayout layout = 1;
+
+  // Packed signed 8-bit scalar storage.
+  bytes data = 2;
+}
+
+// Unsigned 8-bit dense array.
+message UInt8MultiArray {
+  // Shape, strides, and logical data offset.
+  MultiArrayLayout layout = 1;
+
+  // Packed unsigned 8-bit scalar storage.
+  bytes data = 2;
+}
+
+// Signed 16-bit dense array encoded as packed protobuf integers.
+message Int16MultiArray {
+  // Shape, strides, and logical data offset.
+  MultiArrayLayout layout = 1;
+
+  // Values must remain within the signed 16-bit range.
+  repeated sint32 data = 2 [packed = true];
+}
+
+// Unsigned 16-bit dense array encoded as packed protobuf integers.
+message UInt16MultiArray {
+  // Shape, strides, and logical data offset.
+  MultiArrayLayout layout = 1;
+
+  // Values must remain within the unsigned 16-bit range.
+  repeated uint32 data = 2 [packed = true];
+}
+
+// Signed 32-bit dense array.
+message Int32MultiArray {
+  // Shape, strides, and logical data offset.
+  MultiArrayLayout layout = 1;
+
+  // Packed scalar values in row-major storage order.
+  repeated sint32 data = 2 [packed = true];
+}
+
+// Unsigned 32-bit dense array.
+message UInt32MultiArray {
+  // Shape, strides, and logical data offset.
+  MultiArrayLayout layout = 1;
+
+  // Packed scalar values in row-major storage order.
+  repeated uint32 data = 2 [packed = true];
+}
+
+// Signed 64-bit dense array.
+message Int64MultiArray {
+  // Shape, strides, and logical data offset.
+  MultiArrayLayout layout = 1;
+
+  // Packed scalar values in row-major storage order.
+  repeated sint64 data = 2 [packed = true];
+}
+
+// Unsigned 64-bit dense array.
+message UInt64MultiArray {
+  // Shape, strides, and logical data offset.
+  MultiArrayLayout layout = 1;
+
+  // Packed scalar values in row-major storage order.
+  repeated uint64 data = 2 [packed = true];
+}
+
+// IEEE-754 single-precision dense array.
+message Float32MultiArray {
+  // Shape, strides, and logical data offset.
+  MultiArrayLayout layout = 1;
+
+  // Packed scalar values in row-major storage order.
+  repeated float data = 2 [packed = true];
+}
+
+// IEEE-754 double-precision dense array.
+message Float64MultiArray {
+  // Shape, strides, and logical data offset.
+  MultiArrayLayout layout = 1;
+
+  // Packed scalar values in row-major storage order.
+  repeated double data = 2 [packed = true];
+}

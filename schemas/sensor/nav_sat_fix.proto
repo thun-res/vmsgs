@@ -4,28 +4,32 @@ package vmsgs.proto.sensor;
 
 import "common/header.proto";
 
+// Receiver fix quality and satellite constellations used by a GNSS solution.
 message NavSatStatus {
+  // Quality class of the reported navigation solution.
   enum Status {
     STATUS_NO_FIX = 0;
     STATUS_FIX = 1;
     STATUS_SBAS_FIX = 2;
     STATUS_GBAS_FIX = 3;
   }
+  // Bit values identifying satellite constellations contributing to the fix.
   enum Service {
     SERVICE_UNKNOWN = 0;
     SERVICE_GPS = 1;
     SERVICE_GLONASS = 2;
-    SERVICE_COMPASS = 4;
+    // BeiDou (historically named COMPASS in ROS); ROS-compatible bit position.
+    SERVICE_BEIDOU = 4;
     SERVICE_GALILEO = 8;
-    SERVICE_BEIDOU = 16;
   }
-  Status status = 1;
+  Status status = 1;  // Quality class of the current navigation solution.
   // Bitmask over Service values.
   uint32 service = 2;
 }
 
 // Geodetic fix from a GNSS receiver.
 message NavSatFix {
+  // Interpretation and provenance of the position covariance matrix.
   enum CovarianceType {
     COVARIANCE_TYPE_UNKNOWN = 0;
     COVARIANCE_TYPE_APPROXIMATED = 1;
@@ -33,8 +37,8 @@ message NavSatFix {
     COVARIANCE_TYPE_KNOWN = 3;
   }
 
-  vmsgs.proto.common.Header header = 1;
-  NavSatStatus status = 2;
+  vmsgs.proto.common.Header header = 1;  // Fix time and receiver antenna frame.
+  NavSatStatus status = 2;               // Fix quality and contributing constellations.
 
   double latitude = 3;   // degrees
   double longitude = 4;  // degrees
@@ -42,5 +46,5 @@ message NavSatFix {
 
   // 3x3 row-major covariance over (east, north, up) in m^2.
   repeated double position_covariance = 6 [packed = true];
-  CovarianceType position_covariance_type = 7;
+  CovarianceType position_covariance_type = 7;  // Provenance of covariance values.
 }

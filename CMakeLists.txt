@@ -1,6 +1,5 @@
 #
-# Copyright (c) 2026 VMsgs Contributors.
-# SPDX-License-Identifier: MIT
+# Copyright (c) 2026 VMsgs Contributors. SPDX-License-Identifier: MIT
 #
 
 cmake_minimum_required(VERSION 3.15...3.31)
@@ -108,10 +107,11 @@ if(POLICY CMP0069)
 endif()
 
 # src
-file(GLOB_RECURSE PROJECT_HDRS ${PROJECT_SOURCE_DIR}/include/*.h)
-file(GLOB_RECURSE PROJECT_SRCS ${PROJECT_SOURCE_DIR}/src/*.cc)
+file(GLOB_RECURSE PROJECT_HDRS CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/include/*.h)
+file(GLOB_RECURSE PROJECT_SRCS CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/*.cc)
 add_library(${PROJECT_NAME} ${PROJECT_HDRS} ${PROJECT_SRCS})
 add_library(${PROJECT_NAMESPACE}${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+add_library(vmsgs::vmsgs ALIAS ${PROJECT_NAME})
 target_link_libraries(${PROJECT_NAME} PUBLIC vlink::vlink)
 target_include_directories(
   ${PROJECT_NAME}
@@ -122,8 +122,34 @@ target_include_directories(
          $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
          $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}>
 )
+# FlatBuffers emits basename-only includes for referenced schemas (for example "header.fbs.hpp"). Export every generated
+# schema domain so installed consumers can resolve those transitive includes without adding private paths themselves.
+set(VMSGS_SCHEMA_DOMAINS
+    common
+    control
+    embodied
+    geometry
+    localization
+    map
+    navigation
+    perception
+    planning
+    sensor
+    shape
+    system
+    tf2
+    v2x
+    vehicle
+    visualization
+)
+foreach(VMSGS_SCHEMA_DOMAIN IN LISTS VMSGS_SCHEMA_DOMAINS)
+  target_include_directories(
+    ${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/${PROJECT_NAME}/${VMSGS_SCHEMA_DOMAIN}>
+                           $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/${VMSGS_SCHEMA_DOMAIN}>
+  )
+endforeach()
 if(ENABLE_PROTOBUF)
-  file(GLOB_RECURSE PROTO_SRCS ${PROJECT_SOURCE_DIR}/schemas/*.proto)
+  file(GLOB_RECURSE PROTO_SRCS CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/schemas/*.proto)
   vlink_generate_cpp(
     TARGET
     generate_proto
@@ -150,7 +176,7 @@ if(ENABLE_PROTOBUF)
   endif()
 endif()
 if(ENABLE_FLATBUFFERS)
-  file(GLOB_RECURSE FBS_SRCS ${PROJECT_SOURCE_DIR}/schemas/*.fbs)
+  file(GLOB_RECURSE FBS_SRCS CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/schemas/*.fbs)
   vlink_generate_cpp(
     TARGET
     generate_fbs

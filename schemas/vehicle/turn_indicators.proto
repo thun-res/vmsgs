@@ -4,6 +4,7 @@ package vmsgs.proto.vehicle;
 
 import "common/header.proto";
 
+// Stable command and feedback states for left and right turn indicators.
 enum TurnIndicatorsCode {
   TURN_DISABLE = 0;
   TURN_ENABLE_LEFT = 1;
@@ -11,12 +12,18 @@ enum TurnIndicatorsCode {
   TURN_NO_COMMAND = 3;
 }
 
+// Requests a turn-indicator state.
 message TurnIndicatorsCommand {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // Command encoded using the referenced `TurnIndicatorsCode` contract.
   TurnIndicatorsCode command = 2;
 }
 
+// Reports the effective turn-indicator state.
 message TurnIndicatorsReport {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // Report encoded using the referenced `TurnIndicatorsCode` contract.
   TurnIndicatorsCode report = 2;
 }

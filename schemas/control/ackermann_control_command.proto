@@ -8,7 +8,10 @@ import "control/longitudinal_command.proto";
 
 // Combined lateral + longitudinal target for an Ackermann-steered vehicle.
 message AckermannControlCommand {
+  // Common command timestamp; nested headers may preserve source timestamps.
   vmsgs.proto.common.Header header = 1;
+  // Desired steering state for the lateral controller.
   LateralCommand lateral = 2;
+  // Desired motion state for the longitudinal controller.
   LongitudinalCommand longitudinal = 3;
 }

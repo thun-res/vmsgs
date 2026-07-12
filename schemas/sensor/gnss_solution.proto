@@ -1,0 +1,82 @@
+syntax = "proto3";
+
+package vmsgs.proto.sensor;
+
+import "common/header.proto";
+import "geometry/vector3.proto";
+import "sensor/nav_sat_fix.proto";
+
+// Receiver-level GNSS solution quality independent of a vendor protocol.
+enum GnssSolutionQuality {
+  GNSS_SOLUTION_UNKNOWN = 0;
+  GNSS_SOLUTION_NO_FIX = 1;
+  GNSS_SOLUTION_SINGLE = 2;
+  GNSS_SOLUTION_DIFFERENTIAL = 3;
+  GNSS_SOLUTION_FLOAT_RTK = 4;
+  GNSS_SOLUTION_FIXED_RTK = 5;
+  GNSS_SOLUTION_PPP = 6;
+  GNSS_SOLUTION_DEAD_RECKONING = 7;
+}
+
+// Signal-quality summary for one tracked navigation satellite.
+message SatelliteSignalStatus {
+  // Constellation-specific satellite vehicle identifier.
+  uint32 satellite_id = 1;
+
+  // Constellation name such as GPS, Galileo, BeiDou, GLONASS, or QZSS.
+  string constellation = 2;
+
+  // Carrier-to-noise density ratio in decibel-hertz.
+  float cn0_dbhz = 3;
+
+  // Satellite elevation above the local horizon in radians.
+  float elevation = 4;
+
+  // Satellite azimuth clockwise from north in radians.
+  float azimuth = 5;
+
+  // True when this signal contributed to the navigation solution.
+  bool used_in_solution = 6;
+}
+
+// Comprehensive GNSS navigation solution complementing the ROS-compatible fix.
+message GnssSolution {
+  // Receiver measurement time in nanoseconds and antenna frame identifier.
+  vmsgs.proto.common.Header header = 1;
+
+  // Geodetic position and covariance.
+  NavSatFix fix = 2;
+
+  // Receiver solution class.
+  GnssSolutionQuality quality = 3;
+
+  // Number of satellite signals tracked by the receiver.
+  uint32 satellites_tracked = 4;
+
+  // Number of satellite signals used to compute this solution.
+  uint32 satellites_used = 5;
+
+  // Horizontal dilution of precision; non-negative, zero means unavailable.
+  float hdop = 6;
+
+  // Vertical dilution of precision; non-negative, zero means unavailable.
+  float vdop = 7;
+
+  // Position dilution of precision; non-negative, zero means unavailable.
+  float pdop = 8;
+
+  // Ground velocity in local north-east-down axes, in metres per second.
+  vmsgs.proto.geometry.Vector3 velocity_ned = 9;
+
+  // Course over ground clockwise from north, in radians.
+  double course = 10;
+
+  // Heading of the platform reference axis clockwise from north, in radians.
+  double heading = 11;
+
+  // Receiver/GNSS time corresponding to the fix as unsigned nanoseconds.
+  uint64 receiver_stamp = 12;
+
+  // Per-satellite signal summaries in receiver-defined order.
+  repeated SatelliteSignalStatus satellites = 13;
+}

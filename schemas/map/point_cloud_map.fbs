@@ -6,18 +6,27 @@ namespace vmsgs.fbs.map;
 /// A spatially indexed PCD map tile (or full map). Same packed-data layout as
 /// sensor.PointCloud2 to allow zero-copy reuse by NDT/ICP localizers.
 table PointCloudMap {
+  /// Timestamp, sequence number, and coordinate frame shared by this payload.
   header:vmsgs.fbs.common.Header (id: 0);
   /// Tile id within the parent map; 0 if this is the whole map.
   tile_id:uint64 (id: 1);
   /// Bounding box in `header.frame_id` (m).
   min_x:double (id: 2);
+  /// Boundary coordinate in metres in the enclosing map frame.
   min_y:double (id: 3);
+  /// Boundary coordinate in metres in the enclosing map frame.
   min_z:double (id: 4);
+  /// Boundary coordinate in metres in the enclosing map frame.
   max_x:double (id: 5);
+  /// Boundary coordinate in metres in the enclosing map frame.
   max_y:double (id: 6);
+  /// Boundary coordinate in metres in the enclosing map frame.
   max_z:double (id: 7);
+  /// Point field layout describing each packed point record.
   fields:[vmsgs.fbs.sensor.PointField] (id: 8);
+  /// Size of one packed point record in bytes.
   point_step:uint32 (id: 9);
+  /// Packed point bytes; length is point_step times the point count.
   data:[uint8] (id: 10);
 }
 

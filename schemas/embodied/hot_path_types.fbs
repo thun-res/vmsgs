@@ -1,0 +1,27 @@
+include "../geometry/geometry.fbs";
+namespace vmsgs.fbs.embodied;
+/// Cartesian linear and angular velocity.
+struct Twist {
+  /// Linear velocity in metres per second along frame axes.
+  linear:vmsgs.fbs.geometry.Vector3;
+  /// Angular velocity in radians per second about frame axes.
+  angular:vmsgs.fbs.geometry.Vector3;
+}
+/// Cartesian force and torque.
+struct Wrench {
+  /// Force in newtons along frame axes.
+  force:vmsgs.fbs.geometry.Vector3;
+  /// Torque in newton-metres about frame axes.
+  torque:vmsgs.fbs.geometry.Vector3;
+}
+/// Absolute tracking tolerance for one named joint.
+table JointTolerance {
+  /// Joint name matching the shared joint ordering.
+  name:string (id: 0);
+  /// Position error in radians or metres; zero selects the default.
+  position:double (id: 1);
+  /// Velocity error in joint units/s; zero selects the default.
+  velocity:double (id: 2);
+  /// Acceleration error in joint units/s^2; zero selects the default.
+  acceleration:double (id: 3);
+}

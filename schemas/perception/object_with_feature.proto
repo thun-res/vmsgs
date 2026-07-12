@@ -6,9 +6,8 @@ import "common/header.proto";
 import "perception/detected_object.proto";
 import "perception/tracked_object.proto";
 
-// Raw cluster / point indices that produced a detection - used for upstream
-// debugging and for downstream consumers that need the underlying feature.
-// Mirrors tier4_perception_msgs/Feature.
+// Source indices or an encoded feature payload retained for provenance-aware
+// perception pipelines. This type is embedded and has no canonical public topic.
 message Feature {
   // Identifier of the feature kind ("lidar_cluster", "image_bbox", ...).
   string type = 1;
@@ -19,22 +18,34 @@ message Feature {
   string data_format = 4;  // "rgb8", "raw_f32", ...
 }
 
+// Detection paired with the sensor feature from which it was produced.
 message DetectedObjectWithFeature {
+  // Detection described by the accompanying source feature.
   DetectedObject object = 1;
+  // Source indices or feature payload used to produce the detection.
   Feature feature = 2;
 }
 
+// Timestamped batch of detections retaining their source features.
 message DetectedObjectsWithFeature {
+  // Observation timestamp in nanoseconds and common coordinate frame.
   vmsgs.proto.common.Header header = 1;
+  // Detections and their source features from the same cycle.
   repeated DetectedObjectWithFeature feature_objects = 2;
 }
 
+// Persistent object track paired with its latest sensor feature.
 message TrackedObjectWithFeature {
+  // Track described by the accompanying latest source feature.
   TrackedObject object = 1;
+  // Latest source indices or feature payload associated with the track.
   Feature feature = 2;
 }
 
+// Timestamped batch of tracks retaining their latest source features.
 message TrackedObjectsWithFeature {
+  // Tracker timestamp in nanoseconds and common coordinate frame.
   vmsgs.proto.common.Header header = 1;
+  // Active tracks and latest source features; track IDs should be unique.
   repeated TrackedObjectWithFeature feature_objects = 2;
 }

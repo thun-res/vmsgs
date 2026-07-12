@@ -1,0 +1,36 @@
+include "../common/header.fbs";
+include "../geometry/geometry.fbs";
+
+namespace vmsgs.fbs.planning;
+
+/// Time-parameterized vehicle state sampled along a planned trajectory.
+/// All kinematic values use the vehicle/body convention associated with the
+/// trajectory header; positive steering and heading rate turn to the left.
+struct TrajectoryPoint {
+  /// Signed offset from the trajectory header timestamp, in nanoseconds.
+  time_from_start_ns:long;
+  /// Desired body pose expressed in `Trajectory.header.frame_id`.
+  pose:vmsgs.fbs.geometry.Pose;
+  /// Desired longitudinal velocity in metres per second.
+  longitudinal_velocity:float;
+  /// Desired lateral velocity in metres per second.
+  lateral_velocity:float;
+  /// Desired longitudinal acceleration in metres per second squared.
+  acceleration:float;
+  /// Desired yaw rate in radians per second.
+  heading_rate:float;
+  /// Desired equivalent front-wheel steering angle in radians.
+  front_wheel_angle:float;
+  /// Desired equivalent rear-wheel steering angle in radians.
+  rear_wheel_angle:float;
+}
+
+/// Hot-path representation of a complete time-ordered planned trajectory.
+table Trajectory {
+  /// Acquisition/planning timestamp and coordinate frame for every point.
+  header:vmsgs.fbs.common.Header (id: 0);
+  /// Samples ordered by nondecreasing `time_from_start_ns`.
+  points:[TrajectoryPoint] (id: 1);
+}
+
+root_type Trajectory;

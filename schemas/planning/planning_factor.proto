@@ -7,8 +7,7 @@ import "common/uuid.proto";
 import "geometry/pose.proto";
 
 // Reason why a planner produced its current decision (slow-down, stop, lane
-// change). Mirrors autoware_internal_planning_msgs/PlanningFactor +
-// SafetyFactor + tier4_planning_msgs/PlanningFactor.
+// change), together with the safety evidence behind it.
 
 enum PlanningBehavior {
   PLANNING_BEHAVIOR_NONE = 0;
@@ -30,21 +29,26 @@ enum PlanningBehavior {
   PLANNING_BEHAVIOR_NARROW_PATH = 16;
 }
 
+// Spatial control constraint and desired velocity emitted by a planner module.
 message ControlPoint {
+  // Pose expressed in the coordinate frame identified by the enclosing header.
   vmsgs.proto.geometry.Pose pose = 1;
   // Distance along the trajectory from the ego (m).
   float distance = 2;
-  // Achieved velocity at this point (m/s).
+  // Target velocity constraint at this point (m/s).
   float velocity = 3;
 }
 
+// Safety evidence associated with an object, point or route feature.
 message SafetyFactor {
+  // Kind of entity represented by the safety factor.
   enum Type {
     SAFETY_FACTOR_UNKNOWN = 0;
     SAFETY_FACTOR_OBJECT = 1;
     SAFETY_FACTOR_POINTCLOUD = 2;
     SAFETY_FACTOR_USER_DEFINED = 3;
   }
+  // Type encoded using the referenced `Type` contract.
   Type type = 1;
   // Object UUID for OBJECT type; empty otherwise.
   vmsgs.proto.common.UUID object_id = 2;
@@ -52,18 +56,25 @@ message SafetyFactor {
   repeated vmsgs.proto.geometry.Pose points = 3;
   // True when the factor is currently considered unsafe.
   bool is_safe = 4;
+  // Optional human-readable detail for diagnostics and operator displays.
   string detail = 5;
 }
 
+// Timestamped safety factors and their aggregate safe/unsafe decision.
 message SafetyFactorArray {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // Safety factors aggregated into this array's overall safe/unsafe decision.
   repeated SafetyFactor factors = 2;
+  // True only when all enclosed safety factors are currently safe.
   bool is_safe = 3;
 }
 
+// Structured explanation of a behavior planner's control decision.
 message PlanningFactor {
   // Module emitting this factor (e.g. "obstacle_cruise", "intersection").
   string module = 1;
+  // Behavior encoded using the referenced `PlanningBehavior` contract.
   PlanningBehavior behavior = 2;
   // Distance to the relevant point (m).
   float distance = 3;
@@ -71,14 +82,18 @@ message PlanningFactor {
   float velocity = 4;
   // Multiple control points the planner is acting on.
   repeated ControlPoint control_points = 5;
-  // Whether this factor is a stop / slowdown / pass.
+  // True when the ego travels forward through this factor; false when reversing.
   bool is_driving_forward = 6;
   // Active safety factors driving this decision.
   SafetyFactorArray safety_factors = 7;
+  // Optional human-readable detail for diagnostics and operator displays.
   string detail = 8;
 }
 
+// Timestamped set of planning-decision explanations for one planning cycle.
 message PlanningFactorArray {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // Planning-decision explanations produced for this planning cycle.
   repeated PlanningFactor factors = 2;
 }

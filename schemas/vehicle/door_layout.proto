@@ -5,22 +5,26 @@ package vmsgs.proto.vehicle;
 import "common/header.proto";
 import "vehicle/door.proto";
 
-// Single physical door description (autoware_adapi_v1_msgs/DoorLayout).
+// Single physical door description and its supported capabilities.
 message DoorLayout {
   // Index into vehicle/door.DoorIndex for primary id.
   DoorIndex door = 1;
   // Human-readable name (e.g. "front_left").
   string name = 2;
-  // Set of capabilities supported by this door.
+  // True when this door supports a remote open command.
   bool can_open = 3;
+  // True when this door supports a remote close command.
   bool can_close = 4;
+  // True when this door supports a remote lock command.
   bool can_lock = 5;
 }
 
-// All doors known to the vehicle (autoware_adapi_v1_msgs/DoorStatusArray).
+// Layout and current open/closed state of all doors known to the vehicle.
 message DoorStatusArray {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
-  // Per-door states aligned with `layout`.
+  // Per-door layout and capability descriptors.
   repeated DoorLayout layout = 2;
+  // Per-door open/closed state, aligned one-to-one with `layout`.
   repeated DoorState states = 3 [packed = true];
 }

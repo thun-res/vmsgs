@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+package vmsgs.proto.embodied;
+
+import "common/header.proto";
+import "embodied/joint_trajectory.proto";
+
+// Permitted absolute tracking error for one joint. A zero value asks the
+// controller to use its configured default for that interface.
+message JointTolerance {
+  // Joint name matching the robot model and trajectory joint_names entry.
+  string name = 1;
+  // Maximum absolute position error, normally in radians or metres.
+  double position = 2;
+  // Maximum absolute velocity error, in joint units per second.
+  double velocity = 3;
+  // Maximum absolute acceleration error, in joint units per second squared.
+  double acceleration = 4;
+}
+
+// Synchronized reference, measured state, and tracking error from a joint
+// trajectory controller. All point vectors follow joint_names ordering.
+message JointTrajectoryControllerState {
+  // Sample time in nanoseconds and controller reference frame.
+  vmsgs.proto.common.Header header = 1;
+  // Ordered joint names shared by every trajectory point below.
+  repeated string joint_names = 2;
+  // Controller reference evaluated at header.stamp.
+  JointTrajectoryPoint reference = 3;
+  // Measured or estimated joint feedback at header.stamp.
+  JointTrajectoryPoint feedback = 4;
+  // reference - feedback for each populated interface.
+  JointTrajectoryPoint error = 5;
+  // Active limits applied throughout trajectory execution.
+  repeated JointTolerance path_tolerance = 6;
+  // Active limits used to decide whether the final goal is reached.
+  repeated JointTolerance goal_tolerance = 7;
+  // Applied speed scale in [0, 1]; one means unscaled execution.
+  double speed_scaling_factor = 8;
+}
+
+// Diagnostic snapshot of a scalar proportional-integral-derivative loop.
+message PidState {
+  // Sample time in nanoseconds and controlled frame or component name.
+  vmsgs.proto.common.Header header = 1;
+  // Requested process value in the controller interface's declared unit.
+  double setpoint = 2;
+  // Measured process value in the same unit as setpoint.
+  double process_value = 3;
+  // Control error, conventionally setpoint - process_value.
+  double error = 4;
+  // Proportional contribution to the controller output.
+  double p_term = 5;
+  // Integral contribution to the controller output.
+  double i_term = 6;
+  // Derivative contribution to the controller output.
+  double d_term = 7;
+  // Final controller output after limits and optional feed-forward terms.
+  double output = 8;
+}

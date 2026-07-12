@@ -9,12 +9,19 @@ enum SemanticEncoding : ubyte {
   CLASS_ID_UINT32 = 2,
 }
 
+/// Per-pixel semantic labels and optional confidence for one image frame.
 table SemanticImage {
+  /// Image acquisition timestamp in nanoseconds and optical frame.
   header:vmsgs.fbs.common.Header (id: 0);
+  /// Image height in pixels.
   height:uint32 (id: 1);
-  width:uint32  (id: 2);
+  /// Image width in pixels.
+  width:uint32 (id: 2);
+  /// Scalar class-ID representation used by data.
   encoding:SemanticEncoding (id: 3);
+  /// Number of payload bytes between consecutive image rows.
   step:uint32 (id: 4);
+  /// Row-major label bytes; size must agree with height, step, and encoding.
   data:[uint8] (id: 5);
   /// Optional confidence map, same dims, float32 row-major.
   confidence:[float] (id: 6);

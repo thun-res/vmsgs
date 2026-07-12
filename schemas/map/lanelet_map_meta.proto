@@ -5,18 +5,21 @@ package vmsgs.proto.map;
 import "map/area_info.proto";
 
 // Per-tile metadata for a partitioned lanelet map.
-// Mirrors autoware_map_msgs/LaneletMapCellMetaData.
 message LaneletMapCellMetaData {
+  // Stable identifier of this lanelet map tile.
   string id = 1;
+  // Area encoded using the referenced `AreaInfo` contract.
   AreaInfo area = 2;
+  // Version number of this lanelet map tile.
   uint64 version = 3;
 }
 
 // Top-level catalogue of lanelet tiles available on the map server.
-// Mirrors autoware_map_msgs/LaneletMapMetaData.
 message LaneletMapMetaData {
-  string format = 1;        // "lanelet2_osm", ...
+  string format = 1;  // "lanelet2_osm", ...
+  // Version identifier of this lanelet map catalogue.
   string version = 2;
-  string projector = 3;     // "MGRS:10TFK", "UTM:54N", ...
+  string projector = 3;  // "MGRS:10TFK", "UTM:54N", ...
+  // Per-tile metadata for every lanelet tile in this catalogue.
   repeated LaneletMapCellMetaData metadata_list = 4;
 }

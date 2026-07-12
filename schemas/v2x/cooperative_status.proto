@@ -7,14 +7,30 @@ import "geometry/pose.proto";
 
 // Status broadcast for cooperative driving (CACC, platoon, intersection).
 message CooperativeStatus {
+  // Source timestamp in nanoseconds and map frame used by pose and heading.
   vmsgs.proto.common.Header header = 1;
+
+  // Stable cooperative-participant identifier for the sender's active lifetime.
   string vehicle_id = 2;
+
+  // Sender pose in header.frame_id at header.stamp.
   vmsgs.proto.geometry.Pose pose = 3;
-  float velocity = 4;            // m/s
-  float acceleration = 5;        // m/s^2
-  float heading = 6;             // rad
-  float intended_yaw_rate = 7;   // rad/s
+
+  // Longitudinal speed in metres per second.
+  float velocity = 4;  // m/s
+
+  // Longitudinal acceleration in metres per second squared.
+  float acceleration = 5;  // m/s^2
+
+  // Vehicle heading about the map-frame z axis, in radians.
+  float heading = 6;  // rad
+
+  // Intended yaw rate in radians per second; positive follows frame convention.
+  float intended_yaw_rate = 7;  // rad/s
+
   // Planned trajectory length and target.
-  float planned_distance = 8;    // m
-  string intent = 9;             // "lane_change_left", "merge", "yield", ...
+  float planned_distance = 8;  // m
+
+  // Current maneuver intent token, valid until a newer status supersedes it.
+  string intent = 9;  // "lane_change_left", "merge", "yield", ...
 }

@@ -11,32 +11,48 @@ import "perception/object_classification.proto";
 
 // Per-object kinematics (position, velocity, accel) with covariance hints.
 message DetectedObjectKinematics {
+  // Indicates whether the orientation estimate is usable and sign-ambiguous.
   enum OrientationAvailability {
     UNAVAILABLE = 0;
     SIGN_UNKNOWN = 1;
     AVAILABLE = 2;
   }
 
+  // Object-center pose and optional 6x6 uncertainty in the enclosing frame.
   vmsgs.proto.geometry.PoseWithCovariance pose_with_covariance = 1;
+  // True when the pose covariance entries are populated and valid.
   bool has_position_covariance = 2;
+  // Whether the estimated orientation is usable or has a sign ambiguity.
   OrientationAvailability orientation_availability = 3;
+  // Linear and angular velocity with optional 6x6 uncertainty.
   vmsgs.proto.geometry.TwistWithCovariance twist_with_covariance = 4;
+  // True when a velocity estimate is available.
   bool has_twist = 5;
+  // True when the twist covariance entries are populated and valid.
   bool has_twist_covariance = 6;
 
-  // Optional acceleration (extension over Autoware vanilla DetectedObject).
+  // Optional acceleration estimate used by motion-aware consumers.
   vmsgs.proto.geometry.AccelWithCovariance accel_with_covariance = 7;
+  // True when accel_with_covariance contains a valid estimate.
   bool has_accel = 8;
 }
 
+// One instantaneous perception detection with geometry and classification.
 message DetectedObject {
+  // Probability that this detection represents a real object, in [0, 1].
   float existence_probability = 1;
+  // Candidate semantic classes and probabilities; probabilities need not sum to one.
   repeated ObjectClassification classification = 2;
+  // Motion state observed during the current perception cycle.
   DetectedObjectKinematics kinematics = 3;
+  // Object-local geometric extent and footprint.
   Shape shape = 4;
 }
 
+// Detections produced together in one timestamped perception cycle.
 message DetectedObjects {
+  // Observation timestamp in nanoseconds and common object coordinate frame.
   vmsgs.proto.common.Header header = 1;
+  // Detections from this cycle; ordering has no semantic significance.
   repeated DetectedObject objects = 2;
 }

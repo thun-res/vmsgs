@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package vmsgs.proto.map;
+
+import "common/status.proto";
+import "common/uuid.proto";
+import "map/area_info.proto";
+import "map/occupancy_grid.proto";
+import "map/point_cloud_map_meta.proto";
+
+// Request for the current complete occupancy grid from a map server.
+message GetOccupancyGridRequest {
+  // Client-generated identifier copied into the response.
+  vmsgs.proto.common.UUID request_id = 1;
+  // Optional map identifier; empty selects the server's active map.
+  string map_id = 2;
+}
+
+// Complete occupancy-grid response with portable status information.
+message GetOccupancyGridResponse {
+  // Identifier copied from the corresponding request.
+  vmsgs.proto.common.UUID request_id = 1;
+  // Portable request status and diagnostic detail.
+  vmsgs.proto.common.Status status = 2;
+  // Requested occupancy map; absent/default when status is not OK.
+  OccupancyGrid map = 4;
+}
+
+// Spatial query for point-cloud map tiles intersecting a requested area.
+message GetPointCloudMapTilesRequest {
+  // Client-generated identifier copied into the response.
+  vmsgs.proto.common.UUID request_id = 1;
+  // Requested geodetic and/or Cartesian bounding area.
+  AreaInfo area = 2;
+  // Optional map version; empty selects the active version.
+  string version = 3;
+}
+
+// References and metadata for point-cloud tiles selected by a spatial query.
+message GetPointCloudMapTilesResponse {
+  // Identifier copied from the corresponding request.
+  vmsgs.proto.common.UUID request_id = 1;
+  // Portable query status and diagnostic detail.
+  vmsgs.proto.common.Status status = 2;
+  // Tile references whose areas intersect the request, in server-defined order.
+  repeated PointCloudMapCellWithID cells = 4;
+  // Map version from which all returned tile references were selected.
+  string version = 5;
+}

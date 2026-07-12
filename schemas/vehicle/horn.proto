@@ -4,12 +4,18 @@ package vmsgs.proto.vehicle;
 
 import "common/header.proto";
 
+// Requests activation or deactivation of the audible warning device.
 message HornCommand {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // True to sound the horn; false to silence it.
   bool active = 2;
 }
 
+// Reports whether the audible warning device is active.
 message HornReport {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // True when the horn is currently sounding.
   bool active = 2;
 }

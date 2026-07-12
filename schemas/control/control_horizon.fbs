@@ -1,0 +1,16 @@
+include "../common/header.fbs";
+include "ackermann_control_command.fbs";
+
+namespace vmsgs.fbs.control;
+
+/// Time-ordered horizon of Ackermann commands for predictive control.
+table ControlHorizon {
+  /// Horizon generation timestamp and vehicle reference frame.
+  header:vmsgs.fbs.common.Header (id: 0);
+  /// Constant interval between adjacent commands, in signed nanoseconds; must be positive.
+  time_step_ns:long (id: 1);
+  /// Commands in increasing prediction-time order, separated by time_step_ns.
+  commands:[AckermannControlCommand] (id: 2);
+}
+
+root_type ControlHorizon;

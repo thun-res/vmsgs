@@ -1,0 +1,93 @@
+include "../common/header.fbs";
+
+namespace vmsgs.fbs.vehicle;
+
+/// Linear ground speeds of the four wheels, in metres per second.
+struct WheelSpeedValues {
+  /// Front-left wheel speed.
+  front_left:float;
+  /// Front-right wheel speed.
+  front_right:float;
+  /// Rear-left wheel speed.
+  rear_left:float;
+  /// Rear-right wheel speed.
+  rear_right:float;
+}
+
+/// Hot-path aggregate of vehicle motion, actuator, body and fault feedback.
+/// Numeric mode fields use the values of the corresponding protobuf enums.
+table ChassisInfo {
+  /// Measurement timestamp and vehicle body frame.
+  header:vmsgs.fbs.common.Header (id: 0);
+
+  /// True while the combustion engine or traction system reports running.
+  engine_started:bool (id: 1);
+  /// Engine or traction motor shaft speed in revolutions per minute.
+  engine_rpm:float (id: 2);
+
+  /// Body-frame forward velocity in metres per second.
+  longitudinal_velocity:float (id: 3);
+  /// Body-frame leftward velocity in metres per second.
+  lateral_velocity:float (id: 4);
+  /// Body-frame yaw rate in radians per second, positive counter-clockwise.
+  yaw_rate:float (id: 5);
+  /// Body-frame forward acceleration in metres per second squared.
+  longitudinal_acceleration:float (id: 6);
+  /// Body-frame leftward acceleration in metres per second squared.
+  lateral_acceleration:float (id: 7);
+  /// Lifetime travelled distance in metres.
+  odometer_m:float (id: 8);
+
+  /// Accelerator request/position in the inclusive range [0, 100].
+  throttle_percentage:float (id: 9);
+  /// Brake request/position in the inclusive range [0, 100].
+  brake_percentage:float (id: 10);
+  /// Equivalent front-tire angle in radians, positive left.
+  steering_tire_angle:float (id: 11);
+  /// Steering-wheel angle in radians, positive left.
+  steering_wheel_angle:float (id: 12);
+  /// Steering-wheel rotation rate in radians per second.
+  steering_wheel_rate:float (id: 13);
+  /// Measured steering torque in newton-metres.
+  steering_torque_nm:float (id: 14);
+
+  /// Selected gear; numeric values follow protobuf `GearCommandCode`.
+  gear:ubyte (id: 15);
+  /// True while the parking brake is applied.
+  parking_brake:bool (id: 16);
+  /// True while the physical brake pedal is pressed.
+  brake_pedal_pressed:bool (id: 17);
+  /// True when the driver overrides accelerator automation.
+  accelerator_pedal_override:bool (id: 18);
+  /// True when the driver overrides brake automation.
+  brake_pedal_override:bool (id: 19);
+  /// True while anti-lock braking is actively regulating pressure.
+  abs_active:bool (id: 20);
+  /// True while automatic hold is actively retaining the vehicle.
+  autohold_active:bool (id: 21);
+
+  /// Remaining battery state of charge in the inclusive range [0, 1].
+  battery_soc:float (id: 22);
+  /// Per-wheel ground speeds measured at the same header timestamp.
+  wheel_speeds:WheelSpeedValues (id: 23);
+
+  /// Turn indicator value following protobuf `TurnIndicatorsCode`.
+  turn_indicators:ubyte (id: 24);
+  /// Hazard lamp value following protobuf `HazardLightsCode`.
+  hazard_lights:ubyte (id: 25);
+  /// Headlamp value following protobuf `HeadlightsCode`.
+  headlights:ubyte (id: 26);
+  /// Wiper value following protobuf `WipersCode`.
+  wipers:ubyte (id: 27);
+  /// True while the horn output is active.
+  horn_active:bool (id: 28);
+
+  /// Automation authority value following protobuf `ControlMode`.
+  control_mode:ubyte (id: 29);
+  /// Primary fault value following protobuf `ChassisInfo.ErrorCode`.
+  error_code:ushort (id: 30);
+  /// Vendor-neutral bit mask for simultaneous chassis faults.
+  error_mask:ulong (id: 31);
+}
+
+root_type ChassisInfo;

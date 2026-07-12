@@ -4,6 +4,7 @@ package vmsgs.proto.embodied;
 
 import "common/header.proto";
 
+// Mechanical actuation principle used by an end-effector gripper.
 enum GripperKind {
   GRIPPER_UNKNOWN = 0;
   GRIPPER_PARALLEL = 1;
@@ -13,25 +14,42 @@ enum GripperKind {
   GRIPPER_SOFT = 5;
 }
 
+// Position or vacuum command with an optional effort safety limit.
 message GripperCommand {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // Mechanical gripper category controlling position interpretation.
   GripperKind kind = 2;
-  // Normalised in [0, 1]: 0 = fully open, 1 = fully closed.
+  // Target position in the gripper hardware interface's declared unit (e.g. jaw
+  // opening in metres); matches GripperState.position for direct comparison.
   float position = 3;
   // Closing force / vacuum level (N or kPa).
   float effort = 4;
   // For dexterous hands, per-finger position targets.
   repeated double finger_positions = 5 [packed = true];
+  // Stable identifier of the addressed gripper resource.
+  string gripper_id = 6;
 }
 
+// Measured gripper position, effort, contact, and operating condition.
 message GripperState {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // Mechanical gripper category associated with this state sample.
   GripperKind kind = 2;
+  // Measured gripper position in the hardware interface's declared unit (e.g. jaw
+  // opening in metres); comparable to GripperCommand.position.
   float position = 3;
+  // Measured gripper effort in newtons or newton-metres, according to gripper type.
   float effort = 4;
+  // True when contact and effort indicate that an object is retained.
   bool is_grasping = 5;
+  // True when commanded motion stopped before reaching the target position.
   bool is_stalled = 6;
   // Per-finger feedback for dexterous hands.
   repeated double finger_positions = 7 [packed = true];
+  // Per-finger forces or torques aligned to the hardware finger ordering.
   repeated double finger_efforts = 8 [packed = true];
+  // Stable identifier of the measured gripper resource.
+  string gripper_id = 9;
 }

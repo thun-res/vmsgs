@@ -6,6 +6,7 @@ import "common/header.proto";
 
 // Generic per-sensor health report.
 message SensorStatus {
+  // Coarse health assessment used for monitoring and fault handling.
   enum Health {
     HEALTH_UNKNOWN = 0;
     HEALTH_OK = 1;
@@ -13,11 +14,11 @@ message SensorStatus {
     HEALTH_FAULT = 3;
     HEALTH_OFFLINE = 4;
   }
-  vmsgs.proto.common.Header header = 1;
-  string sensor_id = 2;
-  Health health = 3;
-  float temperature_c = 4;   // NaN if unknown
-  float supply_voltage_v = 5;
-  string firmware_version = 6;
-  string message = 7;
+  vmsgs.proto.common.Header header = 1;  // Status time and sensor frame.
+  string sensor_id = 2;                  // Stable logical or hardware sensor identifier.
+  Health health = 3;                     // Coarse operational health classification.
+  float temperature_c = 4;               // NaN if unknown
+  float supply_voltage_v = 5;            // Measured sensor supply voltage, in volts.
+  string firmware_version = 6;           // Vendor firmware version string.
+  string message = 7;                    // Human-readable diagnostic; not for control decisions.
 }

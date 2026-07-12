@@ -1,0 +1,22 @@
+include "../common/header.fbs";
+include "../geometry/geometry.fbs";
+include "hot_path_types.fbs";
+namespace vmsgs.fbs.embodied;
+/// Cartesian pose and optional velocity target.
+table EndEffectorCommand {
+  /// Command timestamp and target frame.
+  header:vmsgs.fbs.common.Header (id: 0);
+  /// Desired pose in header.frame_id.
+  target_pose:vmsgs.fbs.geometry.Pose (id: 1);
+  /// Optional velocity feed-forward.
+  target_twist:Twist (id: 2);
+  /// True when target_twist is valid.
+  use_twist:bool (id: 3);
+  /// Linear speed limit in m/s.
+  max_linear_speed:float (id: 4);
+  /// Angular speed limit in rad/s.
+  max_angular_speed:float (id: 5);
+  /// Stable identifier of the addressed tool or end-effector resource.
+  end_effector_id:string (id: 6);
+}
+root_type EndEffectorCommand;

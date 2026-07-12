@@ -5,6 +5,7 @@ package vmsgs.proto.perception;
 import "common/header.proto";
 import "geometry/point.proto";
 
+// Shape or regulatory meaning assigned to a detected road marking.
 enum RoadMarkingType {
   ROAD_MARKING_UNKNOWN = 0;
   ROAD_MARKING_LANE_LINE_SOLID = 1;
@@ -20,6 +21,7 @@ enum RoadMarkingType {
   ROAD_MARKING_BIKE_LANE = 11;
 }
 
+// Standardized visible color of a road marking.
 enum RoadMarkingColor {
   ROAD_MARKING_COLOR_UNKNOWN = 0;
   ROAD_MARKING_COLOR_WHITE = 1;
@@ -28,16 +30,24 @@ enum RoadMarkingColor {
   ROAD_MARKING_COLOR_RED = 4;
 }
 
+// One detected road marking with sampled geometry and confidence.
 message RoadMarking {
+  // Stable detector or map identifier for this marking.
   uint64 id = 1;
+  // Semantic road-marking geometry type.
   RoadMarkingType type = 2;
+  // Observed marking color.
   RoadMarkingColor color = 3;
   // Polyline in `header.frame_id`.
   repeated vmsgs.proto.geometry.Point points = 4;
+  // Detection confidence in the inclusive range [0, 1].
   float confidence = 5;
 }
 
+// Road markings observed together in a common timestamp and frame.
 message RoadMarkingArray {
+  // Observation timestamp in nanoseconds and common coordinate frame.
   vmsgs.proto.common.Header header = 1;
+  // Markings observed in this cycle; IDs should be unique.
   repeated RoadMarking markings = 2;
 }

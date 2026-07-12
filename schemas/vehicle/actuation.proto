@@ -6,18 +6,25 @@ import "common/header.proto";
 
 // Low-level actuator targets (raw pedal/wheel positions).
 message ActuationCommand {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
-  float accel_cmd = 2;          // 0..1
-  float brake_cmd = 3;          // 0..1
-  float steer_cmd = 4;          // rad (steering-wheel angle)
+  float accel_cmd = 2;  // 0..1
+  float brake_cmd = 3;  // 0..1
+  float steer_cmd = 4;  // rad (steering-wheel angle)
   // Optional gas-pedal force / brake pressure if available.
-  float steer_torque_cmd = 5;   // Nm
+  float steer_torque_cmd = 5;  // Nm
 }
 
+// Measured low-level actuator positions corresponding to an actuation command.
 message ActuationStatus {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // Measured accelerator actuation, matching accel_cmd; normalized to [0, 1].
   float accel_status = 2;
+  // Measured brake actuation, matching brake_cmd; normalized to [0, 1].
   float brake_status = 3;
+  // Measured steering-wheel angle, matching steer_cmd, in radians.
   float steer_status = 4;
+  // Measured steering torque, matching steer_torque_cmd, in newton-metres.
   float steer_torque_status = 5;
 }

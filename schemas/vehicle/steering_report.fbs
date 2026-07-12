@@ -1,0 +1,15 @@
+include "../common/header.fbs";
+
+namespace vmsgs.fbs.vehicle;
+
+/// Equivalent front-tire steering angle and angular rate feedback.
+table SteeringReport {
+  /// Measurement timestamp and vehicle body frame.
+  header:vmsgs.fbs.common.Header (id: 0);
+  /// Equivalent front-wheel tire angle in radians, positive to the left.
+  steering_tire_angle:float (id: 1);
+  /// Tire-angle rotation rate in radians per second, positive toward the left.
+  steering_tire_rotation_rate:float (id: 2);
+}
+
+root_type SteeringReport;

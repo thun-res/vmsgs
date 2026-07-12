@@ -8,28 +8,40 @@ import "geometry/quaternion.proto";
 import "geometry/vector3.proto";
 
 // Stamped variants of the basic geometry types
-// (geometry_msgs/{PointStamped, QuaternionStamped, Vector3Stamped, VelocityStamped}).
+// (PointStamped, QuaternionStamped, Vector3Stamped, VelocityStamped).
 
 message PointStamped {
+  // Sample timestamp in nanoseconds and point coordinate frame.
   vmsgs.proto.common.Header header = 1;
+  // Position expressed in header.frame_id, normally in metres.
   Point point = 2;
 }
 
+// Timestamped orientation expressed relative to header.frame_id.
 message QuaternionStamped {
+  // Sample timestamp in nanoseconds and orientation reference frame.
   vmsgs.proto.common.Header header = 1;
+  // Unit-quaternion orientation relative to header.frame_id.
   Quaternion quaternion = 2;
 }
 
+// Timestamped three-dimensional vector expressed in header.frame_id.
 message Vector3Stamped {
+  // Sample timestamp in nanoseconds and vector coordinate frame.
   vmsgs.proto.common.Header header = 1;
+  // Vector expressed along header.frame_id axes; units are context-defined.
   Vector3 vector = 2;
 }
 
 // Linear velocity expressed in `header.frame_id`, body in `body_frame_id`,
 // reference in `reference_frame_id`.
 message VelocityStamped {
+  // Measurement timestamp in nanoseconds; frame semantics are specified below.
   vmsgs.proto.common.Header header = 1;
+  // Frame rigidly attached to the moving body whose velocity is reported.
   string body_frame_id = 2;
+  // Reference frame relative to which body motion is measured.
   string reference_frame_id = 3;
+  // Linear velocity of body_frame_id relative to reference_frame_id, in m/s.
   Vector3 velocity = 4;
 }

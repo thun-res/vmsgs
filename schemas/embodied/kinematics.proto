@@ -1,0 +1,64 @@
+syntax = "proto3";
+package vmsgs.proto.embodied;
+import "common/header.proto";
+import "common/duration.proto";
+import "common/status.proto";
+import "common/uuid.proto";
+import "geometry/pose.proto";
+import "embodied/robot_state.proto";
+import "embodied/motion_plan.proto";
+
+// Request to solve joint positions that place one robot link at a target pose.
+message InverseKinematicsRequest {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
+  vmsgs.proto.common.Header header = 1;
+  // Planning or kinematic joint-group name defined by the robot model.
+  string group_name = 2;
+  // Robot link to place at target_pose.
+  string link_name = 3;
+  // Pose expressed in the coordinate frame identified by the enclosing header.
+  vmsgs.proto.geometry.PoseStamped target_pose = 4;
+  // Initial joint state used to select a nearby inverse-kinematics solution.
+  RobotState seed_state = 5;
+  // Additional joint and Cartesian constraints applied to the solution.
+  MotionConstraints constraints = 6;
+  // Maximum solver duration; unset selects the implementation default.
+  vmsgs.proto.common.Duration timeout = 7;
+  // True to reject inverse-kinematics solutions that collide with the planning scene.
+  bool avoid_collisions = 8;
+  // Client-generated identifier used to correlate the response.
+  vmsgs.proto.common.UUID request_id = 9;
+}
+// Result of an inverse-kinematics query, including the full solution state.
+message InverseKinematicsResponse {
+  // Portable success or failure status and diagnostic detail.
+  vmsgs.proto.common.Status status = 1;
+  // Full or partial robot state containing the solved joint positions.
+  RobotState solution = 4;
+  // Identifier copied from the corresponding request.
+  vmsgs.proto.common.UUID request_id = 5;
+}
+// Request to compute link poses from a complete or partial robot state.
+message ForwardKinematicsRequest {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
+  vmsgs.proto.common.Header header = 1;
+  // Robot links whose poses are requested; order defines the response order.
+  repeated string link_names = 2;
+  // Robot joint state from which requested link poses are computed.
+  RobotState robot_state = 3;
+  // Coordinate-frame identifier used to interpret spatial values.
+  string frame_id = 4;
+  // Client-generated identifier used to correlate the response.
+  vmsgs.proto.common.UUID request_id = 5;
+}
+// Link poses returned in the same order as the requested link_names.
+message ForwardKinematicsResponse {
+  // Portable success or failure status and diagnostic detail.
+  vmsgs.proto.common.Status status = 1;
+  // Requested link names, echoed in the same order as the poses below.
+  repeated string link_names = 4;
+  // Link poses aligned one-to-one with link_names and expressed in frame_id.
+  repeated vmsgs.proto.geometry.PoseStamped poses = 5;
+  // Identifier copied from the corresponding request.
+  vmsgs.proto.common.UUID request_id = 6;
+}

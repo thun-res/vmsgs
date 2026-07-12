@@ -4,6 +4,7 @@ package vmsgs.proto.vehicle;
 
 import "common/header.proto";
 
+// Stable logical index for common passenger-vehicle openings.
 enum DoorIndex {
   DOOR_INDEX_UNKNOWN = 0;
   DOOR_FRONT_LEFT = 1;
@@ -14,6 +15,7 @@ enum DoorIndex {
   DOOR_HOOD = 6;
 }
 
+// Observable physical state of an individual door or opening.
 enum DoorState {
   DOOR_STATE_UNKNOWN = 0;
   DOOR_STATE_CLOSED = 1;
@@ -21,14 +23,19 @@ enum DoorState {
   DOOR_STATE_OPEN = 3;
 }
 
+// Requests opening or closing one indexed door.
 message DoorCommand {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // Door encoded using the referenced `DoorIndex` contract.
   DoorIndex door = 2;
   // True = open, false = close.
   bool open = 3;
 }
 
+// Timestamped door states indexed by `DoorIndex` numeric value.
 message DoorStatus {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
   // index = enum DoorIndex
   repeated DoorState states = 2 [packed = true];

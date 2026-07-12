@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package vmsgs.proto.map;
+
+import "common/header.proto";
+import "map/map_meta_data.proto";
+
+// Complete 2D occupancy map for protobuf/RPC use (map services and incremental
+// OccupancyGridUpdate). For zero-copy transport use the FlatBuffers variants:
+// map.OccupancyGridMap (static map tile) or perception.OccupancyGrid (dynamic).
+message OccupancyGrid {
+  // Map publication timestamp and coordinate frame of metadata.origin.
+  vmsgs.proto.common.Header header = 1;
+  // Grid resolution, dimensions, origin, version, and load timestamp.
+  MapMetaData info = 2;
+  // Row-major occupancy values; exactly width*height entries, with -1 unknown,
+  // 0 free, and 100 occupied. Intermediate values represent probability percent.
+  repeated int32 data = 3 [packed = true];
+}
+
+// Rectangular incremental update to a previously published occupancy grid.
+message OccupancyGridUpdate {
+  // Update timestamp and coordinate frame; frame_id must match the base map.
+  vmsgs.proto.common.Header header = 1;
+  // Zero-based x coordinate of the update's lower-left grid cell.
+  uint32 x = 2;
+  // Zero-based y coordinate of the update's lower-left grid cell.
+  uint32 y = 3;
+  // Number of updated grid columns.
+  uint32 width = 4;
+  // Number of updated grid rows.
+  uint32 height = 5;
+  // Row-major occupancy values; exactly width*height entries in [-1, 100].
+  repeated int32 data = 6 [packed = true];
+  // Version of the complete map to which this update applies.
+  string base_version = 7;
+}

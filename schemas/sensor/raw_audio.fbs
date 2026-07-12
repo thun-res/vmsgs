@@ -2,23 +2,26 @@ include "../common/header.fbs";
 
 namespace vmsgs.fbs.sensor;
 
+/// Numeric sample representation used in an uncompressed audio payload.
 enum AudioFormat : ubyte {
-  PCM_S16LE = 0,
-  PCM_S24LE = 1,
-  PCM_S32LE = 2,
-  PCM_F32LE = 3,
-  PCM_U8    = 4,
+  /// Unset/unknown format; producers must set a concrete value.
+  AUDIO_FORMAT_UNKNOWN = 0,
+  PCM_S16LE = 1,
+  PCM_S24LE = 2,
+  PCM_S32LE = 3,
+  PCM_F32LE = 4,
+  PCM_U8    = 5,
 }
 
 /// Interleaved raw audio chunk.
 table RawAudio {
-  header:vmsgs.fbs.common.Header (id: 0);
-  format:AudioFormat (id: 1);
-  sample_rate:uint32 (id: 2);
-  channels:uint32 (id: 3);
+  header:vmsgs.fbs.common.Header (id: 0);  // Capture time in nanoseconds and audio source frame.
+  format:AudioFormat (id: 1);  // Scalar representation used by every sample.
+  sample_rate:uint32 (id: 2);  // Samples per second for each channel, in hertz.
+  channels:uint32 (id: 3);  // Number of channels interleaved in each sample frame.
   /// Number of frames in `data` (data_bytes = frame_count * channels * bytes_per_sample).
   frame_count:uint32 (id: 4);
-  data:[uint8] (id: 5);
+  data:[uint8] (id: 5);  // Interleaved sample bytes in chronological frame order.
 }
 
 root_type RawAudio;

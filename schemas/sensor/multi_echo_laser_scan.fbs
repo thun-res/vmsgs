@@ -1,0 +1,44 @@
+include "../common/header.fbs";
+
+namespace vmsgs.fbs.sensor;
+
+/// Ordered returns for one emitted laser beam.
+table LaserEcho {
+  /// Echo values ordered by return time; units follow the containing vector.
+  echoes:[float] (id: 0);
+}
+
+/// Zero-copy multi-return planar laser sweep.
+table MultiEchoLaserScan {
+  /// Acquisition timestamp in nanoseconds and scan coordinate frame.
+  header:vmsgs.fbs.common.Header (id: 0);
+
+  /// Angle of the first beam about the frame z axis, in radians.
+  angle_min:float (id: 1);
+
+  /// Angle of the final beam about the frame z axis, in radians.
+  angle_max:float (id: 2);
+
+  /// Angular separation between adjacent beams, in radians.
+  angle_increment:float (id: 3);
+
+  /// Acquisition interval between adjacent beams, in signed nanoseconds.
+  time_increment_ns:long (id: 4);
+
+  /// Duration of one complete sweep, in signed nanoseconds.
+  scan_time_ns:long (id: 5);
+
+  /// Minimum valid range echo, in metres.
+  range_min:float (id: 6);
+
+  /// Maximum valid range echo, in metres.
+  range_max:float (id: 7);
+
+  /// Per-beam range echoes in metres; vector length equals the angular sample count.
+  ranges:[LaserEcho] (id: 8);
+
+  /// Per-beam intensity echoes aligned one-to-one with ranges.
+  intensities:[LaserEcho] (id: 9);
+}
+
+root_type MultiEchoLaserScan;

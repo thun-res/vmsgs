@@ -7,11 +7,16 @@ import "common/header.proto";
 
 // Force + torque acting at a point.
 message Wrench {
+  // Force along the containing frame axes, in newtons.
   Vector3 force = 1;
+  // Torque about the containing frame axes, in newton-metres.
   Vector3 torque = 2;
 }
 
+// Timestamped force and torque expressed in header.frame_id.
 message WrenchStamped {
+  // Measurement timestamp in nanoseconds and wrench coordinate frame.
   vmsgs.proto.common.Header header = 1;
+  // Force and torque expressed in header.frame_id.
   Wrench wrench = 2;
 }

@@ -6,6 +6,7 @@ import "common/header.proto";
 import "geometry/twist.proto";
 import "geometry/pose.proto";
 
+// Generic locomotion gait selected for a legged robot.
 enum Gait {
   GAIT_UNKNOWN = 0;
   GAIT_STAND = 1;
@@ -20,18 +21,27 @@ enum Gait {
   GAIT_HOPPING = 10;
 }
 
+// Desired base motion, gait, stance, and step parameters for locomotion.
 message LocomotionCommand {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // Desired body linear and angular velocity in header.frame_id.
   vmsgs.proto.geometry.Twist target_twist = 2;
+  // Requested locomotion gait; UNKNOWN delegates selection to the controller.
   Gait gait = 3;
   // Stance height (m) for legged platforms.
   float stance_height = 4;
 }
 
+// Synchronized locomotion mode, base motion, contacts, and stability state.
 message LocomotionState {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // Gait currently executed by the locomotion controller.
   Gait active_gait = 2;
+  // Measured body linear and angular velocity in header.frame_id.
   vmsgs.proto.geometry.Twist achieved_twist = 3;
+  // Pose expressed in the coordinate frame identified by the enclosing header.
   vmsgs.proto.geometry.Pose body_pose = 4;
   // Per-leg foot contact (size: number of legs, value: 0 = swing, 1 = stance).
   repeated uint32 foot_contact = 5 [packed = true];

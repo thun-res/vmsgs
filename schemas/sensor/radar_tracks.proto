@@ -6,12 +6,14 @@ import "common/header.proto";
 import "common/uuid.proto";
 import "geometry/vector3.proto";
 
-// Object-level radar track produced by an on-board radar tracker.
+// Lightweight radar track: position/velocity/acceleration without covariance.
+// Use RadarObject (radar_object.proto) when full uncertainty, amplitude, and
+// radar field metadata are required.
 message RadarTrack {
-  vmsgs.proto.common.UUID uuid = 1;
-  vmsgs.proto.geometry.Vector3 position = 2;
-  vmsgs.proto.geometry.Vector3 velocity = 3;
-  vmsgs.proto.geometry.Vector3 acceleration = 4;
+  vmsgs.proto.common.UUID uuid = 1;               // Stable 128-bit tracker identity.
+  vmsgs.proto.geometry.Vector3 position = 2;      // Target position in metres.
+  vmsgs.proto.geometry.Vector3 velocity = 3;      // Target velocity in metres per second.
+  vmsgs.proto.geometry.Vector3 acceleration = 4;  // Target acceleration in m/s^2.
   // Bounding-box extents in m.
   vmsgs.proto.geometry.Vector3 size = 5;
   // Class id; see perception.ObjectLabel.
@@ -22,7 +24,9 @@ message RadarTrack {
   float existence_probability = 8;
 }
 
+// Radar tracks updated together in one timestamped scan or fusion cycle.
 message RadarTracks {
-  vmsgs.proto.common.Header header = 1;
+  vmsgs.proto.common.Header header = 1;  // Observation time and common track frame.
+  // Tracks observed in this cycle; each track's uuid provides stable identity.
   repeated RadarTrack tracks = 2;
 }

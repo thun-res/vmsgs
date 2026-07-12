@@ -1,0 +1,65 @@
+include "../common/header.fbs";
+
+namespace vmsgs.fbs.embodied;
+
+/// External tensor descriptor for zero-copy or memory-mapped dataset storage.
+table TensorReference {
+  /// Stable observation name, such as "front_camera" or "joint_position".
+  name:string (id: 0);
+
+  /// Dataset-relative path or URI understood by the dataset reader.
+  uri:string (id: 1);
+
+  /// Payload format and scalar type, for example "npy/float32" or "jpeg".
+  encoding:string (id: 2);
+
+  /// Dimensions ordered from outermost to innermost; images normally use HWC.
+  shape:[ulong] (id: 3);
+}
+
+/// Hot-path representation of one synchronized robot-learning transition.
+table EpisodeStep {
+  /// Acquisition/publication metadata; timestamps are nanoseconds.
+  header:vmsgs.fbs.common.Header (id: 0);
+
+  /// Most-significant 64 bits of the 128-bit episode UUID.
+  episode_high:ulong (id: 1);
+
+  /// Least-significant 64 bits of the 128-bit episode UUID.
+  episode_low:ulong (id: 2);
+
+  /// Zero-based, monotonically increasing index inside the episode.
+  step:ulong (id: 3);
+
+  /// Synchronized observations stored outside the FlatBuffer.
+  observations:[TensorReference] (id: 4);
+
+  /// Flattened action vector defined by action_space_id.
+  action:[float] (id: 5);
+
+  /// Versioned definition of action ordering, units, bounds, and frame.
+  action_space_id:string (id: 6);
+
+  /// Scalar reward assigned to this transition.
+  reward:float (id: 7);
+
+  /// Whether the task itself reached a terminal state.
+  terminated:bool (id: 8);
+
+  /// Whether collection ended because of an external limit.
+  truncated:bool (id: 9);
+
+  /// Natural-language instruction active at this step; may be empty.
+  language_instruction:string (id: 10);
+
+  /// Discount applied to future reward after this transition, normally [0, 1].
+  discount:float (id: 11);
+
+  /// Observation sample offsets from header.stamp in signed nanoseconds.
+  observation_time_offset_ns:[long] (id: 12);
+
+  /// Per-observation validity flags aligned one-to-one with observations.
+  observation_valid:[bool] (id: 13);
+}
+
+root_type EpisodeStep;

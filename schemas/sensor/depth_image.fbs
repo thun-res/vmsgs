@@ -2,31 +2,35 @@ include "../common/header.fbs";
 
 namespace vmsgs.fbs.sensor;
 
+/// Scalar encoding used by every pixel in a depth image payload.
 enum DepthEncoding : ubyte {
+  /// Unset/unknown encoding; producers must set a concrete value.
+  DEPTH_ENCODING_UNKNOWN = 0,
   /// 16-bit unsigned, depth in millimeters.
-  UINT16_MM = 0,
+  UINT16_MM = 1,
   /// 32-bit float, depth in meters.
-  FLOAT32_M = 1,
+  FLOAT32_M = 2,
   /// 32-bit float, inverse depth (disparity-like) in 1/m.
-  FLOAT32_INV_M = 2,
+  FLOAT32_INV_M = 3,
 }
 
+/// Metric depth image optimized for zero-copy transport and processing.
 table DepthImage {
-  header:vmsgs.fbs.common.Header (id: 0);
-  height:uint32 (id: 1);
-  width:uint32  (id: 2);
-  encoding:DepthEncoding (id: 3);
+  header:vmsgs.fbs.common.Header (id: 0);  // Capture time and optical frame.
+  height:uint32 (id: 1);  // Number of depth-image pixel rows.
+  width:uint32 (id: 2);  // Number of depth-image pixel columns.
+  encoding:DepthEncoding (id: 3);  // Scalar depth representation for all pixels.
   /// Row stride in bytes.
   step:uint32 (id: 4);
-  data:[uint8] (id: 5);
+  data:[uint8] (id: 5);  // Row-major depth bytes; length covers step*height.
   /// Optional intrinsic projection (fx, fy, cx, cy) - unset when paired with CameraInfo.
   fx:float (id: 6);
-  fy:float (id: 7);
-  cx:float (id: 8);
-  cy:float (id: 9);
+  fy:float (id: 7);  // Vertical focal length in pixels.
+  cx:float (id: 8);  // Principal point x coordinate in pixels.
+  cy:float (id: 9);  // Principal point y coordinate in pixels.
   /// Min/max valid depth in meters; 0 = unknown.
   depth_min:float (id: 10);
-  depth_max:float (id: 11);
+  depth_max:float (id: 11);  // Maximum valid depth in metres.
 }
 
 root_type DepthImage;

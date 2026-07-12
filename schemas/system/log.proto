@@ -4,6 +4,8 @@ package vmsgs.proto.system;
 
 import "common/header.proto";
 
+// Severity assigned to one log record. Consumers should filter by value rather
+// than relying on declaration order because TRACE is retained for compatibility.
 enum LogLevel {
   LOG_DEBUG = 0;
   LOG_INFO = 1;
@@ -13,13 +15,26 @@ enum LogLevel {
   LOG_TRACE = 5;
 }
 
-// Single log line. Mirrors rcl_interfaces/Log + rosgraph_msgs/Log conventions.
+// Single log line with severity, logger name, message text, and source location.
 message Log {
+  // Event time and publisher identity context.
   vmsgs.proto.common.Header header = 1;
+
+  // Severity of this record.
   LogLevel level = 2;
+
+  // Logger, node, or subsystem name.
   string name = 3;
+
+  // UTF-8 log text; one message may contain multiple logical lines.
   string msg = 4;
+
+  // Optional source file path associated with the call site.
   string file = 5;
+
+  // Optional source function or symbol name.
   string function = 6;
+
+  // One-based source line number; zero when unavailable.
   uint32 line = 7;
 }

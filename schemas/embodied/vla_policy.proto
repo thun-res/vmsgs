@@ -1,0 +1,123 @@
+syntax = "proto3";
+
+package vmsgs.proto.embodied;
+
+import "common/header.proto";
+import "common/key_value.proto";
+import "common/status.proto";
+import "common/uuid.proto";
+import "embodied/space_descriptor.proto";
+
+// Static, versioned contract advertised by a VLA policy endpoint.
+message VLAPolicyDescriptor {
+  // Stable policy identifier used by inference requests.
+  string policy_id = 1;
+
+  // Immutable model or release version.
+  string version = 2;
+
+  // Runtime family, for example ONNX, TensorRT, PyTorch, or JAX.
+  string runtime = 3;
+
+  // URI of model weights or an authoritative model manifest.
+  string model_uri = 4;
+
+  // Content checksum of the referenced model artifact.
+  string model_checksum = 5;
+
+  // Machine-readable observation-space contract accepted by the policy.
+  SpaceDescriptor observation_space = 6;
+
+  // Machine-readable action-space contract produced by the policy.
+  SpaceDescriptor action_space = 7;
+
+  // Robot model identifiers on which the policy has been validated.
+  repeated string supported_model_ids = 8;
+
+  // Maximum number of observation steps consumed as temporal context.
+  uint32 context_horizon = 9;
+
+  // Maximum number of future action steps produced by one inference.
+  uint32 action_horizon = 10;
+
+  // Nominal inference or control rate in hertz; zero means unspecified.
+  double nominal_rate_hz = 11;
+}
+
+// Correlated request to run one VLA policy inference.
+message VLAInferenceRequest {
+  // Request creation time and the observation coordinate frame.
+  vmsgs.proto.common.Header header = 1;
+
+  // Unique request identifier copied into results and emitted actions.
+  vmsgs.proto.common.UUID request_uuid = 2;
+
+  // Episode identifier associated with the observation.
+  vmsgs.proto.common.UUID episode_uuid = 3;
+
+  // Zero-based observation step within the episode.
+  uint64 step = 4;
+
+  // Requested policy identifier; empty selects the endpoint default.
+  string policy_id = 5;
+
+  // Natural-language instruction active for this inference.
+  string instruction = 6;
+
+  // Topic or shared-memory URL carrying the correlated observation payload.
+  string observation_url = 7;
+
+  // Acquisition timestamp of the referenced observation in nanoseconds.
+  uint64 observation_stamp = 8;
+
+  // Requested number of future action steps; zero selects the policy default.
+  uint32 action_horizon = 9;
+
+  // Optional deterministic sampling seed; zero may select runtime randomness.
+  uint64 seed = 10;
+
+  // Low-volume runtime parameters such as temperature or guidance scale.
+  repeated vmsgs.proto.common.KeyValue parameters = 11;
+}
+
+// Completion record for a correlated VLA inference request.
+message VLAInferenceResult {
+  // Result publication time in nanoseconds.
+  vmsgs.proto.common.Header header = 1;
+
+  // Request identifier copied from VLAInferenceRequest.
+  vmsgs.proto.common.UUID request_uuid = 2;
+
+  // Portable success or error status.
+  vmsgs.proto.common.Status status = 3;
+
+  // Number of action steps emitted for this request.
+  uint32 actions_generated = 4;
+
+  // End-to-end inference latency in nanoseconds.
+  uint64 inference_time_ns = 5;
+
+  // Exact policy/model version used for reproducibility.
+  string model_version = 6;
+}
+
+// Request to clear temporal context maintained by a stateful VLA policy.
+message VLAPolicyResetRequest {
+  // Unique reset request identifier.
+  vmsgs.proto.common.UUID request_uuid = 1;
+
+  // Episode whose cached context must be cleared; zero UUID means all episodes.
+  vmsgs.proto.common.UUID episode_uuid = 2;
+
+  // Policy identifier to reset; empty selects the endpoint default.
+  string policy_id = 3;
+}
+
+// Result of clearing a policy's temporal context.
+message VLAPolicyResetResponse {
+  // Request identifier copied from VLAPolicyResetRequest.
+  vmsgs.proto.common.UUID request_uuid = 1;
+
+  // Portable success or error status.
+  vmsgs.proto.common.Status status = 2;
+}

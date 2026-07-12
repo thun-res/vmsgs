@@ -5,16 +5,25 @@ namespace vmsgs.fbs.perception;
 
 /// Multi-layer planning cost map. Each layer is row-major with `width*height` floats.
 table CostMapLayer {
+  /// Stable layer name describing its cost source or semantic meaning.
   name:string (id: 0);
+  /// Row-major cell costs; length must equal map width times height.
   data:[float] (id: 1);
 }
 
+/// Dense two-dimensional planning cost grid stored in row-major order.
 table CostMap {
+  /// Generation timestamp in nanoseconds and grid coordinate frame.
   header:vmsgs.fbs.common.Header (id: 0);
+  /// Square cell edge length in metres; must be positive.
   resolution:float (id: 1);
+  /// Number of columns along the grid x axis.
   width:uint32 (id: 2);
+  /// Number of rows along the grid y axis.
   height:uint32 (id: 3);
+  /// Pose of cell (0, 0) in header.frame_id.
   origin:vmsgs.fbs.geometry.Pose (id: 4);
+  /// Named cost layers sharing this grid geometry.
   layers:[CostMapLayer] (id: 5);
 }
 

@@ -4,6 +4,7 @@ package vmsgs.proto.localization;
 
 import "common/header.proto";
 
+// Coarse health level derived from localization uncertainty and source quality.
 enum LocalizationLevel {
   LOC_LEVEL_UNKNOWN = 0;
   LOC_LEVEL_FAILED = 1;
@@ -14,15 +15,22 @@ enum LocalizationLevel {
 
 // Aggregated quality summary over all localization sources.
 message LocalizationQuality {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // Aggregate localization health level derived from uncertainty and source scores.
   LocalizationLevel level = 2;
   // 1-sigma estimated error (m / rad).
   float position_rmse = 3;
+  // 1-sigma estimated orientation error, in radians.
   float orientation_rmse = 4;
   // Source-specific scores in [0,1].
   float gnss_score = 5;
+  // Normalized value in the inclusive range [0, 1].
   float lidar_score = 6;
+  // Normalized value in the inclusive range [0, 1].
   float camera_score = 7;
+  // Normalized value in the inclusive range [0, 1].
   float wheel_odom_score = 8;
+  // Optional human-readable diagnostic detail for this quality report.
   string message = 9;
 }

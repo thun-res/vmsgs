@@ -4,14 +4,20 @@ package vmsgs.proto.geometry;
 
 // Position in 3D space.
 message Point {
+  // Position along the containing frame x axis, normally in metres.
   double x = 1;
+  // Position along the containing frame y axis, normally in metres.
   double y = 2;
+  // Position along the containing frame z axis, normally in metres.
   double z = 3;
 }
 
 // Lower-precision variant for high-volume streams (e.g. predicted paths).
 message Point32 {
+  // Single-precision position along the containing frame x axis, in metres.
   float x = 1;
+  // Single-precision position along the containing frame y axis, in metres.
   float y = 2;
+  // Single-precision position along the containing frame z axis, in metres.
   float z = 3;
 }

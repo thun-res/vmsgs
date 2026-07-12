@@ -6,24 +6,28 @@ import "common/header.proto";
 
 // Generic joystick / gamepad input.
 message Joy {
-  vmsgs.proto.common.Header header = 1;
+  vmsgs.proto.common.Header header = 1;        // Input time and joystick source frame.
   repeated float axes = 2 [packed = true];     // [-1,1]
   repeated int32 buttons = 3 [packed = true];  // 0/1
 }
 
+// Force, LED, or rumble command addressed to one joystick actuator.
 message JoyFeedback {
+  // Physical feedback channel controlled by the command value.
   enum Type {
     TYPE_UNKNOWN = 0;
     TYPE_LED = 1;
     TYPE_RUMBLE = 2;
     TYPE_BUZZER = 3;
   }
-  Type type = 1;
-  uint32 id = 2;
-  float intensity = 3;
+  Type type = 1;        // Physical feedback channel controlled by this command.
+  uint32 id = 2;        // Zero-based actuator index within the channel type.
+  float intensity = 3;  // Normalized command intensity in [0, 1].
 }
 
+// Joystick feedback commands intended to be applied in one update.
 message JoyFeedbackArray {
-  vmsgs.proto.common.Header header = 1;
+  vmsgs.proto.common.Header header = 1;  // Command time and target joystick frame.
+  // Feedback commands applied independently in array order.
   repeated JoyFeedback array = 2;
 }

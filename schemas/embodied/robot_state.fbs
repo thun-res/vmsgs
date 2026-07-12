@@ -1,0 +1,31 @@
+include "../common/header.fbs";
+include "../geometry/geometry.fbs";
+include "../sensor/joint_state.fbs";
+include "hot_path_types.fbs";
+include "manipulator_state.fbs";
+include "gripper_state.fbs";
+namespace vmsgs.fbs.embodied;
+/// Whole-body mobile-manipulator state.
+table RobotState {
+  /// Snapshot timestamp and world frame.
+  header:vmsgs.fbs.common.Header (id: 0);
+  /// Stable robot identifier.
+  robot_id:string (id: 1);
+  /// Base pose in header.frame_id.
+  base_pose:vmsgs.fbs.geometry.Pose (id: 2);
+  /// Base linear and angular velocity.
+  base_twist:Twist (id: 3);
+  /// Articulated joint state.
+  joints:vmsgs.fbs.sensor.JointState (id: 4);
+  /// Arm states in robot-model order.
+  arms:[ManipulatorState] (id: 5);
+  /// Gripper states in robot-model order.
+  grippers:[GripperState] (id: 6);
+  /// Remaining charge in [0,100].
+  battery_percentage:float (id: 7);
+  /// Controller-defined operating mode.
+  operating_mode:string (id: 8);
+  /// True while emergency-stopped.
+  is_estopped:bool (id: 9);
+}
+root_type RobotState;

@@ -6,12 +6,15 @@ namespace vmsgs.fbs.map;
 /// The bytes are produced by the upstream map authoring tool; consumers parse
 /// them with the matching library indicated by `format`.
 table LaneletMapBin {
+  /// Timestamp, sequence number, and coordinate frame shared by this payload.
   header:vmsgs.fbs.common.Header (id: 0);
   /// "lanelet2_osm", "opendrive", "vector_tile", ...
   format:string (id: 1);
+  /// Version identifier of this map blob.
   version:string (id: 2);
   /// Optional projection identifier (e.g. "MGRS:10TFK", "UTM:54N").
   projector:string (id: 3);
+  /// Serialized map blob bytes, parsed with the library named by format.
   data:[uint8] (id: 4);
 }
 

@@ -5,15 +5,27 @@ package vmsgs.proto.common;
 import "common/header.proto";
 import "common/key_value.proto";
 
-// Generic numeric/string metric (autoware_internal_metric_msgs).
+// Generic observable value for telemetry systems that do not share a strongly
+// typed metric schema. Numeric values use a locale-independent string format.
 message Metric {
+  // Stable metric name, preferably using dotted subsystem notation.
   string name = 1;
+
+  // UTF-8 value; producers should document its numeric or categorical format.
   string value = 2;
+
+  // Physical unit, such as "ms", "bytes", or "%"; empty if dimensionless.
   string unit = 3;
+
+  // Optional dimensions used to partition or filter the metric.
   repeated KeyValue tags = 4;
 }
 
+// Timestamped batch of metrics sampled during the same reporting cycle.
 message MetricArray {
+  // Sampling and publication metadata for this batch.
   vmsgs.proto.common.Header header = 1;
+
+  // Metrics in producer-defined order; names should be unique within the batch.
   repeated Metric metric_array = 2;
 }

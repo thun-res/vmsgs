@@ -1,0 +1,24 @@
+include "../common/header.fbs";
+include "hot_path_types.fbs";
+include "joint_trajectory.fbs";
+namespace vmsgs.fbs.embodied;
+/// Joint controller reference, feedback, error, tolerances, and speed scaling.
+table JointTrajectoryControllerState {
+  /// Sample timestamp and controller frame.
+  header:vmsgs.fbs.common.Header (id: 0);
+  /// Joint ordering shared by points and tolerances.
+  joint_names:[string] (id: 1);
+  /// Desired sample at header.stamp.
+  reference:vmsgs.fbs.embodied.JointTrajectoryPoint (id: 2);
+  /// Measured sample at header.stamp.
+  feedback:vmsgs.fbs.embodied.JointTrajectoryPoint (id: 3);
+  /// Reference minus feedback.
+  error:vmsgs.fbs.embodied.JointTrajectoryPoint (id: 4);
+  /// Execution tolerances per joint.
+  path_tolerance:[JointTolerance] (id: 5);
+  /// Final-goal tolerances per joint.
+  goal_tolerance:[JointTolerance] (id: 6);
+  /// Applied scale in [0,1].
+  speed_scaling_factor:double (id: 7);
+}
+root_type JointTrajectoryControllerState;

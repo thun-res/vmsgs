@@ -4,73 +4,157 @@ package vmsgs.proto.system;
 
 import "common/header.proto";
 
-// Mirrors autoware_internal_msgs/ResourceUsageReport + tier4_debug_msgs/SystemUsage.
+// Portable host- and process-level resource telemetry for runtime supervision.
 
+// Utilization sample for one logical CPU.
 message CpuUsage {
+  // Zero-based logical processor identifier assigned by the operating system.
   uint32 cpu_id = 1;
+
+  // User-space execution time as a percentage in [0, 100].
   float user_percent = 2;
+
+  // Kernel execution time as a percentage in [0, 100].
   float system_percent = 3;
+
+  // Idle time as a percentage in [0, 100].
   float idle_percent = 4;
+
+  // Total non-idle utilization as a percentage in [0, 100].
   float total_percent = 5;
 }
 
+// Host physical-memory and swap usage sampled at one instant.
 message MemoryUsage {
+  // Installed or available physical memory capacity in bytes.
   uint64 total_bytes = 1;
+
+  // Physical memory currently considered used, in bytes.
   uint64 used_bytes = 2;
+
+  // Immediately free physical memory in bytes.
   uint64 free_bytes = 3;
+
+  // Reclaimable cache accounted by the operating system, in bytes.
   uint64 cached_bytes = 4;
+
+  // Configured swap capacity in bytes.
   uint64 swap_total_bytes = 5;
+
+  // Swap currently occupied in bytes.
   uint64 swap_used_bytes = 6;
 }
 
+// Utilization and thermal sample for one GPU or accelerator.
 message GpuUsage {
+  // Zero-based device identifier assigned by the reporting backend.
   uint32 gpu_id = 1;
+
+  // Human-readable model or device name.
   string name = 2;
+
+  // Compute utilization as a percentage in [0, 100].
   float utilization_percent = 3;
+
+  // Device memory currently occupied in bytes.
   uint64 memory_used_bytes = 4;
+
+  // Total device memory capacity in bytes.
   uint64 memory_total_bytes = 5;
+
+  // Device temperature in degrees Celsius.
   float temperature_c = 6;
+
+  // Instantaneous electrical power draw in watts.
   float power_w = 7;
 }
 
+// Capacity and throughput sample for one mounted filesystem.
 message DiskUsage {
+  // Canonical mount path identifying the filesystem.
   string mount_point = 1;
+
+  // Filesystem capacity in bytes.
   uint64 total_bytes = 2;
+
+  // Occupied filesystem space in bytes.
   uint64 used_bytes = 3;
+
+  // Available filesystem space in bytes.
   uint64 free_bytes = 4;
+
+  // Read throughput averaged over the reporter's sampling window, in bytes/s.
   float read_bytes_per_sec = 5;
+
+  // Write throughput averaged over the sampling window, in bytes/s.
   float write_bytes_per_sec = 6;
 }
 
+// Cumulative counters and current throughput for one network interface.
 message NetworkUsage {
+  // Operating-system interface name, such as "eth0".
   string interface_name = 1;
+
+  // Bytes received since the interface counter was reset or wrapped.
   uint64 rx_bytes = 2;
+
+  // Bytes transmitted since the interface counter was reset or wrapped.
   uint64 tx_bytes = 3;
+
+  // Receive throughput averaged over the sampling window, in bytes/s.
   float rx_bytes_per_sec = 4;
+
+  // Transmit throughput averaged over the sampling window, in bytes/s.
   float tx_bytes_per_sec = 5;
 }
 
+// Host-wide resource snapshot containing all discovered devices and interfaces.
 message ResourceUsageReport {
+  // Sampling and publication metadata for every nested measurement.
   vmsgs.proto.common.Header header = 1;
+
+  // Per-logical-CPU utilization samples.
   repeated CpuUsage cpu = 2;
+
+  // Aggregate host physical-memory and swap usage.
   MemoryUsage memory = 3;
+
+  // Per-device GPU or accelerator samples.
   repeated GpuUsage gpu = 4;
+
+  // Per-mounted-filesystem capacity and throughput samples.
   repeated DiskUsage disk = 5;
+
+  // Per-interface network counter and throughput samples.
   repeated NetworkUsage network = 6;
 }
 
+// Process-level resource sample used to attribute host load to one node.
 message SystemUsage {
+  // Time at which process counters were sampled.
   vmsgs.proto.common.Header header = 1;
+
+  // Stable node or process name used to correlate with ProcessInfo.
   string node_name = 2;
+
   // Per-node CPU% and resident memory.
   float cpu_percent = 3;
+
+  // Resident set size in bytes.
   uint64 memory_rss_bytes = 4;
+
+  // Number of live operating-system threads.
   uint32 thread_count = 5;
+
   // File descriptors opened.
   uint32 fd_count = 6;
 }
 
+// Batch of process-level resource samples collected in one cycle.
 message SystemUsageArray {
+  // Common sampling and publication metadata.
   vmsgs.proto.common.Header header = 1;
+
+  // Process samples; node names should be unique within this batch.
   repeated SystemUsage processes = 2;
 }

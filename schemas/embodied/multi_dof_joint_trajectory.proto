@@ -3,23 +3,29 @@ syntax = "proto3";
 package vmsgs.proto.embodied;
 
 import "common/header.proto";
-import "common/time.proto";
+import "common/duration.proto";
 import "geometry/transform.proto";
 import "geometry/twist.proto";
 import "geometry/accel.proto";
 
-// Mirrors trajectory_msgs/MultiDOFJointTrajectory{,Point} - ordered waypoints
-// for multi-DoF joints (floating base, mobile chassis).
+// Ordered waypoints for multi-DoF joints (floating base, mobile chassis).
 message MultiDOFJointTrajectoryPoint {
+  // Signed offset from the trajectory header timestamp.
   vmsgs.proto.common.Duration time_from_start = 1;
   // Aligned with MultiDOFJointTrajectory.joint_names.
   repeated vmsgs.proto.geometry.Transform transforms = 2;
+  // Per-joint twists aligned one-to-one with transforms and joint_names.
   repeated vmsgs.proto.geometry.Twist velocities = 3;
+  // Per-joint accelerations aligned one-to-one with transforms and joint_names.
   repeated vmsgs.proto.geometry.Accel accelerations = 4;
 }
 
+// Time-ordered trajectory for floating or planar joints named by joint_names.
 message MultiDOFJointTrajectory {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // Joint names; index i names the joint whose value is at index i in each point vector.
   repeated string joint_names = 2;
+  // Ordered samples expressed in the coordinate frame identified by the enclosing header.
   repeated MultiDOFJointTrajectoryPoint points = 3;
 }

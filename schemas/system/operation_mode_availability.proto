@@ -4,15 +4,29 @@ package vmsgs.proto.system;
 
 import "common/header.proto";
 
-// Mirrors tier4_system_msgs/OperationModeAvailability - which higher-level
-// operation modes the system can transition to right now.
+// Reports which higher-level operation modes the system can enter immediately.
 message OperationModeAvailability {
+  // Time when availability was evaluated.
   vmsgs.proto.common.Header header = 1;
+
+  // True when the stationary stop mode may be selected.
   bool stop = 2;
+
+  // True when autonomous driving may be selected.
   bool autonomous = 3;
+
+  // True when local operator control may be selected.
   bool local = 4;
+
+  // True when remote operator control may be selected.
   bool remote = 5;
+
+  // True when emergency-stop behavior is currently executable.
   bool emergency_stop = 6;
+
+  // True when comfortable-stop behavior is currently executable.
   bool comfortable_stop = 7;
+
+  // True when pull-over behavior is currently executable.
   bool pull_over = 8;
 }

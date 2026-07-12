@@ -3,32 +3,46 @@ syntax = "proto3";
 package vmsgs.proto.control;
 
 import "common/header.proto";
+import "common/status.proto";
 
+// Enumerates vehicle operation modes and the source that holds control authority.
 enum OperationMode {
   OPERATION_MODE_UNKNOWN = 0;
   OPERATION_MODE_STOP = 1;
   OPERATION_MODE_AUTONOMOUS = 2;
-  OPERATION_MODE_LOCAL = 3;     // remote/teleop
-  OPERATION_MODE_REMOTE = 4;
+  OPERATION_MODE_LOCAL = 3;   // operator control from an on-vehicle/local station
+  OPERATION_MODE_REMOTE = 4;  // operator control through a remote network station
   OPERATION_MODE_MANUAL = 5;
 }
 
+// Reports the active operation mode, transition state and available transitions.
 message OperationModeState {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // Mode encoded using the referenced `OperationMode` contract.
   OperationMode mode = 2;
-  bool is_autoware_control_enabled = 3;
+  // True when the autonomous stack currently owns the vehicle-control path.
+  bool autonomy_control_enabled = 3;
+  // True while an operation-mode transition is in progress.
   bool is_in_transition = 4;
+  // True when stop mode can currently be selected.
   bool is_stop_mode_available = 5;
+  // True when autonomous mode can currently be selected.
   bool is_autonomous_mode_available = 6;
+  // True when local-operator mode can currently be selected.
   bool is_local_mode_available = 7;
+  // True when remote-operator mode can currently be selected.
   bool is_remote_mode_available = 8;
 }
 
+// Requests a transition to a specific vehicle operation mode.
 message ChangeOperationModeRequest {
+  // Target encoded using the referenced `OperationMode` contract.
   OperationMode target = 1;
 }
 
+// Reports whether an operation-mode transition was accepted and why it failed.
 message ChangeOperationModeResponse {
-  bool success = 1;
-  string reason = 2;
+  // Portable transition status and diagnostic detail.
+  vmsgs.proto.common.Status status = 1;
 }

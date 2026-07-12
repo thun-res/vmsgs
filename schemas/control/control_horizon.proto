@@ -3,12 +3,15 @@ syntax = "proto3";
 package vmsgs.proto.control;
 
 import "common/header.proto";
+import "common/duration.proto";
 import "control/ackermann_control_command.proto";
 
 // MPC-style horizon of upcoming commands.
 message ControlHorizon {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
-  // Time interval between consecutive `commands` (seconds).
-  float time_step = 2;
+  // Time interval between consecutive `commands`.
+  vmsgs.proto.common.Duration time_step = 2;
+  // Predicted control commands in chronological order, spaced by time_step.
   repeated AckermannControlCommand commands = 3;
 }

@@ -1,0 +1,135 @@
+syntax = "proto3";
+
+package vmsgs.proto.embodied;
+
+import "common/header.proto";
+import "common/uuid.proto";
+import "embodied/space_descriptor.proto";
+
+// Describes an externally stored tensor used by an episode step. Large sensor
+// payloads remain outside protobuf so that datasets can use mmap, object stores,
+// or format-specific zero-copy readers without duplicating the tensor bytes.
+message TensorReference {
+  // Stable observation name, for example "front_camera" or "joint_position".
+  string name = 1;
+
+  // Dataset-relative path or URI. Its scheme is selected by the dataset writer.
+  string uri = 2;
+
+  // Payload encoding and scalar type, for example "npy/float32" or "jpeg".
+  string encoding = 3;
+
+  // Tensor dimensions in outermost-to-innermost order. Images normally use HWC.
+  repeated uint64 shape = 4;
+}
+
+// One synchronized transition in a robot-learning episode.
+message EpisodeStep {
+  // Acquisition and publication timestamps; header.stamp is in nanoseconds.
+  vmsgs.proto.common.Header header = 1;
+
+  // Globally unique identifier shared by every step of the same episode.
+  vmsgs.proto.common.UUID episode_uuid = 2;
+
+  // Zero-based, monotonically increasing step index within the episode.
+  uint64 step = 3;
+
+  // References to synchronized observations captured for this transition.
+  repeated TensorReference observations = 4;
+
+  // Flattened action vector interpreted according to action_space_id.
+  repeated float action = 5;
+
+  // Versioned identifier defining action ordering, units, bounds, and frame.
+  string action_space_id = 6;
+
+  // Scalar reward assigned to this transition by the task or dataset producer.
+  float reward = 7;
+
+  // True when the underlying task reached a terminal state.
+  bool terminated = 8;
+
+  // True when collection stopped for an external limit, not task termination.
+  bool truncated = 9;
+
+  // Natural-language instruction active at this step; may be empty.
+  string language_instruction = 10;
+
+  // Discount applied to future reward after this transition, normally [0, 1].
+  float discount = 11;
+
+  // Observation sample offsets from header.stamp in signed nanoseconds.
+  repeated int64 observation_time_offset_ns = 12 [packed = true];
+
+  // Per-observation validity flags aligned one-to-one with observations.
+  repeated bool observation_valid = 13 [packed = true];
+}
+
+// Reproducibility and licensing metadata for an episode's source dataset.
+message DatasetProvenance {
+  // Dataset source organization or canonical project name.
+  string source = 1;
+
+  // Dataset release, commit, or immutable version identifier.
+  string version = 2;
+
+  // Dataset split such as train, validation, or test.
+  string split = 3;
+
+  // SPDX license expression or dataset-specific license identifier.
+  string license = 4;
+
+  // Checksum of the episode manifest or source archive.
+  string checksum = 5;
+
+  // Collection operator type, for example human, policy, or scripted controller.
+  string control_source = 6;
+}
+
+// Episode-level metadata used to index, validate, and reproduce a trajectory.
+message EpisodeMetadata {
+  // Globally unique episode identifier referenced by EpisodeStep.
+  vmsgs.proto.common.UUID episode_uuid = 1;
+
+  // Stable robot or platform identifier used by the data producer.
+  string robot_id = 2;
+
+  // Task definition or benchmark identifier.
+  string task_id = 3;
+
+  // Dataset name and, when needed, its version.
+  string dataset = 4;
+
+  // Inclusive episode start time in nanoseconds on the dataset time base.
+  uint64 start_stamp = 5;
+
+  // Inclusive episode end time in nanoseconds on the same time base.
+  uint64 end_stamp = 6;
+
+  // Number of EpisodeStep records expected for this episode.
+  uint64 num_steps = 7;
+
+  // Extensible, low-volume metadata; tensor payloads must not be stored here.
+  map<string, string> attributes = 8;
+
+  // Machine-readable observation-space contract used by this episode.
+  SpaceDescriptor observation_space = 9;
+
+  // Machine-readable action-space contract referenced by action_space_id.
+  SpaceDescriptor action_space = 10;
+
+  // Robot model and control convention used to collect the episode.
+  RobotEmbodimentDescriptor embodiment = 11;
+
+  // Dataset source, version, split, licensing, and integrity information.
+  DatasetProvenance provenance = 12;
+
+  // Stable environment or scene identifier used during collection.
+  string environment_id = 13;
+
+  // True when the task-defined success condition was reached.
+  bool success = 14;
+
+  // Machine-readable terminal or reset reason.
+  string outcome_reason = 15;
+}

@@ -3,7 +3,31 @@
 // without a separate .fbs include cycle.
 namespace vmsgs.fbs.geometry;
 
-struct Vector3 { x:double; y:double; z:double; }
-struct Quaternion { x:double; y:double; z:double; w:double; }
-struct Pose { position:Vector3; orientation:Quaternion; }
-struct Transform { translation:Vector3; rotation:Quaternion; }
+/// Three-dimensional Cartesian vector in the frame of its container.
+struct Vector3 {
+  /// Component along the containing frame x axis; units are context-defined.
+  x:double;
+  /// Component along the containing frame y axis; units match x.
+  y:double;
+  /// Component along the containing frame z axis; units match x.
+  z:double;
+} struct Quaternion {
+  /// Quaternion x component; a valid rotation quaternion has unit norm.
+  x:double;
+  /// Quaternion y component; a valid rotation quaternion has unit norm.
+  y:double;
+  /// Quaternion z component; a valid rotation quaternion has unit norm.
+  z:double;
+  /// Quaternion scalar component; identity is conventionally [0,0,0,1].
+  w:double;
+} struct Pose {
+  /// Translational position in the containing frame, normally in metres.
+  position:Vector3;
+  /// Unit-quaternion orientation relative to the containing frame.
+  orientation:Quaternion;
+} struct Transform {
+  /// Translation from parent to child frame, in metres along parent axes.
+  translation:Vector3;
+  /// Unit-quaternion rotation from parent to child frame.
+  rotation:Quaternion;
+}

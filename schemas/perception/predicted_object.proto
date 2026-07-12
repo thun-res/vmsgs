@@ -4,7 +4,7 @@ package vmsgs.proto.perception;
 
 import "common/header.proto";
 import "common/uuid.proto";
-import "common/time.proto";
+import "common/duration.proto";
 import "geometry/pose.proto";
 import "geometry/twist.proto";
 import "geometry/accel.proto";
@@ -15,27 +15,42 @@ import "perception/object_classification.proto";
 message PredictedPath {
   // Equally spaced poses at `time_step` intervals from the start time.
   repeated vmsgs.proto.geometry.Pose path = 1;
+  // Relative interval between consecutive poses; must be positive when populated.
   vmsgs.proto.common.Duration time_step = 2;
+  // Probability assigned to this candidate path, in [0, 1].
   float confidence = 3;
 }
 
+// Current object motion estimate and alternative future paths.
 message PredictedObjectKinematics {
+  // Estimated pose and 6x6 uncertainty at the enclosing header timestamp.
   vmsgs.proto.geometry.PoseWithCovariance initial_pose_with_covariance = 1;
+  // Estimated velocity and 6x6 uncertainty at prediction start.
   vmsgs.proto.geometry.TwistWithCovariance initial_twist_with_covariance = 2;
+  // Estimated acceleration and 6x6 uncertainty at prediction start.
   vmsgs.proto.geometry.AccelWithCovariance initial_acceleration_with_covariance = 3;
   // Multi-modal predictions; sum of `confidence` should be ~1.0.
   repeated PredictedPath predicted_paths = 4;
 }
 
+// Tracked object augmented with probabilistic future motion predictions.
 message PredictedObject {
+  // Stable identity inherited from the source track.
   vmsgs.proto.common.UUID object_id = 1;
+  // Probability that the source object exists, in [0, 1].
   float existence_probability = 2;
+  // Candidate semantic classes and their probabilities.
   repeated ObjectClassification classification = 3;
+  // Initial state and candidate future paths.
   PredictedObjectKinematics kinematics = 4;
+  // Object-local extent assumed over the prediction horizon.
   Shape shape = 5;
 }
 
+// Predicted objects generated together in one planning or prediction cycle.
 message PredictedObjects {
+  // Prediction generation timestamp in nanoseconds and common frame.
   vmsgs.proto.common.Header header = 1;
+  // Predicted tracks; object IDs should be unique in this generation.
   repeated PredictedObject objects = 2;
 }

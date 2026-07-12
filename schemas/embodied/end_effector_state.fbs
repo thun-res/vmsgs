@@ -1,0 +1,16 @@
+include "../common/header.fbs";
+include "../geometry/geometry.fbs";
+include "hot_path_types.fbs";
+namespace vmsgs.fbs.embodied;
+/// Measured Cartesian end-effector state.
+table EndEffectorState {
+  /// Measurement timestamp and frame.
+  header:vmsgs.fbs.common.Header (id: 0);
+  /// Measured pose in header.frame_id.
+  pose:vmsgs.fbs.geometry.Pose (id: 1);
+  /// Measured linear and angular velocity.
+  twist:Twist (id: 2);
+  /// Stable identifier of the measured tool or end-effector resource.
+  end_effector_id:string (id: 3);
+}
+root_type EndEffectorState;

@@ -4,8 +4,9 @@ package vmsgs.proto.sensor;
 
 import "common/header.proto";
 
+// Temperature measurement in degrees Celsius with scalar variance.
 message Temperature {
-  vmsgs.proto.common.Header header = 1;
-  double temperature = 2;  // degC
-  double variance = 3;     // 0 if unknown
+  vmsgs.proto.common.Header header = 1;  // Measurement time and sensor frame.
+  double temperature = 2;                // degC
+  double variance = 3;                   // 0 if unknown
 }

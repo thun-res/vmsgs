@@ -12,16 +12,25 @@ message VelocityLimitConstraints {
   float min_jerk = 4;          // m/s^3 (negative)
 }
 
+// Active speed cap and optional acceleration/jerk constraints from one sender.
 message VelocityLimit {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // Identifier of the sender that issued this speed cap.
   string sender = 2;
-  float max_velocity = 3;      // m/s
+  float max_velocity = 3;  // m/s
+  // True when the accompanying constraints field applies to this speed cap.
   bool use_constraints = 4;
+  // Constraints encoded using the referenced `VelocityLimitConstraints` contract.
   VelocityLimitConstraints constraints = 5;
 }
 
+// Requests removal of a previously published speed cap from the named sender.
 message VelocityLimitClearCommand {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // Identifier of the sender whose speed cap is to be cleared.
   string sender = 2;
+  // True to clear the previously published speed cap from this sender.
   bool command = 3;
 }

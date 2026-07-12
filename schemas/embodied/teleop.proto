@@ -3,33 +3,45 @@ syntax = "proto3";
 package vmsgs.proto.embodied;
 
 import "common/header.proto";
+import "common/duration.proto";
 import "geometry/pose.proto";
 import "geometry/twist.proto";
 
 // Operator pose (e.g. VR / mocap). One per tracked body / hand.
 message TeleopPose {
-  string source = 1;       // "left_hand", "right_hand", "head", "body"
+  string source = 1;  // "left_hand", "right_hand", "head", "body"
+  // Pose expressed in the coordinate frame identified by the enclosing header.
   vmsgs.proto.geometry.Pose pose = 2;
+  // Operator linear and angular velocity in the same frame as pose.
   vmsgs.proto.geometry.Twist twist = 3;
   // Trigger / grip values in [0,1].
   float trigger = 4;
+  // Normalized gripper command in [0, 1], from fully open to fully closed.
   float grip = 5;
   // Bitmask of pressed buttons.
   uint32 buttons = 6;
 }
 
+// Synchronized set of operator tracking inputs for one teleoperation tick.
 message TeleopFrame {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // Stable identifier of the teleoperation operator.
   string operator_id = 2;
+  // Tracked operator body parts captured at header.stamp; source names should be unique.
   repeated TeleopPose poses = 3;
 }
 
 // Haptic / force feedback rendered back to the operator.
 message HapticFeedback {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
   // "left_hand", "right_hand", "torso", ...
   string target = 2;
+  // Normalized haptic vibration amplitude in the inclusive range [0, 1].
   float vibration_amplitude = 3;
+  // Haptic vibration frequency in hertz; zero disables vibration.
   float vibration_frequency_hz = 4;
-  float duration_sec = 5;
+  // Command duration; unset requests an instantaneous update.
+  vmsgs.proto.common.Duration duration = 5;
 }

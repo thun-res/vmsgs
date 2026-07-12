@@ -4,12 +4,18 @@ package vmsgs.proto.vehicle;
 
 import "common/header.proto";
 
+// Requests application or release of the parking/hand brake.
 message HandBrakeCommand {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // True to apply the hand brake; false to release it.
   bool active = 2;
 }
 
+// Reports whether the parking/hand brake is physically applied.
 message HandBrakeReport {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // True when the hand brake is physically applied.
   bool active = 2;
 }

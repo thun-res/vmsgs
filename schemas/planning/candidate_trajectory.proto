@@ -7,30 +7,43 @@ import "common/uuid.proto";
 import "planning/trajectory.proto";
 
 // Output of a candidate-trajectory generator (one of N parallel proposals).
-// Mirrors autoware_internal_planning_msgs/CandidateTrajectory.
 message GeneratorInfo {
+  // Generator id encoded using the referenced `vmsgs.proto.common.UUID` contract.
   vmsgs.proto.common.UUID generator_id = 1;
+  // Human-readable stable name of the trajectory generator.
   string generator_name = 2;
 }
 
+// Candidate trajectory paired with the generator that produced it.
 message CandidateTrajectory {
+  // Trajectory encoded using the referenced `Trajectory` contract.
   Trajectory trajectory = 1;
+  // Generator info encoded using the referenced `GeneratorInfo` contract.
   GeneratorInfo generator_info = 2;
 }
 
+// Unranked set of trajectory proposals produced for one planning cycle.
 message CandidateTrajectories {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // Unranked trajectory proposals produced for this planning cycle.
   repeated CandidateTrajectory candidates = 2;
 }
 
+// Candidate trajectory annotated with its evaluator-specific scalar cost.
 message ScoredCandidateTrajectory {
+  // Candidate encoded using the referenced `CandidateTrajectory` contract.
   CandidateTrajectory candidate = 1;
   // Lower is better unless evaluator declares otherwise.
   float score = 2;
+  // Name of the evaluator that produced this score.
   string evaluator = 3;
 }
 
+// Ranked or scored candidate set produced for one planning cycle.
 message ScoredCandidateTrajectories {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // Scored trajectory candidates produced for this planning cycle.
   repeated ScoredCandidateTrajectory scored = 2;
 }

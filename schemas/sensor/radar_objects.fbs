@@ -1,0 +1,48 @@
+include "../common/header.fbs";
+include "../geometry/geometry.fbs";
+
+namespace vmsgs.fbs.sensor;
+
+/// Fixed-layout radar object suitable for high-rate zero-copy transport.
+struct CompactRadarObject {
+  /// Most-significant 64 bits of the protobuf object UUID.
+  object_id_high:ulong;
+
+  /// Least-significant 64 bits of the protobuf object UUID.
+  object_id_low:ulong;
+
+  /// Object-center pose in the coordinate frame carried by the list header.
+  pose:vmsgs.fbs.geometry.Pose;
+
+  /// Estimated linear velocity, in metres per second along frame axes.
+  velocity:vmsgs.fbs.geometry.Vector3;
+
+  /// Estimated linear acceleration, in metres per second squared.
+  acceleration:vmsgs.fbs.geometry.Vector3;
+
+  /// Full target extents [length, width, height], in metres.
+  dimensions:vmsgs.fbs.geometry.Vector3;
+
+  /// Probability that the radar target exists, in the range [0, 1].
+  existence_probability:float;
+
+  /// Radar cross section, in decibels relative to one square metre (dBsm).
+  rcs_dbsm:float;
+
+  /// Sensor-specific return amplitude; normalization is producer-defined.
+  amplitude:float;
+
+  /// Motion state; numeric value of the protobuf RadarMotionStatus enum.
+  motion_status:uint;
+}
+
+/// High-rate collection of tracked radar targets from one scan or fusion cycle.
+table CompactRadarObjects {
+  /// Observation timestamps in nanoseconds and target coordinate frame.
+  header:vmsgs.fbs.common.Header (id: 0);
+
+  /// Tracked radar objects; ordering is producer-defined.
+  objects:[CompactRadarObject] (id: 1);
+}
+
+root_type CompactRadarObjects;

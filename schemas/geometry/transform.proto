@@ -8,13 +8,18 @@ import "common/header.proto";
 
 // Rigid-body transform: translation + rotation.
 message Transform {
+  // Translation from parent to child frame, in metres along parent-frame axes.
   Vector3 translation = 1;
+  // Unit-quaternion rotation from parent to child frame.
   Quaternion rotation = 2;
 }
 
 // Transform from `header.frame_id` to `child_frame_id`.
 message TransformStamped {
+  // Transform timestamp in nanoseconds and parent frame identifier.
   vmsgs.proto.common.Header header = 1;
+  // Child frame reached by applying transform from header.frame_id.
   string child_frame_id = 2;
+  // Rigid transform from header.frame_id to child_frame_id.
   Transform transform = 3;
 }

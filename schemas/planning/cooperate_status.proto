@@ -11,18 +11,28 @@ enum CooperateCommand {
   COOPERATE_ACTIVATE = 1;
 }
 
+// State of one runtime-cooperation request for a planned maneuver.
 message CooperateStatus {
+  // Stable UUID used to correlate this entity across messages.
   vmsgs.proto.common.UUID uuid = 1;
+  // Name of the planning module that issued this cooperation request.
   string module_name = 2;
+  // True when the requested maneuver is currently judged safe to execute.
   bool safe = 3;
+  // Command status encoded using the referenced `CooperateCommand` contract.
   CooperateCommand command_status = 4;
+  // True when this cooperation request is executed automatically without operator confirmation.
   bool auto_mode = 5;
   // Distance from ego (m) where the maneuver is currently scheduled.
   float distance = 6;
+  // Optional human-readable detail for diagnostics and operator displays.
   string detail = 7;
 }
 
+// Timestamped collection of cooperation requests from planning modules.
 message CooperateStatusArray {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // Cooperation request statuses reported by planning modules.
   repeated CooperateStatus statuses = 2;
 }

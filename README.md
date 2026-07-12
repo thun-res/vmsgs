@@ -1,12 +1,12 @@
 # VMsgs
 
-![](https://img.shields.io/badge/version-v1.0.0-informational.svg) ![](https://img.shields.io/badge/language-C++17-informational.svg) ![](https://img.shields.io/badge/license-MIT-informational.svg)
+![](https://img.shields.io/badge/version-v2.0.0-informational.svg) ![](https://img.shields.io/badge/language-C++17-informational.svg) ![](https://img.shields.io/badge/license-MIT-informational.svg)
 
-[English](vREADME.en.md) | 中文
+[English](README.en_us.md) | 中文
 
 **VMsgs** 是 [VLink](https://github.com/thun-res/vlink) 通信中间件配套的标准消息定义中心仓库。它面向自动驾驶与具身智能，提供一套覆盖感知、规划、定位、控制、地图、车辆、系统、车联网等领域的类型安全消息模型，以及与之配套的标准话题（Topic / URL）约定，使上下游模块以统一的契约通信，无需各自重复定义数据结构。
 
-当前版本提供 13 个领域、174 个 schema 文件（151 个 Protobuf、23 个 FlatBuffers），并以 C++ 库 `vlink::vmsgs` 的形式产出，可直接被业务工程链接使用。
+当前版本提供 16 个领域、237 个 schema 文件（178 个 Protobuf、59 个 FlatBuffers），并以 C++ 库 `vlink::vmsgs` 的形式产出，可直接被业务工程链接使用。
 
 ---
 
@@ -32,7 +32,7 @@ schema 按领域分目录组织于 `schemas/`，命名空间为 `vmsgs.proto.<do
 | 坐标 tf2 | `schemas/tf2/` | TF 变换消息与错误码 |
 | 传感 sensor | `schemas/sensor/` | 图像/点云/IMU/GNSS/雷达/激光/音视频等原始传感数据 |
 | 感知 perception | `schemas/perception/` | 检测/跟踪/预测目标、交通灯、车道、可行驶区域、占据栅格 |
-| 定位 localization | `schemas/localization/` | 里程计、运动状态、EKF 状态、初始化与定位质量 |
+| 定位 localization | `schemas/localization/` | 里程计、运动状态、初始化、定位质量、扫描匹配与重定位 |
 | 地图 map | `schemas/map/` | Lanelet 地图、点云地图、高程图、占据栅格地图与元数据 |
 | 规划 planning | `schemas/planning/` | 路由、路径、轨迹、行为状态、任务、避让、限速等 |
 | 控制 control | `schemas/control/` | Ackermann 指令、横/纵向控制、控制时域、运行模式 |
@@ -40,6 +40,9 @@ schema 按领域分目录组织于 `schemas/`，命名空间为 `vmsgs.proto.<do
 | 系统 system | `schemas/system/` | 诊断、心跳、MRM、紧急状态、资源占用、日志 |
 | 车联网 v2x | `schemas/v2x/` | V2X 消息、协同状态、虚拟交通灯、基础设施指令 |
 | 具身 embodied | `schemas/embodied/` | 关节轨迹、机械臂/末端执行器、技能、VLA 动作、触觉、RGBD/观测帧 |
+| 导航 navigation | `schemas/navigation/` | 几何路径、导航目标与稀疏栅格单元 |
+| 形状 shape | `schemas/shape/` | 碰撞体、三角网格、平面与实体基元 |
+| 可视化 visualization | `schemas/visualization/` | Marker 与批量可视化图元 |
 
 **序列化格式选型：**
 
@@ -113,7 +116,7 @@ VMsgs 通过 `src/schema_plugin_impl.cc` 实现 `vlink::SchemaPluginBase`，向 
 
 ```
 vmsgs/
-├── schemas/          13 个领域的消息定义（.proto / .fbs）
+├── schemas/          16 个领域的消息定义（.proto / .fbs）
 │   ├── common/       基础类型（Header、时间、UUID、状态…）
 │   ├── geometry/     几何基元
 │   ├── sensor/       原始传感数据
@@ -126,6 +129,9 @@ vmsgs/
 │   ├── system/       系统/诊断/MRM
 │   ├── v2x/          车联网
 │   ├── embodied/     具身智能
+│   ├── navigation/   导航路径与目标
+│   ├── shape/        通用形状与碰撞几何
+│   ├── visualization/ 可视化图元
 │   └── tf2/          坐标变换
 ├── include/
 │   ├── macros.h      话题 URL 访问器宏

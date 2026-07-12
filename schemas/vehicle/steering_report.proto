@@ -6,6 +6,7 @@ import "common/header.proto";
 
 // Tire / steering-wheel angle.
 message SteeringReport {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
   // Equivalent front-wheel tire angle (rad). Positive = left.
   float steering_tire_angle = 2;

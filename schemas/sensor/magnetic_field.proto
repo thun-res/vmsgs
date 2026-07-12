@@ -5,8 +5,9 @@ package vmsgs.proto.sensor;
 import "common/header.proto";
 import "geometry/vector3.proto";
 
+// Three-axis magnetic flux density in tesla with 3x3 covariance.
 message MagneticField {
-  vmsgs.proto.common.Header header = 1;
+  vmsgs.proto.common.Header header = 1;             // Measurement time and magnetometer frame.
   vmsgs.proto.geometry.Vector3 magnetic_field = 2;  // Tesla
   // Length 9; row-major.
   repeated double magnetic_field_covariance = 3 [packed = true];

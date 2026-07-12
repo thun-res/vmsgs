@@ -1,0 +1,94 @@
+syntax = "proto3";
+
+package vmsgs.proto.sensor;
+
+import "common/header.proto";
+import "geometry/transform.proto";
+import "sensor/camera_info.proto";
+
+// Rigid calibration from parent_frame to child_frame with uncertainty.
+message SensorExtrinsic {
+  // Reference coordinate frame in which the transform is expressed.
+  string parent_frame = 1;
+
+  // Sensor coordinate frame reached by applying transform.
+  string child_frame = 2;
+
+  // Translation in metres and unit-quaternion rotation.
+  vmsgs.proto.geometry.Transform transform = 3;
+
+  // Row-major 6x6 covariance ordered [translation, rotation]; 36 values.
+  repeated double covariance = 4 [packed = true];
+}
+
+// Intrinsic and extrinsic parameters for a calibrated imaging sensor.
+message CameraCalibration {
+  // Stable logical or hardware identifier of the camera.
+  string sensor_id = 1;
+
+  // Canonical intrinsic, distortion, rectification, projection, binning, and ROI data.
+  CameraInfo camera_info = 2;
+
+  // Sensor pose relative to its parent frame.
+  SensorExtrinsic extrinsic = 3;
+}
+
+// Beam geometry, operating range, and mounting pose of a lidar.
+message LidarCalibration {
+  // Stable logical or hardware identifier of the lidar.
+  string sensor_id = 1;
+
+  // Sensor pose relative to its parent frame.
+  SensorExtrinsic extrinsic = 2;
+
+  // Minimum usable radial distance, in metres.
+  float min_range = 3;
+
+  // Maximum usable radial distance, in metres; must exceed min_range.
+  float max_range = 4;
+
+  // Per-beam elevation angles, in radians and hardware channel order.
+  repeated double beam_elevation = 5 [packed = true];
+
+  // Per-beam azimuth corrections, in radians; length matches elevation.
+  repeated double beam_azimuth = 6 [packed = true];
+}
+
+// Field of view, operating range, and mounting pose of a radar.
+message RadarCalibration {
+  // Stable logical or hardware identifier of the radar.
+  string sensor_id = 1;
+
+  // Sensor pose relative to its parent frame.
+  SensorExtrinsic extrinsic = 2;
+
+  // Total horizontal field of view, in radians.
+  float azimuth_fov = 3;
+
+  // Total vertical field of view, in radians.
+  float elevation_fov = 4;
+
+  // Minimum usable radial distance, in metres.
+  float min_range = 5;
+
+  // Maximum usable radial distance, in metres; must exceed min_range.
+  float max_range = 6;
+}
+
+// Versioned snapshot of calibrations for all sensors on one platform.
+message SensorCalibrations {
+  // Calibration publication time in nanoseconds and platform frame identifier.
+  vmsgs.proto.common.Header header = 1;
+
+  // Camera calibrations indexed by each entry's sensor_id.
+  repeated CameraCalibration cameras = 2;
+
+  // Lidar calibrations indexed by each entry's sensor_id.
+  repeated LidarCalibration lidars = 3;
+
+  // Radar calibrations indexed by each entry's sensor_id.
+  repeated RadarCalibration radars = 4;
+
+  // Stable calibration-set revision, hash, or deployment version.
+  string version = 5;
+}

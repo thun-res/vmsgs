@@ -1,0 +1,35 @@
+include "../common/header.fbs";
+
+namespace vmsgs.fbs.embodied;
+
+/// Complete gripper feedback matching the protobuf GripperState semantics.
+table GripperState {
+  /// Measurement timestamp in nanoseconds and gripper frame.
+  header:vmsgs.fbs.common.Header (id: 0);
+
+  /// Numeric protobuf GripperKind value.
+  kind:int (id: 1);
+
+  /// Gripper position using the hardware interface's declared unit.
+  position:float (id: 2);
+
+  /// Force in newtons or vacuum in kilopascals according to kind.
+  effort:float (id: 3);
+
+  /// True while the gripper reports that it retains an object.
+  is_grasping:bool (id: 4);
+
+  /// True when commanded motion stopped before reaching its target.
+  is_stalled:bool (id: 5);
+
+  /// Per-finger positions in hardware-defined order.
+  finger_positions:[double] (id: 6);
+
+  /// Per-finger efforts aligned one-to-one with finger_positions.
+  finger_efforts:[double] (id: 7);
+
+  /// Stable identifier of the measured gripper resource.
+  gripper_id:string (id: 8);
+}
+
+root_type GripperState;

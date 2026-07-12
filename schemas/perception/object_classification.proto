@@ -23,7 +23,10 @@ enum ObjectLabel {
   LABEL_EMERGENCY_VEHICLE = 15;
 }
 
+// Candidate semantic class and its normalized probability.
 message ObjectClassification {
+  // Semantic class represented by this hypothesis.
   ObjectLabel label = 1;
+  // Class probability in the inclusive range [0, 1].
   float probability = 2;
 }

@@ -1,0 +1,81 @@
+syntax = "proto3";
+
+package vmsgs.proto.embodied;
+
+import "common/header.proto";
+import "common/duration.proto";
+import "embodied/hardware_state.proto";
+
+// Dynamic state-interface values for all joints reported by robot hardware.
+message DynamicJointState {
+  // Sample timestamp and robot reference frame.
+  vmsgs.proto.common.Header header = 1;
+  // Per-joint interface values; joint names must be unique in this snapshot.
+  repeated JointInterfaceState joints = 2;
+}
+
+// Incremental joint-space command suitable for servo and jogging controllers.
+message JointJog {
+  // Command timestamp and robot reference frame.
+  vmsgs.proto.common.Header header = 1;
+  // Ordered joint names shared by displacements and velocities.
+  repeated string joint_names = 2;
+  // Joint displacement increments in radians or metres; length is zero or joint_names length.
+  repeated double displacements = 3 [packed = true];
+  // Joint velocities in radians/s or metres/s; length is zero or joint_names length.
+  repeated double velocities = 4 [packed = true];
+  // Command validity duration; unset selects the controller default.
+  vmsgs.proto.common.Duration duration = 5;
+}
+
+// Lifecycle state of one loaded robot controller.
+enum ControllerActivity {
+  CONTROLLER_ACTIVITY_UNKNOWN = 0;
+  CONTROLLER_ACTIVITY_UNCONFIGURED = 1;
+  CONTROLLER_ACTIVITY_INACTIVE = 2;
+  CONTROLLER_ACTIVITY_ACTIVE = 3;
+  CONTROLLER_ACTIVITY_FINALIZED = 4;
+  CONTROLLER_ACTIVITY_ERROR = 5;
+}
+
+// Runtime controller state and the hardware interfaces it claims.
+message ControllerActivityState {
+  // Stable controller-manager name of this controller.
+  string name = 1;
+  // Controller plugin or implementation type.
+  string type = 2;
+  // Current controller lifecycle activity.
+  ControllerActivity activity = 3;
+  // Command interfaces claimed by this controller, such as joint/position.
+  repeated string claimed_interfaces = 4;
+  // True when this controller is the fallback selected for its resources.
+  bool fallback = 5;
+}
+
+// Timing and reliability statistics for one controller update loop.
+message ControllerStatistics {
+  // Statistics snapshot timestamp and controller-manager frame.
+  vmsgs.proto.common.Header header = 1;
+  // Stable controller name associated with these statistics.
+  string controller_name = 2;
+  // Number of update-loop invocations represented by this snapshot.
+  uint64 update_count = 3;
+  // Number of update cycles that exceeded their configured deadline.
+  uint64 deadline_miss_count = 4;
+  // Mean update duration over the reporting window.
+  vmsgs.proto.common.Duration mean_update_duration = 5;
+  // Maximum update duration over the reporting window.
+  vmsgs.proto.common.Duration max_update_duration = 6;
+  // Mean scheduling period over the reporting window.
+  vmsgs.proto.common.Duration mean_period = 7;
+  // Maximum absolute period jitter over the reporting window.
+  vmsgs.proto.common.Duration max_period_jitter = 8;
+}
+
+// Snapshot of all controllers managed by one controller manager.
+message ControllerManagerState {
+  // Snapshot timestamp and robot reference frame.
+  vmsgs.proto.common.Header header = 1;
+  // Controllers in implementation-defined order; names must be unique.
+  repeated ControllerActivityState controllers = 2;
+}

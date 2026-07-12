@@ -4,6 +4,7 @@ package vmsgs.proto.vehicle;
 
 import "common/header.proto";
 
+// Degree of longitudinal and lateral authority granted to automation.
 enum ControlMode {
   CONTROL_MODE_NO_COMMAND = 0;
   CONTROL_MODE_AUTONOMOUS = 1;
@@ -14,12 +15,18 @@ enum ControlMode {
   CONTROL_MODE_NOT_READY = 6;
 }
 
+// Requests a change in vehicle control authority.
 message ControlModeCommand {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // Mode encoded using the referenced `ControlMode` contract.
   ControlMode mode = 2;
 }
 
+// Reports the vehicle interface's currently effective control authority.
 message ControlModeReport {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // Mode encoded using the referenced `ControlMode` contract.
   ControlMode mode = 2;
 }

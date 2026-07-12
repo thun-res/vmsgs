@@ -9,8 +9,11 @@ import "common/uuid.proto";
 // a tokenized action vector, a Cartesian delta, or a discrete action label;
 // all three are carried as optional fields here.
 message VLAAction {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // Episode identity shared with the observation that produced this action.
   vmsgs.proto.common.UUID episode_uuid = 2;
+  // Zero-based monotonically increasing step index within the associated episode.
   uint64 step = 3;
 
   // Continuous action vector (length depends on action_space_id).
@@ -29,15 +32,30 @@ message VLAAction {
 
   // True for terminal action of an episode/horizon.
   bool is_terminal = 9;
+
+  // Correlated inference request identifier; zero UUID permits streaming mode.
+  vmsgs.proto.common.UUID request_uuid = 10;
+
+  // Zero-based position within a multi-step action horizon.
+  uint32 horizon_step = 11;
+
+  // Last timestamp in nanoseconds at which this action remains valid.
+  uint64 valid_until_stamp = 12;
 }
 
 // Reward / done signal returned by the environment or supervisor.
 message VLAFeedback {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // Episode identity whose environment transition is being reported.
   vmsgs.proto.common.UUID episode_uuid = 2;
+  // Zero-based monotonically increasing step index within the associated episode.
   uint64 step = 3;
+  // Scalar reward in task-defined units; sign and scale are dataset-defined.
   float reward = 4;
+  // True when the episode reached a terminal state.
   bool done = 5;
+  // True when the episode ended due to a time or step limit rather than reaching a terminal state.
   bool truncated = 6;
   // Free-form metadata (success flag, error code, ...).
   map<string, float> info = 7;

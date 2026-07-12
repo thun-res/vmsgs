@@ -4,23 +4,32 @@ package vmsgs.proto.perception;
 
 import "common/header.proto";
 
-// 2D pixel region of a traffic-light bulb produced by an upstream detector and
-// consumed by the classifier. Mirrors tier4_perception_msgs/TrafficLightRoi.
+// Two-dimensional pixel region of a traffic-light element produced by a detector
+// and consumed by a classifier or tracker.
 message TrafficLightRoi {
+  // Axis-aligned image rectangle measured from the upper-left pixel origin.
   message Box {
+    // Horizontal pixel offset from the image's left edge.
     uint32 x_offset = 1;
+    // Vertical pixel offset from the image's top edge.
     uint32 y_offset = 2;
+    // Region height in pixels; zero denotes an empty region.
     uint32 height = 3;
+    // Region width in pixels; zero denotes an empty region.
     uint32 width = 4;
   }
   // Map regulatory-element id of the traffic light this ROI corresponds to.
   int64 traffic_light_id = 1;
+  // Pixel-aligned image region associated with this map light ID.
   Box roi = 2;
   // Detection score in [0, 1].
   float confidence = 3;
 }
 
+// Image regions proposed for traffic-light recognition in one frame.
 message TrafficLightRoiArray {
+  // Image acquisition timestamp in nanoseconds and optical frame.
   vmsgs.proto.common.Header header = 1;
+  // Candidate regions; traffic-light IDs should be unique when mapped.
   repeated TrafficLightRoi rois = 2;
 }

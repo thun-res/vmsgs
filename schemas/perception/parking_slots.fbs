@@ -1,0 +1,39 @@
+include "../common/header.fbs";
+include "../geometry/geometry.fbs";
+
+namespace vmsgs.fbs.perception;
+
+/// Variable-boundary parking-space geometry matching the protobuf semantics.
+table ParkingSlot {
+  /// Stable tracker or map identifier; zero may denote an unassigned ID.
+  id:ulong (id: 0);
+
+  /// ParkingSlot.Type numeric value from the protobuf representation.
+  type:ubyte (id: 1);
+
+  /// Ordered boundary corners, in metres; four entries describe a quadrilateral.
+  corners:[vmsgs.fbs.geometry.Vector3] (id: 2);
+
+  /// Detection confidence in the inclusive range [0, 1].
+  confidence:float (id: 3);
+
+  /// True when an object is believed to occupy the space.
+  occupied:bool (id: 4);
+
+  /// Space heading about the frame z axis, in radians.
+  heading:float (id: 5);
+
+  /// Optional per-slot frame; empty means ParkingSlots.header.frame_id.
+  frame_id:string (id: 6);
+}
+
+/// High-rate, zero-copy collection of parking spaces from one observation.
+table ParkingSlots {
+  /// Observation timestamps in nanoseconds and common slot coordinate frame.
+  header:vmsgs.fbs.common.Header (id: 0);
+
+  /// Detected parking spaces in detector-defined order.
+  slots:[ParkingSlot] (id: 1);
+}
+
+root_type ParkingSlots;

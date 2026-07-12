@@ -1,0 +1,134 @@
+syntax = "proto3";
+package vmsgs.proto.embodied;
+import "common/header.proto";
+import "common/status.proto";
+import "common/uuid.proto";
+import "geometry/pose.proto";
+import "geometry/vector3.proto";
+import "embodied/joint_trajectory.proto";
+import "embodied/motion_plan.proto";
+
+// Direction and acceptable travel distance for a Cartesian approach or retreat.
+message CartesianTranslation {
+  // Coordinate-frame identifier used to interpret spatial values.
+  string frame_id = 1;
+  // Unit direction vector expressed in frame_id; zero vector is invalid.
+  vmsgs.proto.geometry.Vector3 direction = 2;
+  // Desired travel distance along `direction`, in metres; non-negative.
+  float desired_distance = 3;
+  // Minimum acceptable travel distance along `direction`, in metres; non-negative.
+  float min_distance = 4;
+}
+// One ranked grasp pose with the postures and collision exceptions it requires.
+message GraspCandidate {
+  // Stable identifier for this grasp candidate.
+  string id = 1;
+  // Pose expressed in the coordinate frame identified by the enclosing header.
+  vmsgs.proto.geometry.PoseStamped grasp_pose = 2;
+  // End-effector joint posture required before approaching the grasp.
+  JointTrajectory pre_grasp_posture = 3;
+  // End-effector joint posture commanded to close or secure the object.
+  JointTrajectory grasp_posture = 4;
+  // Cartesian approach direction and travel limits before grasp closure.
+  CartesianTranslation pre_grasp_approach = 5;
+  // Cartesian retreat direction and travel limits after grasp closure.
+  CartesianTranslation post_grasp_retreat = 6;
+  // Normalized grasp or candidate quality in the inclusive range [0, 1].
+  float quality = 7;
+  // Collision-object IDs permitted to contact the gripper during this grasp.
+  repeated string allowed_touch_objects = 8;
+}
+// Request to plan or execute acquisition of a named collision object.
+message PickupRequest {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
+  vmsgs.proto.common.Header header = 1;
+  // Planning or kinematic joint-group name defined by the robot model.
+  string group_name = 2;
+  // Name of the target collision object to pick up.
+  string target_name = 3;
+  // Ranked grasp candidates; quality determines preference when feasible.
+  repeated GraspCandidate grasps = 4;
+  // End-effector resource name used to perform the pickup.
+  string end_effector = 5;
+  // True to plan the pickup without executing it.
+  bool plan_only = 6;
+  // True to allow automatic replanning after a recoverable failure.
+  bool replan = 7;
+  // Client-generated identifier used to correlate the terminal result.
+  vmsgs.proto.common.UUID request_id = 8;
+}
+// One candidate release pose and its approach, retreat, and hand posture.
+message PlaceCandidate {
+  // Stable identifier for this place candidate.
+  string id = 1;
+  // Pose expressed in the coordinate frame identified by the enclosing header.
+  vmsgs.proto.geometry.PoseStamped place_pose = 2;
+  // End-effector joint posture commanded after releasing the object.
+  JointTrajectory post_place_posture = 3;
+  // Cartesian approach direction and travel limits before object release.
+  CartesianTranslation pre_place_approach = 4;
+  // Cartesian retreat direction and travel limits after object release.
+  CartesianTranslation post_place_retreat = 5;
+}
+// Request to plan or execute placement of an attached collision object.
+message PlaceRequest {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
+  vmsgs.proto.common.Header header = 1;
+  // Planning or kinematic joint-group name defined by the robot model.
+  string group_name = 2;
+  // Name of the attached collision object to place.
+  string attached_object_name = 3;
+  // Candidate release poses evaluated in producer-defined preference order.
+  repeated PlaceCandidate places = 4;
+  // True to plan the placement without executing it.
+  bool plan_only = 5;
+  // True to allow automatic replanning after a recoverable failure.
+  bool replan = 6;
+  // Client-generated identifier used to correlate the terminal result.
+  vmsgs.proto.common.UUID request_id = 7;
+}
+
+// Periodic progress feedback for a pickup or place request.
+message ManipulationFeedback {
+  // Feedback timestamp in nanoseconds and manipulation reference frame.
+  vmsgs.proto.common.Header header = 1;
+
+  // Identifier copied from the active pickup or place request.
+  vmsgs.proto.common.UUID request_id = 2;
+
+  // Machine-readable execution stage such as planning, approaching, or retreating.
+  string stage = 3;
+
+  // Normalized progress in the inclusive range [0, 1].
+  float progress = 4;
+
+  // Candidate grasp or place identifier currently being evaluated/executed.
+  string candidate_id = 5;
+
+  // Human-readable status detail.
+  string message = 6;
+}
+
+// Terminal planning or execution outcome of a pickup request.
+message PickupResult {
+  // Identifier copied from the corresponding request.
+  vmsgs.proto.common.UUID request_id = 1;
+  // Portable planning or execution status and diagnostic detail.
+  vmsgs.proto.common.Status status = 2;
+  // Identifier of the selected grasp candidate, when applicable.
+  string selected_grasp_id = 5;
+  // Planned motion; populated for successful plan-only requests when available.
+  RobotTrajectory trajectory = 6;
+}
+
+// Terminal planning or execution outcome of a place request.
+message PlaceResult {
+  // Identifier copied from the corresponding request.
+  vmsgs.proto.common.UUID request_id = 1;
+  // Portable planning or execution status and diagnostic detail.
+  vmsgs.proto.common.Status status = 2;
+  // Identifier of the selected place candidate, when applicable.
+  string selected_place_id = 5;
+  // Planned motion; populated for successful plan-only requests when available.
+  RobotTrajectory trajectory = 6;
+}

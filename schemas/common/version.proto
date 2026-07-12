@@ -2,11 +2,20 @@ syntax = "proto3";
 
 package vmsgs.proto.common;
 
-// Semantic version of a producer. Mirrors vlink::Version.
+// Semantic version and build identity of a producer or schema implementation.
 message Version {
+  // Major version; increments for incompatible public behavior changes.
   uint32 major_ver = 1;
+
+  // Minor version; increments for backward-compatible feature additions.
   uint32 minor_ver = 2;
+
+  // Patch version; increments for backward-compatible fixes.
   uint32 patch_ver = 3;
+
+  // Source revision identifier, normally a full or abbreviated Git hash.
   string git_hash = 4;
+
+  // Optional build-channel or artifact tag, such as "release" or a CI run ID.
   string build_tag = 5;
 }

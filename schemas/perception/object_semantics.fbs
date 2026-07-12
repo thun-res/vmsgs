@@ -1,0 +1,52 @@
+include "../geometry/geometry.fbs";
+
+namespace vmsgs.fbs.perception;
+
+/// Candidate semantic class associated with a perceived object.
+struct ObjectClassificationValue {
+  /// Signed 32-bit ObjectLabel enum value from the protobuf perception model.
+  /// The full protobuf enum width is retained so future labels cannot truncate.
+  label:int;
+
+  /// Probability assigned to this class in the inclusive range [0, 1].
+  probability:float;
+}
+
+/// Object-local geometric extent preserving bounding-box, cylinder, or polygon semantics.
+table ObjectShapeValue {
+  /// Signed 32-bit Shape.ShapeType enum value from the protobuf perception model.
+  type:int (id: 0);
+
+  /// Type-dependent dimensions [x, y, z], in metres.
+  dimensions:vmsgs.fbs.geometry.Vector3 (id: 1);
+
+  /// Convex object-local footprint vertices; populated for polygon shapes.
+  footprint:[vmsgs.fbs.geometry.Vector3] (id: 2);
+}
+
+/// Pose, velocity, and acceleration with complete row-major 6x6 uncertainty.
+table ObjectKinematicsValue {
+  /// Object-center pose in the enclosing list coordinate frame.
+  pose:vmsgs.fbs.geometry.Pose (id: 0);
+
+  /// Row-major 6x6 pose covariance ordered [position, rotation]; exactly 36 values.
+  pose_covariance:[double] (id: 1);
+
+  /// Linear velocity along list-frame axes, in metres per second.
+  linear_velocity:vmsgs.fbs.geometry.Vector3 (id: 2);
+
+  /// Angular velocity about list-frame axes, in radians per second.
+  angular_velocity:vmsgs.fbs.geometry.Vector3 (id: 3);
+
+  /// Row-major 6x6 velocity covariance ordered [linear, angular]; exactly 36 values.
+  velocity_covariance:[double] (id: 4);
+
+  /// Linear acceleration along list-frame axes, in metres per second squared.
+  linear_acceleration:vmsgs.fbs.geometry.Vector3 (id: 5);
+
+  /// Angular acceleration about list-frame axes, in radians per second squared.
+  angular_acceleration:vmsgs.fbs.geometry.Vector3 (id: 6);
+
+  /// Row-major 6x6 acceleration covariance ordered [linear, angular]; exactly 36 values.
+  acceleration_covariance:[double] (id: 7);
+}

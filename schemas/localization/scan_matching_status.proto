@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package vmsgs.proto.localization;
+
+import "common/header.proto";
+
+// Algorithm-independent convergence and residual metrics for scan registration.
+message ScanMatchingStatus {
+  // Registration timestamp in nanoseconds and estimated-pose coordinate frame.
+  vmsgs.proto.common.Header header = 1;
+
+  // Final objective or fitness score; lower-is-better semantics are producer-defined.
+  float fitness_score = 2;
+
+  // Number of optimizer iterations used for the reported registration.
+  uint32 iterations = 3;
+
+  // Translation magnitude from the preceding estimate, in metres.
+  float translation_diff = 4;
+
+  // Rotation magnitude from the preceding estimate, in radians.
+  float rotation_diff = 5;
+
+  // True when the registration met its configured convergence criteria.
+  bool converged = 6;
+}

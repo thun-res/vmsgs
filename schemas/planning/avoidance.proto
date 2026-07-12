@@ -5,21 +5,29 @@ package vmsgs.proto.planning;
 import "common/header.proto";
 import "common/uuid.proto";
 
+// Direction in which the ego path should pass an avoidance target.
 enum AvoidanceDirection {
   AVOIDANCE_NONE = 0;
   AVOIDANCE_LEFT = 1;
   AVOIDANCE_RIGHT = 2;
 }
 
+// Object-specific lateral maneuver requested by the avoidance planner.
 message AvoidanceTarget {
+  // Stable identifier of the referenced object.
   vmsgs.proto.common.UUID object_id = 1;
+  // Direction encoded using the referenced `AvoidanceDirection` contract.
   AvoidanceDirection direction = 2;
   // Lateral offset commanded for the ego (m). Positive = left.
   float lateral_offset = 3;
 }
 
+// Timestamped summary of active avoidance targets and maneuver state.
 message AvoidanceState {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // True while at least one avoidance maneuver is active.
   bool is_avoiding = 2;
+  // Objects the avoidance planner is currently maneuvering around.
   repeated AvoidanceTarget targets = 3;
 }

@@ -6,25 +6,34 @@ import "common/header.proto";
 
 // Static vehicle parameters useful for downstream planning/control.
 message VehicleKinematics {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
   // Distance between front and rear axles (m).
   float wheel_base = 2;
   // Track width front/rear (m).
   float track_width_front = 3;
+  // Rear track width: lateral distance between the left and right rear wheels, in metres.
   float track_width_rear = 4;
+  // Front overhang from the front axle to the front bumper, in metres.
   float overhang_front = 5;
+  // Rear overhang from the rear axle to the rear bumper, in metres.
   float overhang_rear = 6;
   // Bounding-box dimensions (m).
   float length = 7;
+  // Vehicle width in metres.
   float width = 8;
+  // Vehicle height in metres.
   float height = 9;
   // Limits.
-  float max_steer_angle = 10;          // rad
-  float max_steer_rate = 11;           // rad/s
+  float max_steer_angle = 10;  // rad
+  float max_steer_rate = 11;   // rad/s
+  // Acceleration in metres per second squared, using the enclosing frame axes.
   float max_longitudinal_acceleration = 12;
+  // Maximum supported longitudinal deceleration magnitude in metres per second squared.
   float max_longitudinal_deceleration = 13;
+  // Acceleration in metres per second squared, using the enclosing frame axes.
   float max_lateral_acceleration = 14;
-  float max_velocity = 15;             // m/s
+  float max_velocity = 15;  // m/s
   // Steering ratio (steering_wheel / tire angle).
   float steering_ratio = 16;
 }

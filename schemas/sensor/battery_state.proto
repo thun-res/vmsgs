@@ -4,7 +4,9 @@ package vmsgs.proto.sensor;
 
 import "common/header.proto";
 
+// Electrical, charge, health, and technology state of one battery pack.
 message BatteryState {
+  // Current charging or discharging operating state.
   enum PowerSupplyStatus {
     POWER_SUPPLY_STATUS_UNKNOWN = 0;
     POWER_SUPPLY_STATUS_CHARGING = 1;
@@ -12,6 +14,7 @@ message BatteryState {
     POWER_SUPPLY_STATUS_NOT_CHARGING = 3;
     POWER_SUPPLY_STATUS_FULL = 4;
   }
+  // Diagnostic assessment of battery condition and failure mode.
   enum PowerSupplyHealth {
     POWER_SUPPLY_HEALTH_UNKNOWN = 0;
     POWER_SUPPLY_HEALTH_GOOD = 1;
@@ -23,6 +26,7 @@ message BatteryState {
     POWER_SUPPLY_HEALTH_WATCHDOG_TIMER_EXPIRE = 7;
     POWER_SUPPLY_HEALTH_SAFETY_TIMER_EXPIRE = 8;
   }
+  // Cell chemistry used to interpret voltage and charge characteristics.
   enum PowerSupplyTechnology {
     POWER_SUPPLY_TECHNOLOGY_UNKNOWN = 0;
     POWER_SUPPLY_TECHNOLOGY_NIMH = 1;
@@ -33,20 +37,29 @@ message BatteryState {
     POWER_SUPPLY_TECHNOLOGY_LIMN = 6;
   }
 
+  // Measurement timestamp in nanoseconds and battery source frame.
   vmsgs.proto.common.Header header = 1;
-  float voltage = 2;        // V
-  float temperature = 3;    // degC; NaN if unknown
-  float current = 4;        // A; positive=draw, negative=charge
-  float charge = 5;         // Ah
-  float capacity = 6;       // Ah (last full)
-  float design_capacity = 7;// Ah
-  float percentage = 8;     // 0..1
+  float voltage = 2;          // V
+  float temperature = 3;      // degC; NaN if unknown
+  float current = 4;          // A; positive=draw, negative=charge
+  float charge = 5;           // Ah
+  float capacity = 6;         // Ah (last full)
+  float design_capacity = 7;  // Ah
+  float percentage = 8;       // 0..1
+  // Current charging/discharging state reported by the battery manager.
   PowerSupplyStatus power_supply_status = 9;
+  // Current health classification reported by the battery manager.
   PowerSupplyHealth power_supply_health = 10;
+  // Battery cell chemistry.
   PowerSupplyTechnology power_supply_technology = 11;
+  // True when the battery is physically present and responding.
   bool present = 12;
+  // Per-cell voltages in volts, ordered by hardware cell index.
   repeated float cell_voltage = 13 [packed = true];
+  // Per-cell temperatures in degrees Celsius, matching cell_voltage ordering.
   repeated float cell_temperature = 14 [packed = true];
+  // Human-readable installation location on the platform.
   string location = 15;
+  // Manufacturer or integrator serial identifier.
   string serial_number = 16;
 }

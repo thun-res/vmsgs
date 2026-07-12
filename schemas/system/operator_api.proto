@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+package vmsgs.proto.system;
+
+import "common/header.proto";
+import "common/status.proto";
+import "geometry/pose.proto";
+
+// External operator or cloud request to replace the active route.
+message SetRouteRequest {
+  // Request timestamp and coordinate frame shared by goal and waypoints.
+  vmsgs.proto.common.Header header = 1;
+  // Final route goal expressed in header.frame_id.
+  vmsgs.proto.geometry.Pose goal = 2;
+  // Intermediate poses in traversal order before goal.
+  repeated vmsgs.proto.geometry.Pose waypoints = 3;
+  // True when route planning may adjust supplied waypoint geometry.
+  bool allow_modification = 4;
+}
+
+// Acceptance or diagnostic outcome of a route replacement request.
+message SetRouteResponse {
+  // Portable success/error status for the corresponding request.
+  vmsgs.proto.common.Status status = 1;
+}
+
+// Request to remove the active route and all intermediate goals.
+message ClearRouteRequest {}
+
+// Acceptance or diagnostic outcome of clearing the route.
+message ClearRouteResponse {
+  // STATUS_OK means no active route remains.
+  vmsgs.proto.common.Status status = 1;
+}
+
+// Operator request to engage or disengage autonomous vehicle control.
+message EngageControlRequest {
+  // True requests engagement; false requests disengagement.
+  bool engage = 1;
+}
+
+// Acceptance or diagnostic outcome of an engagement request.
+message EngageControlResponse {
+  // Portable success/error status for the corresponding request.
+  vmsgs.proto.common.Status status = 1;
+}
+
+// Operator request to enter or leave an external command override state.
+message SetControlOverrideRequest {
+  // Request timestamp and origin context for auditing.
+  vmsgs.proto.common.Header header = 1;
+  // True enters external override; false returns to normal arbitration.
+  bool override_active = 2;
+  // Human-readable operator rationale; not used directly by control logic.
+  string reason = 3;
+}
+
+// Acceptance or diagnostic outcome of an override request.
+message SetControlOverrideResponse {
+  // Portable success/error status for the corresponding request.
+  vmsgs.proto.common.Status status = 1;
+}

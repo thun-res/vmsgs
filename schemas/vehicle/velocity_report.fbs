@@ -1,0 +1,17 @@
+include "../common/header.fbs";
+
+namespace vmsgs.fbs.vehicle;
+
+/// Body-frame vehicle velocity reported by the vehicle interface.
+table VelocityReport {
+  /// Measurement timestamp and vehicle body frame, normally base_link.
+  header:vmsgs.fbs.common.Header (id: 0);
+  /// Forward velocity in metres per second along the body x axis.
+  longitudinal_velocity:float (id: 1);
+  /// Leftward velocity in metres per second along the body y axis.
+  lateral_velocity:float (id: 2);
+  /// Yaw rate in radians per second, positive counter-clockwise about body z.
+  heading_rate:float (id: 3);
+}
+
+root_type VelocityReport;

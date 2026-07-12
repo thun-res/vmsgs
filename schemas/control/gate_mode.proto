@@ -5,26 +5,36 @@ package vmsgs.proto.control;
 import "common/header.proto";
 
 // Switch between "AUTO" command from the planner and "EXTERNAL" command
-// from the operator/teleop. Mirrors tier4_control_msgs/GateMode +
-// ExternalCommandSelectorMode.
+// from the operator/teleop.
 
 enum GateMode {
-  GATE_MODE_AUTO = 0;
-  GATE_MODE_EXTERNAL = 1;
+  // Unset default; consumers must treat it as "no valid gate selected".
+  GATE_MODE_UNKNOWN = 0;
+  // Command path driven by the autonomous planner.
+  GATE_MODE_AUTO = 1;
+  // Command path driven by an external operator/teleop endpoint.
+  GATE_MODE_EXTERNAL = 2;
 }
 
+// Timestamped command-gate selection used to choose autonomous or external control.
 message GateModeStamped {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // Data encoded using the referenced `GateMode` contract.
   GateMode data = 2;
 }
 
+// Selects which external-control endpoint currently owns the command path.
 enum ExternalCommandSelectorMode {
   EXTERNAL_COMMAND_SELECTOR_NONE = 0;
   EXTERNAL_COMMAND_SELECTOR_LOCAL = 1;
   EXTERNAL_COMMAND_SELECTOR_REMOTE = 2;
 }
 
+// Timestamped selection of the active local or remote external controller.
 message ExternalCommandSelectorModeStamped {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // Data encoded using the referenced `ExternalCommandSelectorMode` contract.
   ExternalCommandSelectorMode data = 2;
 }

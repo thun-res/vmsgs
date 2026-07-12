@@ -1,11 +1,13 @@
 #
-# Copyright (c) 2026 VMsgs Contributors.
-# SPDX-License-Identifier: MIT
+# Copyright (c) 2026 VMsgs Contributors. SPDX-License-Identifier: MIT
 #
 
 @PACKAGE_INIT@
 
 if(TARGET @PROJECT_NAMESPACE@@PROJECT_NAME@)
+  if(NOT TARGET vmsgs::vmsgs)
+    add_library(vmsgs::vmsgs ALIAS @PROJECT_NAMESPACE@@PROJECT_NAME@)
+  endif()
   return()
 endif()
 
@@ -16,12 +18,18 @@ if(NOT TARGET vlink::vlink)
   find_package(vlink CONFIG REQUIRED)
 endif()
 
-if(VMSG_ENABLE_PROTOBUF NOT TARGET @protobuf_libs@)
+if(VMSG_ENABLE_PROTOBUF AND NOT TARGET @protobuf_libs@)
   find_package(Protobuf CONFIG REQUIRED)
 endif()
 
-if(VMSG_ENABLE_FLATBUFFERS NOT TARGET @flatbuffers_libs@)
+if(VMSG_ENABLE_FLATBUFFERS AND NOT TARGET @flatbuffers_libs@)
   find_package(Flatbuffers CONFIG REQUIRED)
 endif()
 
 include(${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@-targets.cmake)
+
+# Public package-name alias. Keep the historical vlink::vmsgs export available while allowing consumers to link the
+# conventional vmsgs::vmsgs target.
+if(NOT TARGET vmsgs::vmsgs)
+  add_library(vmsgs::vmsgs ALIAS @PROJECT_NAMESPACE@@PROJECT_NAME@)
+endif()

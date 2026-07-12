@@ -4,10 +4,12 @@ package vmsgs.proto.system;
 
 import "common/header.proto";
 
-// Mirrors autoware_internal_debug_msgs/ServiceLog and tier4_system_msgs/ServiceLog.
-// Records one service call's lifecycle for debugging.
+// Records one service call's lifecycle for portable tracing and debugging.
 message ServiceLog {
+  // Event time and publication metadata.
   vmsgs.proto.common.Header header = 1;
+
+  // Lifecycle event represented by this audit record.
   enum Type {
     SERVICE_LOG_UNKNOWN = 0;
     SERVICE_LOG_REQUEST = 1;
@@ -15,12 +17,22 @@ message ServiceLog {
     SERVICE_LOG_TIMEOUT = 3;
     SERVICE_LOG_ERROR = 4;
   }
+
+  // Request/response lifecycle event type.
   Type type = 2;
+
+  // Node that emitted the audit record.
   string node_name = 3;
+
+  // Fully qualified service endpoint name.
   string service_name = 4;
+
+  // Calling client identity when known.
   string client_name = 5;
+
   // Serialized request / response (best-effort textproto / JSON).
   string body = 6;
+
   // Sequence number used to correlate request and response.
   uint64 sequence = 7;
 }

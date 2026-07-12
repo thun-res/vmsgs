@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package vmsgs.proto.common;
+
+import "common/uuid.proto";
+
+// Portable lifecycle state shared by generic asynchronous actions.
+enum GoalStatusCode {
+  GOAL_STATUS_UNKNOWN = 0;
+  GOAL_STATUS_ACCEPTED = 1;
+  GOAL_STATUS_EXECUTING = 2;
+  GOAL_STATUS_CANCELING = 3;
+  GOAL_STATUS_SUCCEEDED = 4;
+  GOAL_STATUS_CANCELED = 5;
+  GOAL_STATUS_ABORTED = 6;
+}
+
+// Identity and acceptance time of an asynchronous action goal.
+message GoalInfo {
+  // Client-generated globally unique goal identifier.
+  UUID goal_id = 1;
+
+  // Goal acceptance time as an absolute unsigned nanosecond timestamp.
+  uint64 accepted_stamp = 2;
+}
+
+// Current lifecycle state of one action goal.
+message GoalStatus {
+  // Goal identity and acceptance time.
+  GoalInfo goal_info = 1;
+
+  // Current lifecycle state.
+  GoalStatusCode status = 2;
+}
+
+// Complete status snapshot for goals known to one action server.
+message GoalStatusArray {
+  // Status entries in implementation-defined order.
+  repeated GoalStatus status_list = 1;
+}
+
+// Generic cancellation selector supporting one, many, or all goals.
+message CancelGoalRequest {
+  // Exact goal to cancel; all-zero UUID selects by accepted_before_stamp only.
+  UUID goal_id = 1;
+
+  // Cancel goals accepted at or before this absolute nanosecond timestamp;
+  // zero disables the time selector. Both selectors zero requests all goals.
+  uint64 accepted_before_stamp = 2;
+}
+
+// Result of applying a generic cancellation selector.
+message CancelGoalResponse {
+  // Portable return code: zero means accepted, non-zero means rejected/unknown.
+  int32 return_code = 1;
+
+  // Goals accepted for asynchronous cancellation.
+  repeated GoalInfo goals_canceling = 2;
+}

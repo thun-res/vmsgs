@@ -1,0 +1,23 @@
+include "../common/header.fbs";
+
+namespace vmsgs.fbs.sensor;
+
+/// Hot-path snapshot of measured or estimated robot joint interfaces.
+table JointState {
+  /// Measurement time in nanoseconds and robot reference frame.
+  header:vmsgs.fbs.common.Header (id: 0);
+  /// Ordered joint names shared by all populated value vectors.
+  name:[string] (id: 1);
+  /// Position in radians for revolute joints or metres for prismatic joints.
+  position:[double] (id: 2);
+  /// Velocity in joint position units per second.
+  velocity:[double] (id: 3);
+
+  /// Effort in newton-metres or newtons according to joint type.
+  effort:[double] (id: 4);
+
+  /// Acceleration in joint position units per second squared.
+  acceleration:[double] (id: 5);
+}
+
+root_type JointState;

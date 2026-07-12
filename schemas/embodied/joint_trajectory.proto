@@ -3,10 +3,11 @@ syntax = "proto3";
 package vmsgs.proto.embodied;
 
 import "common/header.proto";
-import "common/time.proto";
+import "common/duration.proto";
 
 // Single time-parameterized waypoint for a multi-DoF joint group.
 message JointTrajectoryPoint {
+  // Signed offset from the enclosing trajectory header timestamp.
   vmsgs.proto.common.Duration time_from_start = 1;
   // All vectors are aligned to JointTrajectory.joint_names.
   repeated double positions = 2 [packed = true];      // rad or m
@@ -17,18 +18,27 @@ message JointTrajectoryPoint {
 
 // Trajectory streamed to a joint controller.
 message JointTrajectory {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // Joint names; index i names the joint whose value is at index i in each point vector.
   repeated string joint_names = 2;
+  // Ordered samples expressed in the coordinate frame identified by the enclosing header.
   repeated JointTrajectoryPoint points = 3;
 }
 
 // Per-joint position/velocity/effort target for a single tick.
 message JointCommand {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // Joint names; index i names the joint whose value is at index i in each vector.
   repeated string joint_names = 2;
+  // Joint positions aligned with joint_names, in radians or metres.
   repeated double positions = 3 [packed = true];
+  // Joint velocities aligned with joint_names, in rad/s or m/s.
   repeated double velocities = 4 [packed = true];
+  // Joint efforts aligned with joint_names, in newton-metres or newtons.
   repeated double effort = 5 [packed = true];
+  // Controller interface or combination of interfaces used by this command.
   enum Mode {
     MODE_UNKNOWN = 0;
     MODE_POSITION = 1;
@@ -36,5 +46,6 @@ message JointCommand {
     MODE_EFFORT = 3;
     MODE_HYBRID = 4;
   }
+  // Controller interface combination used to interpret populated command vectors.
   Mode mode = 6;
 }

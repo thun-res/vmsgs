@@ -4,19 +4,26 @@ package vmsgs.proto.control;
 
 import "common/header.proto";
 
-// Driving-pause state machine signals. Mirrors tier4_control_msgs/{IsPaused,
-// IsStartRequested, IsStopped}.
+// Driving-pause state machine signals.
 message IsPaused {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // True when the driving stack is currently paused.
   bool data = 2;
 }
 
+// Reports whether a paused driving stack has received a request to start.
 message IsStartRequested {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // True when a start has been requested while the stack is paused.
   bool data = 2;
 }
 
+// Reports whether the vehicle has reached the stack's stopped-state criterion.
 message IsStopped {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // True when the vehicle has reached the stack's stopped-state criterion.
   bool data = 2;
 }

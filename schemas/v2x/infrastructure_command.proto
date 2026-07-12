@@ -3,23 +3,31 @@ syntax = "proto3";
 package vmsgs.proto.v2x;
 
 import "common/header.proto";
+import "common/duration.proto";
 
 // Command issued from the ego to roadside infrastructure (signal request,
-// gate request). Mirrors tier4_v2x_msgs/InfrastructureCommand.
+// gate request).
 message InfrastructureCommand {
   // Map regulatory-element / RSU id to address.
   uint64 id = 1;
+  // Lifecycle of a request sent to roadside infrastructure.
   enum State {
     INFRASTRUCTURE_STATE_UNKNOWN = 0;
     INFRASTRUCTURE_STATE_REQUESTING = 1;
     INFRASTRUCTURE_STATE_FINALIZED = 2;
   }
+
+  // Current request lifecycle, valid for the command's configured lifetime.
   State state = 2;
-  // Lifetime of this request (s).
-  float lifetime_sec = 3;
+  // Lifetime of this request.
+  vmsgs.proto.common.Duration lifetime = 3;
 }
 
+// Timestamped batch of infrastructure commands for one transmission cycle.
 message InfrastructureCommandArray {
+  // Transmission-cycle timestamp in nanoseconds and map frame context.
   vmsgs.proto.common.Header header = 1;
+
+  // Commands sent atomically in this cycle; IDs should be unique in the batch.
   repeated InfrastructureCommand commands = 2;
 }

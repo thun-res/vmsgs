@@ -4,9 +4,14 @@ package vmsgs.proto.system;
 
 import "common/header.proto";
 
-// Mirrors autoware_internal_msgs/MissionRemainingDistanceTime.
+// Estimated distance and time remaining along the active mission route.
 message MissionRemainingDistanceTime {
+  // Time and route-frame context of the estimate.
   vmsgs.proto.common.Header header = 1;
-  float remaining_distance = 2;  // m
-  float remaining_time = 3;      // s
+
+  // Remaining path distance in meters; non-negative when the estimate is valid.
+  float remaining_distance = 2;
+
+  // Remaining travel time in seconds; non-negative when the estimate is valid.
+  float remaining_time = 3;
 }

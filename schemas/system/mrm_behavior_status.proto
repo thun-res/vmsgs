@@ -5,10 +5,15 @@ package vmsgs.proto.system;
 import "common/header.proto";
 import "system/mrm_state.proto";
 
-// Mirrors tier4_system_msgs/MrmBehaviorStatus - per-behavior MRM execution status.
+// Per-behavior minimum-risk-maneuver availability and execution status.
 message MrmBehaviorStatus {
+  // Time when this behavior state was sampled.
   vmsgs.proto.common.Header header = 1;
+
+  // Minimum-risk behavior described by this status.
   MrmBehavior behavior = 2;
+
+  // Availability and execution lifecycle of one behavior implementation.
   enum Status {
     MRM_BEHAVIOR_STATUS_UNKNOWN = 0;
     MRM_BEHAVIOR_STATUS_AVAILABLE = 1;
@@ -17,23 +22,39 @@ message MrmBehaviorStatus {
     MRM_BEHAVIOR_STATUS_FAILED = 4;
     MRM_BEHAVIOR_STATUS_UNAVAILABLE = 5;
   }
+
+  // Current behavior lifecycle state, valid until superseded.
   Status status = 3;
 }
 
-// Mirrors autoware_adapi_v1_msgs/MrmRequest + MrmRequestList.
+// Requests from safety authorities to execute minimum-risk behavior.
+// Request from one safety authority to execute a minimum-risk behavior.
 message MrmRequest {
-  string source = 1;          // "operator", "watchdog", "fault_handler"
+  // Stable origin, such as "operator", "watchdog", or "fault_handler".
+  string source = 1;
+
+  // Requested minimum-risk behavior.
   MrmBehavior behavior = 2;
+
+  // Human-readable trigger or safety rationale.
   string reason = 3;
 }
 
+// Timestamped set of concurrently active minimum-risk requests.
 message MrmRequestList {
+  // Time when the request set was assembled.
   vmsgs.proto.common.Header header = 1;
+
+  // Active requests; consumers resolve conflicts using deployment policy.
   repeated MrmRequest requests = 2;
 }
 
-// Mirrors autoware_adapi_v1_msgs/MrmDescription.
+// Catalog description of one supported minimum-risk behavior.
+// Human-readable catalog entry for one supported minimum-risk behavior.
 message MrmDescription {
+  // Behavior represented by this catalog entry.
   MrmBehavior behavior = 1;
+
+  // Operator-facing description of the intended maneuver and constraints.
   string description = 2;
 }

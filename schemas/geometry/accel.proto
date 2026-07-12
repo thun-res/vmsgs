@@ -7,22 +7,32 @@ import "common/header.proto";
 
 // Linear and angular acceleration.
 message Accel {
+  // Linear acceleration along the containing frame axes, in metres per second squared.
   Vector3 linear = 1;
+  // Angular acceleration about the containing frame axes, in radians per second squared.
   Vector3 angular = 2;
 }
 
+// Acceleration sample with acquisition time and coordinate frame.
 message AccelStamped {
+  // Measurement timestamp in nanoseconds and acceleration coordinate frame.
   vmsgs.proto.common.Header header = 1;
+  // Linear and angular acceleration expressed in header.frame_id.
   Accel accel = 2;
 }
 
+// Acceleration estimate accompanied by row-major 6x6 uncertainty.
 message AccelWithCovariance {
+  // Measured or estimated linear and angular acceleration.
   Accel accel = 1;
   // Length 36; row-major covariance over (ax, ay, az, alpha_x, alpha_y, alpha_z).
   repeated double covariance = 2 [packed = true];
 }
 
+// Timestamped acceleration estimate with covariance and coordinate frame.
 message AccelWithCovarianceStamped {
+  // Measurement timestamp in nanoseconds and acceleration coordinate frame.
   vmsgs.proto.common.Header header = 1;
+  // Acceleration estimate and row-major 6x6 uncertainty.
   AccelWithCovariance accel = 2;
 }

@@ -8,21 +8,30 @@ namespace vmsgs.fbs.embodied;
 /// For full CameraInfo (binning, distortion coefficients, ROI) consume the
 /// vmsgs.proto.sensor.CameraInfo topic published alongside.
 struct CameraIntrinsics {
+  /// Horizontal focal length in pixels.
   fx:float;
+  /// Vertical focal length in pixels.
   fy:float;
+  /// Horizontal principal-point coordinate in pixels.
   cx:float;
+  /// Vertical principal-point coordinate in pixels.
   cy:float;
 }
 
-/// Colour + aligned depth pair from an RGB-D sensor (Realsense, Azure Kinect).
+/// Colour and aligned depth pair from a generic RGB-D sensor.
 table RGBDFrame {
+  /// Timestamp, sequence number, and coordinate frame shared by this payload.
   header:vmsgs.fbs.common.Header (id: 0);
+  /// Color image whose dimensions define the registered output grid.
   color:vmsgs.fbs.sensor.Image (id: 1);
+  /// Metric depth image; dimensions match color when is_aligned is true.
   depth:vmsgs.fbs.sensor.DepthImage (id: 2);
   /// Intrinsics for the colour stream; use `depth.fx/fy/cx/cy` for depth.
   color_intrinsics:CameraIntrinsics (id: 3);
   /// True when colour and depth are pixel-registered (1:1 lookup).
   is_aligned:bool (id: 4);
+  /// Stable identifier of the RGB-D sensor resource.
+  sensor_id:string (id: 5);
 }
 
 root_type RGBDFrame;

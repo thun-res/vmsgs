@@ -7,8 +7,11 @@ import "common/uuid.proto";
 
 // Natural-language command issued to the robot (text or transcribed speech).
 message NLInstruction {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // Client-generated 128-bit identity used to correlate responses.
   vmsgs.proto.common.UUID instruction_uuid = 2;
+  // Natural-language instruction text, or the transcript of spoken input.
   string text = 3;
   // BCP-47 language tag (e.g. "zh-CN", "en-US").
   string language = 4;
@@ -22,9 +25,13 @@ message NLInstruction {
 
 // Robot-side reply to the operator.
 message NLResponse {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // UUID of the instruction to which this response applies.
   vmsgs.proto.common.UUID in_reply_to = 2;
+  // Natural-language reply text sent to the operator.
   string text = 3;
+  // BCP-47 language tag of the reply text (e.g. "zh-CN", "en-US").
   string language = 4;
   // Optional synthesized audio reference.
   string audio_ref = 5;

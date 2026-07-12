@@ -1,0 +1,42 @@
+include "../common/header.fbs";
+include "../geometry/geometry.fbs";
+
+namespace vmsgs.fbs.perception;
+
+/// Fixed-layout state of one detected object for high-rate perception paths.
+struct CompactObjectState {
+  /// Optional detector-assigned instance id for this frame; zero if unassigned.
+  id:ulong;
+
+  /// Object-center pose in the coordinate frame carried by the list header.
+  pose:vmsgs.fbs.geometry.Pose;
+
+  /// Linear velocity along frame axes, in metres per second.
+  velocity:vmsgs.fbs.geometry.Vector3;
+
+  /// Linear acceleration along frame axes, in metres per second squared.
+  acceleration:vmsgs.fbs.geometry.Vector3;
+
+  /// Full object extents [length, width, height], in metres.
+  dimensions:vmsgs.fbs.geometry.Vector3;
+
+  /// Probability that the detected object exists, in the range [0, 1].
+  existence_probability:float;
+
+  /// Application classification code shared with the protobuf object model.
+  label:ushort;
+
+  /// Probability of label, in the range [0, 1].
+  classification_probability:float;
+}
+
+/// High-rate, zero-copy collection of objects from a common observation.
+table CompactDetectedObjects {
+  /// Observation timestamp in nanoseconds and object coordinate frame.
+  header:vmsgs.fbs.common.Header (id: 0);
+
+  /// Detected object states; ordering has no semantic significance.
+  objects:[CompactObjectState] (id: 1);
+}
+
+root_type CompactDetectedObjects;

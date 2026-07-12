@@ -4,11 +4,16 @@ package vmsgs.proto.vehicle;
 
 import "common/header.proto";
 
+// Timestamped ground speed of each wheel on a four-wheel vehicle.
 message WheelSpeeds {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
   // m/s, individual wheel ground speeds.
   float front_left = 2;
+  // Front-right wheel ground speed in metres per second.
   float front_right = 3;
+  // Rear-left wheel ground speed in metres per second.
   float rear_left = 4;
+  // Rear-right wheel ground speed in metres per second.
   float rear_right = 5;
 }

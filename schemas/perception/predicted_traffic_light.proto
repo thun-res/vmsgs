@@ -3,25 +3,31 @@ syntax = "proto3";
 package vmsgs.proto.perception;
 
 import "common/header.proto";
+import "common/duration.proto";
 import "perception/traffic_light.proto";
 
-// Forecast of an upcoming traffic-light state change.
-// Mirrors autoware_perception_msgs/PredictedTrafficLightState.
+// Traffic-light state predicted at a future time offset.
 message PredictedTrafficLightState {
   // Element that will be active.
   TrafficLightElement element = 1;
-  // Seconds from now until the predicted state takes effect.
-  float predicted_time_offset = 2;
+  // Interval from message time until the predicted state takes effect.
+  vmsgs.proto.common.Duration predicted_time_offset = 2;
   // Confidence in [0, 1].
   float confidence = 3;
 }
 
+// Traffic-light group state expected at a specified future offset.
 message PredictedTrafficLightGroup {
+  // Stable map identifier of the predicted traffic-light group.
   int64 traffic_light_group_id = 1;
+  // Candidate future states, normally ordered by increasing time offset.
   repeated PredictedTrafficLightState predictions = 2;
 }
 
+// Predicted traffic-light groups sharing one generation time and frame.
 message PredictedTrafficLightGroupArray {
+  // Prediction generation timestamp in nanoseconds and map frame.
   vmsgs.proto.common.Header header = 1;
+  // Predicted groups; traffic-light group IDs should be unique.
   repeated PredictedTrafficLightGroup groups = 2;
 }

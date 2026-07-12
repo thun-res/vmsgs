@@ -1,0 +1,21 @@
+include "../common/header.fbs";
+
+namespace vmsgs.fbs.control;
+
+/// Low-latency steering and pedal command from teleoperation or another external controller.
+table ExternalControlCommand {
+  /// Command timestamp and vehicle reference frame.
+  header:vmsgs.fbs.common.Header (id: 0);
+  /// Stable source identifier, such as remote_driver, joystick, or fail_safe.
+  source:string (id: 1);
+  /// Normalized steering request in [-1, 1], with sign convention defined by the vehicle adapter.
+  steering:float (id: 2);
+  /// Normalized accelerator request in the inclusive range [0, 1].
+  throttle:float (id: 3);
+  /// Normalized brake request in the inclusive range [0, 1].
+  brake:float (id: 4);
+  /// True to request a soft override with zero steering, throttle, and brake output.
+  emergency:bool (id: 5);
+}
+
+root_type ExternalControlCommand;

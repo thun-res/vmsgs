@@ -7,12 +7,14 @@ import "geometry/polygon.proto";
 
 // Geometric extent of a detected/tracked/predicted object.
 message Shape {
+  // Geometric model used to interpret dimensions and footprint.
   enum ShapeType {
     SHAPE_TYPE_UNKNOWN = 0;
     SHAPE_TYPE_BOUNDING_BOX = 1;
     SHAPE_TYPE_CYLINDER = 2;
     SHAPE_TYPE_POLYGON = 3;
   }
+  // Geometric representation used to interpret dimensions and footprint.
   ShapeType type = 1;
   // Used by BOUNDING_BOX (x=length, y=width, z=height) and CYLINDER (x=diameter, z=height).
   vmsgs.proto.geometry.Vector3 dimensions = 2;

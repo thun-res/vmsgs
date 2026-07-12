@@ -1,0 +1,45 @@
+include "../common/header.fbs";
+include "../geometry/geometry.fbs";
+
+namespace vmsgs.fbs.sensor;
+
+/// Fixed-layout radar track preserving the complete protobuf RadarTrack state.
+struct RadarTrack {
+  /// Most-significant 64 bits of the stable protobuf track UUID.
+  uuid_high:ulong;
+
+  /// Least-significant 64 bits of the stable protobuf track UUID.
+  uuid_low:ulong;
+
+  /// Target position in metres in the enclosing header frame.
+  position:vmsgs.fbs.geometry.Vector3;
+
+  /// Target velocity along frame axes, in metres per second.
+  velocity:vmsgs.fbs.geometry.Vector3;
+
+  /// Target acceleration along frame axes, in metres per second squared.
+  acceleration:vmsgs.fbs.geometry.Vector3;
+
+  /// Bounding-box full extents [length, width, height], in metres.
+  size:vmsgs.fbs.geometry.Vector3;
+
+  /// Numeric perception ObjectLabel value assigned to the track.
+  classification:uint;
+
+  /// Radar cross section in decibels relative to one square metre.
+  rcs_dbsm:float;
+
+  /// Probability that the track exists, in the inclusive range [0, 1].
+  existence_probability:float;
+}
+
+/// Zero-copy radar tracks updated in one scan or tracker cycle.
+table RadarTracks {
+  /// Observation timestamp in nanoseconds and common track coordinate frame.
+  header:vmsgs.fbs.common.Header (id: 0);
+
+  /// Active tracks for this cycle; UUID pairs must be unique in the vector.
+  tracks:[RadarTrack] (id: 1);
+}
+
+root_type RadarTracks;

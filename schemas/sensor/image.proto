@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package vmsgs.proto.sensor;
+
+import "common/header.proto";
+
+// Uncompressed two-dimensional image with ROS-compatible encoding semantics.
+message Image {
+  // Capture timestamp in nanoseconds and optical frame identifier.
+  vmsgs.proto.common.Header header = 1;
+
+  // Number of pixel rows.
+  uint32 height = 2;
+
+  // Number of pixel columns.
+  uint32 width = 3;
+
+  // Pixel encoding, for example "rgb8", "mono16", or "32FC1".
+  string encoding = 4;
+
+  // True when multibyte channel values are stored in big-endian order.
+  bool is_bigendian = 5;
+
+  // Full row length in bytes, including any row padding.
+  uint32 step = 6;
+
+  // Row-major pixel bytes; size must be at least step * height.
+  bytes data = 7;
+}
+
+// Encoded image payload for transport or storage where decoding is deferred.
+message CompressedImage {
+  // Original capture timestamp in nanoseconds and optical frame identifier.
+  vmsgs.proto.common.Header header = 1;
+
+  // Codec and optional source encoding, for example "jpeg" or "png; mono16".
+  string format = 2;
+
+  // Complete encoded image byte stream.
+  bytes data = 3;
+}

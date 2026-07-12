@@ -4,6 +4,7 @@ package vmsgs.proto.v2x;
 
 import "common/header.proto";
 
+// Negotiated right-of-way state of a virtual traffic-light element.
 enum VirtualTrafficLightState {
   VTL_UNKNOWN = 0;
   VTL_STOP = 1;
@@ -12,20 +13,34 @@ enum VirtualTrafficLightState {
   VTL_FINALIZED = 4;
 }
 
+// Current state and remaining validity for one mapped virtual light.
 message VirtualTrafficLightStatus {
+  // Stable map identifier of the virtual traffic-light element.
   uint64 id = 1;
+
+  // Currently negotiated right-of-way state.
   VirtualTrafficLightState state = 2;
   // Time until state change (s).
   float time_remaining = 3;
 }
 
+// Timestamped status snapshot for all virtual lights relevant to the vehicle.
 message VirtualTrafficLightStatusArray {
+  // Snapshot timestamp in nanoseconds and map frame context.
   vmsgs.proto.common.Header header = 1;
+
+  // Relevant virtual lights; IDs should be unique within this snapshot.
   repeated VirtualTrafficLightStatus statuses = 2;
 }
 
+// Reliable request to transition one virtual light to the specified state.
 message VirtualTrafficLightStateRequest {
+  // Request creation timestamp in nanoseconds and map frame context.
   vmsgs.proto.common.Header header = 1;
+
+  // Stable map identifier of the virtual light to transition.
   uint64 id = 2;
+
+  // Requested right-of-way state, valid until acknowledged or superseded.
   VirtualTrafficLightState state = 3;
 }

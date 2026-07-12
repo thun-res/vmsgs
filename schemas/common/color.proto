@@ -2,10 +2,19 @@ syntax = "proto3";
 
 package vmsgs.proto.common;
 
-// RGBA color, each channel in [0, 1].
+// Linear or display-space RGBA color used by visualization and material messages.
+// The producer and consumer must agree on the color space; this type only defines
+// normalized channel storage.
 message ColorRGBA {
+  // Red channel in the inclusive range [0.0, 1.0].
   float r = 1;
+
+  // Green channel in the inclusive range [0.0, 1.0].
   float g = 2;
+
+  // Blue channel in the inclusive range [0.0, 1.0].
   float b = 3;
+
+  // Opacity in [0.0, 1.0], where 0.0 is transparent and 1.0 is opaque.
   float a = 4;
 }

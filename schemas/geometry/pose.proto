@@ -8,37 +8,50 @@ import "common/header.proto";
 
 // Position + orientation.
 message Pose {
+  // Translational position in the containing coordinate frame, normally in metres.
   Point position = 1;
+  // Unit-quaternion orientation relative to the containing coordinate frame.
   Quaternion orientation = 2;
 }
 
 // Pose with frame and timestamp.
 message PoseStamped {
+  // Pose timestamp in nanoseconds and parent coordinate frame.
   vmsgs.proto.common.Header header = 1;
+  // Pose expressed in header.frame_id.
   Pose pose = 2;
 }
 
 // Pose with row-major 6x6 covariance over (x, y, z, rot_x, rot_y, rot_z).
 message PoseWithCovariance {
+  // Estimated pose in the containing coordinate frame.
   Pose pose = 1;
   // Length 36; row-major.
   repeated double covariance = 2 [packed = true];
 }
 
+// Timestamped pose estimate with row-major 6x6 uncertainty.
 message PoseWithCovarianceStamped {
+  // Estimate timestamp in nanoseconds and parent coordinate frame.
   vmsgs.proto.common.Header header = 1;
+  // Pose estimate and row-major 6x6 uncertainty.
   PoseWithCovariance pose = 2;
 }
 
 // 2D pose on the ground plane (x, y, theta).
 message Pose2D {
+  // Planar position along the containing frame x axis, normally in metres.
   double x = 1;
+  // Planar position along the containing frame y axis, normally in metres.
   double y = 2;
+  // Heading about the containing frame z axis, in radians.
   double theta = 3;
 }
 
 // A polyline / waypoint list of stamped poses.
 message PoseArray {
+  // Shared timestamp in nanoseconds and coordinate frame for every pose.
   vmsgs.proto.common.Header header = 1;
+  // Poses expressed in header.frame_id; ordering is producer-defined.
   repeated Pose poses = 2;
 }

@@ -10,35 +10,91 @@ import "embodied/skill.proto";
 // High-level multi-skill task plan.
 
 enum TaskState {
-  TASK_PENDING = 0;
-  TASK_RUNNING = 1;
-  TASK_SUCCEEDED = 2;
-  TASK_FAILED = 3;
-  TASK_CANCELED = 4;
+  TASK_UNKNOWN = 0;
+  TASK_PENDING = 1;
+  TASK_RUNNING = 2;
+  TASK_SUCCEEDED = 3;
+  TASK_FAILED = 4;
+  TASK_CANCELED = 5;
 }
 
+// One ordered skill invocation in a declarative high-level robot task.
 message TaskStep {
+  // Name of this task step.
   string name = 1;
+  // Name of the skill invoked by this step, matching a SkillDescriptor.name.
   string skill_name = 2;
+  // Skill input parameters; keys must follow the referenced skill descriptor.
   repeated vmsgs.proto.common.KeyValue parameters = 3;
   // Indices into `Task.steps` that must succeed before this step can run.
   repeated uint32 dependencies = 4 [packed = true];
 }
 
+// Complete high-level task definition and its ordered execution steps.
 message Task {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // Client-generated 128-bit task identity shared by feedback and result.
   vmsgs.proto.common.UUID task_uuid = 2;
+  // Human-readable description of the current state or mission.
   string description = 3;
+  // Task steps indexed from zero; dependency indices reference this same vector.
   repeated TaskStep steps = 4;
 }
 
+// Periodic progress and diagnostic feedback for a running task.
 message TaskFeedback {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // Identifier of the running task producing this feedback.
   vmsgs.proto.common.UUID task_uuid = 2;
+  // Current task lifecycle state; terminal states are repeated in TaskResult.
   TaskState state = 3;
+  // Zero-based index of the task step currently being executed.
   uint32 active_step = 4;
+  // Normalized task completion fraction in the inclusive range [0, 1].
   float progress = 5;
   // Per-step skill feedback for the currently running step.
   SkillFeedback step_feedback = 6;
+  // Human-readable progress detail for this feedback update.
   string message = 7;
+}
+
+// Reliable terminal outcome of a task, separate from droppable progress data.
+message TaskResult {
+  // Identifier of the completed task.
+  vmsgs.proto.common.UUID task_uuid = 1;
+
+  // Terminal state; must be succeeded, failed, or canceled.
+  TaskState state = 2;
+
+  // Portable numeric result code; zero indicates no error.
+  int32 error_code = 3;
+
+  // Human-readable completion or failure detail.
+  string message = 4;
+
+  // Optional typed task outputs.
+  repeated vmsgs.proto.common.KeyValue outputs = 5;
+}
+
+// Reliable request to stop a pending or running task.
+message TaskCancelRequest {
+  // Task to cancel.
+  vmsgs.proto.common.UUID task_uuid = 1;
+
+  // Operator or supervisor reason recorded for diagnostics.
+  string reason = 2;
+}
+
+// Acknowledgement that a task cancellation request was accepted or rejected.
+message TaskCancelResponse {
+  // Task referenced by the request.
+  vmsgs.proto.common.UUID task_uuid = 1;
+
+  // True when cancellation was accepted for processing.
+  bool accepted = 2;
+
+  // Human-readable rejection or acknowledgement detail.
+  string message = 3;
 }

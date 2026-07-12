@@ -1,0 +1,29 @@
+include "../common/header.fbs";
+
+namespace vmsgs.fbs.embodied;
+
+/// One time-parameterized waypoint in joint space.
+table JointTrajectoryPoint {
+  /// Signed nanoseconds relative to the trajectory start time.
+  time_from_start_ns:long (id: 0);
+  /// Joint positions ordered by JointTrajectory.joint_names.
+  positions:[double] (id: 1);
+  /// Joint velocities in position units per second.
+  velocities:[double] (id: 2);
+  /// Joint accelerations in position units per second squared.
+  accelerations:[double] (id: 3);
+  /// Joint efforts in newton-metres or newtons according to joint type.
+  effort:[double] (id: 4);
+}
+
+/// Zero-copy trajectory command for high-rate multi-joint execution.
+table JointTrajectory {
+  /// Planned start time in nanoseconds and trajectory reference frame.
+  header:vmsgs.fbs.common.Header (id: 0);
+  /// Ordered joints shared by each populated vector in every point.
+  joint_names:[string] (id: 1);
+  /// Time-ordered waypoints; time_from_start_ns must be nondecreasing.
+  points:[JointTrajectoryPoint] (id: 2);
+}
+
+root_type JointTrajectory;

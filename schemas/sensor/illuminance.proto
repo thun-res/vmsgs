@@ -4,8 +4,9 @@ package vmsgs.proto.sensor;
 
 import "common/header.proto";
 
+// Ambient light illuminance measurement in lux with scalar variance.
 message Illuminance {
-  vmsgs.proto.common.Header header = 1;
-  double illuminance = 2;  // lux
-  double variance = 3;
+  vmsgs.proto.common.Header header = 1;  // Measurement time and light-sensor frame.
+  double illuminance = 2;                // lux
+  double variance = 3;                   // Illuminance variance, in squared lux.
 }

@@ -3,8 +3,10 @@ syntax = "proto3";
 package vmsgs.proto.planning;
 
 import "common/header.proto";
+import "common/duration.proto";
 import "geometry/pose.proto";
 
+// Lifecycle of the active point-to-point driving mission.
 enum MissionState {
   MISSION_UNKNOWN = 0;
   MISSION_INITIALIZING = 1;
@@ -15,17 +17,24 @@ enum MissionState {
   MISSION_CANCELED = 6;
 }
 
+// Timestamped mission lifecycle state and human-readable diagnostic detail.
 message MissionStateStamped {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // State encoded using the referenced `MissionState` contract.
   MissionState state = 2;
+  // Human-readable description of the current state or mission.
   string description = 3;
 }
 
+// Goal pose and optional mission identifier requested from route planning.
 message MissionGoal {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // Pose expressed in the coordinate frame identified by the enclosing header.
   vmsgs.proto.geometry.Pose goal_pose = 2;
   // Optional ordered intermediate waypoints.
   repeated vmsgs.proto.geometry.Pose waypoints = 3;
-  // Hard time budget in seconds; 0 = none.
-  double deadline_sec = 4;
+  // Hard time budget for completing the mission; unset = none.
+  vmsgs.proto.common.Duration time_budget = 4;
 }

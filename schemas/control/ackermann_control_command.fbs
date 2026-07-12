@@ -1,0 +1,37 @@
+include "../common/header.fbs";
+
+namespace vmsgs.fbs.control;
+
+/// High-rate lateral target for an Ackermann steering controller.
+table LateralCommand {
+  /// Command timestamp and vehicle body frame.
+  header:vmsgs.fbs.common.Header (id: 0);
+  steering_tire_angle:float (id: 1);  // rad, positive left
+  steering_tire_rotation_rate:float (id: 2);  // rad/s
+  steering_tire_torque:float (id: 3);  // Nm
+  /// True when the torque field is valid and should be applied.
+  use_torque:bool (id: 4);
+}
+
+/// High-rate longitudinal target.
+table LongitudinalCommand {
+  /// Command timestamp and vehicle body frame.
+  header:vmsgs.fbs.common.Header (id: 0);
+  velocity:float (id: 1);  // m/s
+  acceleration:float (id: 2);  // m/s^2
+  jerk:float (id: 3);  // m/s^3
+  /// True to request stopping independently of the velocity target.
+  stop:bool (id: 4);
+}
+
+/// FlatBuffers mirror of proto AckermannControlCommand for the control hot path.
+table AckermannControlCommand {
+  /// Common command timestamp; nested headers may retain source timestamps.
+  header:vmsgs.fbs.common.Header (id: 0);
+  /// Desired steering state for the lateral controller.
+  lateral:LateralCommand (id: 1);
+  /// Desired motion state for the longitudinal controller.
+  longitudinal:LongitudinalCommand (id: 2);
+}
+
+root_type AckermannControlCommand;

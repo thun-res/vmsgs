@@ -3,22 +3,26 @@ syntax = "proto3";
 package vmsgs.proto.sensor;
 
 import "common/header.proto";
+import "common/duration.proto";
 
 // Set of returns for a single beam (multi-echo LiDAR).
 message LaserEcho {
+  // Echo values ordered by return time for one emitted beam.
   repeated float echoes = 1 [packed = true];
 }
 
-// Multi-echo planar laser sweep. Mirrors sensor_msgs/MultiEchoLaserScan.
+// Multi-echo planar laser sweep.
 message MultiEchoLaserScan {
-  vmsgs.proto.common.Header header = 1;
-  float angle_min = 2;
-  float angle_max = 3;
-  float angle_increment = 4;
-  float time_increment = 5;
-  float scan_time = 6;
-  float range_min = 7;
-  float range_max = 8;
+  vmsgs.proto.common.Header header = 1;  // Acquisition time and scan frame.
+  float angle_min = 2;                   // First beam angle about frame z, in radians.
+  float angle_max = 3;                   // Final beam angle about frame z, in radians.
+  float angle_increment = 4;             // Angular step between beams, in radians.
+  vmsgs.proto.common.Duration time_increment = 5;  // Acquisition interval between beams.
+  vmsgs.proto.common.Duration scan_time = 6;       // Duration of one complete scan.
+  float range_min = 7;                   // Minimum valid return distance, in metres.
+  float range_max = 8;                   // Maximum valid return distance, in metres.
+  // Per-beam range echoes in metres; length matches the angular sample count.
   repeated LaserEcho ranges = 9;
+  // Per-beam return intensities aligned one-to-one with ranges.
   repeated LaserEcho intensities = 10;
 }

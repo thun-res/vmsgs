@@ -5,16 +5,25 @@ namespace vmsgs.fbs.map;
 
 /// 2.5D height map. `height` and `variance` are row-major float32 arrays sized width*length.
 table ElevationLayer {
+  /// Name of this elevation layer.
   name:string (id: 0);
+  /// Row-major layer samples; length equals the grid width * length.
   data:[float] (id: 1);
 }
 
+/// Multi-layer 2.5D elevation grid expressed in the header coordinate frame.
 table ElevationMap {
+  /// Timestamp, sequence number, and coordinate frame shared by this payload.
   header:vmsgs.fbs.common.Header (id: 0);
+  /// Grid resolution: edge length of each square cell, in metres.
   resolution:float (id: 1);
+  /// Number of grid columns; every layer contains exactly `width * length` samples.
   width:uint32 (id: 2);
+  /// Number of grid rows; every layer uses row-major ordering.
   length:uint32 (id: 3);
+  /// Origin encoded using the referenced `vmsgs.fbs.geometry.Pose` contract.
   origin:vmsgs.fbs.geometry.Pose (id: 4);
+  /// Named elevation layers (e.g. height, variance) sharing this grid geometry.
   layers:[ElevationLayer] (id: 5);
 }
 

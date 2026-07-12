@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+package vmsgs.proto.embodied;
+
+import "common/header.proto";
+
+// Named scalar exposed by a hardware component, such as position or effort.
+message InterfaceValue {
+  // Interface name defined by the hardware contract.
+  string interface_name = 1;
+  // Current value in the unit declared for that interface.
+  double value = 2;
+}
+
+// Complete set of state interfaces reported for one robot joint.
+message JointInterfaceState {
+  // Joint name matching the robot description.
+  string joint_name = 1;
+  // Available interface samples; names should be unique within this joint.
+  repeated InterfaceValue interfaces = 2;
+}
+
+// Lifecycle and health state of one actuator, sensor, or hardware plugin.
+message HardwareComponentState {
+  // Generic managed-hardware lifecycle state.
+  enum State {
+    // State was not reported or is not recognized.
+    UNKNOWN = 0;
+    // Component exists but has not loaded its configuration.
+    UNCONFIGURED = 1;
+    // Component is configured but does not currently process commands.
+    INACTIVE = 2;
+    // Component is configured and actively processing data or commands.
+    ACTIVE = 3;
+    // Component completed shutdown and cannot be reactivated directly.
+    FINALIZED = 4;
+    // Component detected a fault requiring recovery or reconfiguration.
+    ERROR = 5;
+  }
+
+  // Stable component name from the robot hardware description.
+  string name = 1;
+  // Current lifecycle state.
+  State state = 2;
+  // Whether the component can currently be reached and queried.
+  bool available = 3;
+  // Whether its command/state interfaces are enabled for use.
+  bool enabled = 4;
+  // Human-readable status or fault detail; control logic uses state instead.
+  string message = 5;
+}
+
+// Aggregate hardware snapshot for monitoring, failover, and controller setup.
+message HardwareState {
+  // Snapshot time in nanoseconds and robot frame identifier.
+  vmsgs.proto.common.Header header = 1;
+  // Lifecycle and availability of all reported hardware components.
+  repeated HardwareComponentState components = 2;
+  // Per-joint state-interface values captured for this snapshot.
+  repeated JointInterfaceState joints = 3;
+}

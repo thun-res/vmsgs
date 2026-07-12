@@ -1,0 +1,98 @@
+syntax = "proto3";
+
+package vmsgs.proto.vehicle;
+
+import "common/header.proto";
+import "vehicle/gear_command.proto";
+import "vehicle/turn_indicators.proto";
+import "vehicle/hazard_lights.proto";
+import "vehicle/headlights.proto";
+import "vehicle/wipers.proto";
+import "vehicle/control_mode.proto";
+
+// Header-free wheel-speed values captured at the enclosing chassis timestamp.
+message WheelSpeedValues {
+  // Front-left wheel ground speed in metres per second.
+  float front_left = 1;
+
+  // Front-right wheel ground speed in metres per second.
+  float front_right = 2;
+
+  // Rear-left wheel ground speed in metres per second.
+  float rear_left = 3;
+
+  // Rear-right wheel ground speed in metres per second.
+  float rear_right = 4;
+}
+
+// Vendor-neutral aggregate chassis feedback for vehicle state, actuation,
+// driver overrides, body equipment, control ownership, and fault reporting.
+message ChassisInfo {
+  // Primary machine-readable chassis fault category; `error_mask` carries extras.
+  enum ErrorCode {
+    ERROR_NONE = 0;
+    ERROR_COMMAND_TIMEOUT = 1;
+    ERROR_CHASSIS = 2;
+    ERROR_STEERING = 3;
+    ERROR_BRAKE = 4;
+    ERROR_THROTTLE = 5;
+    ERROR_GEAR = 6;
+    ERROR_CAN_LOST = 7;
+    ERROR_MANUAL_INTERVENTION = 8;
+    ERROR_UNKNOWN = 255;
+  }
+
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
+  vmsgs.proto.common.Header header = 1;
+  // True when the engine or traction motor is running.
+  bool engine_started = 2;
+  // Engine or traction-motor speed in revolutions per minute.
+  float engine_rpm = 3;
+  float longitudinal_velocity = 4;      // m/s
+  float lateral_velocity = 5;           // m/s
+  float yaw_rate = 6;                   // rad/s
+  float longitudinal_acceleration = 7;  // m/s^2
+  float lateral_acceleration = 8;       // m/s^2
+  // Total distance travelled in metres; non-negative and monotonically increasing.
+  float odometer_m = 9;
+  float throttle_percentage = 10;   // [0, 100]
+  float brake_percentage = 11;      // [0, 100]
+  float steering_tire_angle = 12;   // rad
+  float steering_wheel_angle = 13;  // rad
+  float steering_wheel_rate = 14;   // rad/s
+  // Measured steering torque in newton-metres.
+  float steering_torque_nm = 15;
+  // Gear encoded using the referenced `GearCommandCode` contract.
+  GearCommandCode gear = 16;
+  // True when the parking brake is engaged.
+  bool parking_brake = 17;
+  // True when the brake pedal is currently pressed.
+  bool brake_pedal_pressed = 18;
+  // True when the driver is overriding control via the accelerator pedal.
+  bool accelerator_pedal_override = 19;
+  // True when the driver is overriding control via the brake pedal.
+  bool brake_pedal_override = 20;
+  // True when the anti-lock braking system is currently active.
+  bool abs_active = 21;
+  // True when automatic brake hold is currently active.
+  bool autohold_active = 22;
+  float battery_soc = 23;  // [0, 1]
+  // Wheel speeds encoded using the referenced `WheelSpeedValues` contract.
+  WheelSpeedValues wheel_speeds = 24;
+  // Turn indicators encoded using the referenced `TurnIndicatorsCode` contract.
+  TurnIndicatorsCode turn_indicators = 25;
+  // Hazard lights encoded using the referenced `HazardLightsCode` contract.
+  HazardLightsCode hazard_lights = 26;
+  // Headlights encoded using the referenced `HeadlightsCode` contract.
+  HeadlightsCode headlights = 27;
+  // Wipers encoded using the referenced `WipersCode` contract.
+  WipersCode wipers = 28;
+  // True when the horn is currently sounding.
+  bool horn_active = 29;
+  // Control mode encoded using the referenced `ControlMode` contract.
+  ControlMode control_mode = 30;
+  // Error code encoded using the referenced `ErrorCode` contract.
+  ErrorCode error_code = 31;
+  // Bit mask of simultaneously active chassis faults; bit assignments are platform-defined.
+  uint64 error_mask = 32;
+}

@@ -1,0 +1,26 @@
+include "../common/header.fbs";
+include "../geometry/geometry.fbs";
+include "hot_path_types.fbs";
+namespace vmsgs.fbs.embodied;
+/// Tool-center-point motion, wrench, and manipulator health state.
+table ManipulatorState {
+  /// Measurement timestamp and arm frame.
+  header:vmsgs.fbs.common.Header (id: 0);
+  /// TCP pose in header.frame_id.
+  tcp_pose:vmsgs.fbs.geometry.Pose (id: 1);
+  /// TCP linear and angular velocity.
+  tcp_twist:Twist (id: 2);
+  /// TCP force and torque.
+  tcp_wrench:Wrench (id: 3);
+  /// Numeric protobuf ArmStatus.
+  status:int (id: 4);
+  /// Controller-defined operating mode name.
+  mode:string (id: 5);
+  /// True while collision contact is reported.
+  is_collision:bool (id: 6);
+  /// True near a kinematic singularity.
+  is_singularity:bool (id: 7);
+  /// Stable identifier of the measured manipulator resource.
+  manipulator_id:string (id: 8);
+}
+root_type ManipulatorState;

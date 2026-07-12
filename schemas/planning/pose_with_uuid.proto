@@ -7,9 +7,12 @@ import "common/uuid.proto";
 import "geometry/pose.proto";
 
 // Pose carrying its own UUID, used to correlate operator-set goals across
-// modules. Mirrors autoware_planning_msgs/PoseWithUuidStamped.
+// modules.
 message PoseWithUuidStamped {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // Stable UUID used to correlate this entity across messages.
   vmsgs.proto.common.UUID uuid = 2;
+  // Pose expressed in the coordinate frame identified by the enclosing header.
   vmsgs.proto.geometry.Pose pose = 3;
 }

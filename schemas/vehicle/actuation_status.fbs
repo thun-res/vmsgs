@@ -1,0 +1,19 @@
+include "../common/header.fbs";
+
+namespace vmsgs.fbs.vehicle;
+
+/// Measured low-level actuator state corresponding to an actuation command.
+table ActuationStatus {
+  /// Measurement timestamp and vehicle body frame.
+  header:vmsgs.fbs.common.Header (id: 0);
+  /// Measured accelerator actuator position in the inclusive range [0, 1].
+  accel_status:float (id: 1);
+  /// Measured brake actuator position in the inclusive range [0, 1].
+  brake_status:float (id: 2);
+  /// Measured steering-wheel angle in radians, positive to the left.
+  steer_status:float (id: 3);
+  /// Measured steering actuator torque in newton-metres.
+  steer_torque_status:float (id: 4);
+}
+
+root_type ActuationStatus;

@@ -6,11 +6,14 @@ import "common/header.proto";
 import "common/uuid.proto";
 import "geometry/pose.proto";
 
+// Stable identifier and semantic kind of one lanelet-map primitive.
 message LaneletPrimitive {
+  // Stable identifier of this lanelet-map primitive.
   uint64 id = 1;
   string primitive_type = 2;  // "lane", "lanelet", "area"
 }
 
+// Route segment containing a preferred lane and permitted alternatives.
 message LaneletSegment {
   // Preferred lanelet to drive in.
   LaneletPrimitive preferred = 1;
@@ -18,14 +21,21 @@ message LaneletSegment {
   repeated LaneletPrimitive primitives = 2;
 }
 
+// Complete ordered lanelet route from a start pose to a goal pose.
 message LaneletRoute {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // Pose expressed in the coordinate frame identified by the enclosing header.
   vmsgs.proto.geometry.Pose start_pose = 2;
+  // Pose expressed in the coordinate frame identified by the enclosing header.
   vmsgs.proto.geometry.Pose goal_pose = 3;
+  // Route segments in traversal order from start_pose to goal_pose.
   repeated LaneletSegment segments = 4;
+  // Route uuid encoded using the referenced `vmsgs.proto.common.UUID` contract.
   vmsgs.proto.common.UUID route_uuid = 5;
 }
 
+// Lifecycle of the route managed by the route-planning service.
 enum RouteState {
   ROUTE_STATE_UNKNOWN = 0;
   ROUTE_STATE_UNSET = 1;
@@ -34,7 +44,10 @@ enum RouteState {
   ROUTE_STATE_CHANGING = 4;
 }
 
+// Timestamped route lifecycle state.
 message RouteStateStamped {
+  // Timestamp, sequence number, and coordinate frame shared by this payload.
   vmsgs.proto.common.Header header = 1;
+  // State encoded using the referenced `RouteState` contract.
   RouteState state = 2;
 }

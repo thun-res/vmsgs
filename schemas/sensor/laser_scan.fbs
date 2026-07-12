@@ -1,0 +1,38 @@
+include "../common/header.fbs";
+
+namespace vmsgs.fbs.sensor;
+
+/// Zero-copy planar laser sweep preserving ROS-compatible LaserScan semantics.
+table LaserScan {
+  /// Acquisition timestamp in nanoseconds and scan coordinate frame.
+  header:vmsgs.fbs.common.Header (id: 0);
+
+  /// Angle of the first beam about the frame z axis, in radians.
+  angle_min:float (id: 1);
+
+  /// Angle of the final beam about the frame z axis, in radians.
+  angle_max:float (id: 2);
+
+  /// Angular separation between adjacent beams, in radians.
+  angle_increment:float (id: 3);
+
+  /// Acquisition interval between adjacent beams, in signed nanoseconds.
+  time_increment_ns:long (id: 4);
+
+  /// Duration of one complete sweep, in signed nanoseconds.
+  scan_time_ns:long (id: 5);
+
+  /// Minimum valid return distance, in metres.
+  range_min:float (id: 6);
+
+  /// Maximum valid return distance, in metres.
+  range_max:float (id: 7);
+
+  /// Beam ranges in metres, ordered from angle_min by angle_increment.
+  ranges:[float] (id: 8);
+
+  /// Optional per-beam intensities; empty or equal in length to ranges.
+  intensities:[float] (id: 9);
+}
+
+root_type LaserScan;

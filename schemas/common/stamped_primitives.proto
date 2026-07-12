@@ -4,54 +4,96 @@ package vmsgs.proto.common;
 
 import "common/header.proto";
 
-// Stamped scalar/array debug values (autoware_internal_debug_msgs).
+// Timestamped scalar and one-dimensional array values for lightweight telemetry,
+// debug probes, and generic adapters. Arrays are ordered but have no shape or
+// unit metadata; use multi_array.proto when dimensional layout is required.
 
+// Boolean sample associated with an acquisition time and coordinate context.
 message BoolStamped {
+  // Sample timing and source frame metadata.
   vmsgs.proto.common.Header header = 1;
+
+  // Sample value.
   bool data = 2;
 }
 
+// Signed 32-bit integer sample.
 message Int32Stamped {
+  // Sample timing and source frame metadata.
   vmsgs.proto.common.Header header = 1;
+
+  // Sample value in the application-defined unit.
   int32 data = 2;
 }
 
+// Signed 64-bit integer sample.
 message Int64Stamped {
+  // Sample timing and source frame metadata.
   vmsgs.proto.common.Header header = 1;
+
+  // Sample value in the application-defined unit.
   int64 data = 2;
 }
 
+// IEEE-754 single-precision sample.
 message Float32Stamped {
+  // Sample timing and source frame metadata.
   vmsgs.proto.common.Header header = 1;
+
+  // Sample value; the publishing API must define its unit and valid range.
   float data = 2;
 }
 
+// IEEE-754 double-precision sample.
 message Float64Stamped {
+  // Sample timing and source frame metadata.
   vmsgs.proto.common.Header header = 1;
+
+  // Sample value; the publishing API must define its unit and valid range.
   double data = 2;
 }
 
+// UTF-8 textual sample intended for state labels or debug output.
 message StringStamped {
+  // Sample timing and source frame metadata.
   vmsgs.proto.common.Header header = 1;
+
+  // Text value; consumers must not assume a fixed vocabulary unless documented.
   string data = 2;
 }
 
+// Ordered one-dimensional array of signed 32-bit integer samples.
 message Int32MultiArrayStamped {
+  // Common acquisition metadata for all elements.
   vmsgs.proto.common.Header header = 1;
+
+  // Packed values in producer-defined order; length is application-defined.
   repeated int32 data = 2 [packed = true];
 }
 
+// Ordered one-dimensional array of signed 64-bit integer samples.
 message Int64MultiArrayStamped {
+  // Common acquisition metadata for all elements.
   vmsgs.proto.common.Header header = 1;
+
+  // Packed values in producer-defined order; length is application-defined.
   repeated int64 data = 2 [packed = true];
 }
 
+// Ordered one-dimensional array of single-precision samples.
 message Float32MultiArrayStamped {
+  // Common acquisition metadata for all elements.
   vmsgs.proto.common.Header header = 1;
+
+  // Packed values in producer-defined order; units apply uniformly to the array.
   repeated float data = 2 [packed = true];
 }
 
+// Ordered one-dimensional array of double-precision samples.
 message Float64MultiArrayStamped {
+  // Common acquisition metadata for all elements.
   vmsgs.proto.common.Header header = 1;
+
+  // Packed values in producer-defined order; units apply uniformly to the array.
   repeated double data = 2 [packed = true];
 }

@@ -1,0 +1,251 @@
+syntax = "proto3";
+
+package vmsgs.proto.visualization;
+
+import "common/color.proto";
+import "common/duration.proto";
+import "common/header.proto";
+import "geometry/point.proto";
+import "geometry/pose.proto";
+import "geometry/quaternion.proto";
+import "visualization/marker.proto";
+
+// Marker rendered directly in an image or pixel-coordinate overlay.
+message ImageMarker {
+  // Image-overlay primitive type.
+  enum Type {
+    TYPE_UNKNOWN = 0;
+    CIRCLE = 1;
+    LINE_STRIP = 2;
+    LINE_LIST = 3;
+    POLYGON = 4;
+    POINTS = 5;
+  }
+
+  // Lifecycle operation for the stable namespace and identifier pair.
+  enum Action {
+    ACTION_UNKNOWN = 0;
+    ADD = 1;
+    REMOVE = 2;
+  }
+
+  // Image acquisition timestamp in nanoseconds and optical frame identifier.
+  vmsgs.proto.common.Header header = 1;
+
+  // Application namespace combined with id to identify this overlay.
+  string ns = 2;
+
+  // Marker identifier unique within ns for its displayed lifetime.
+  int32 id = 3;
+
+  // Pixel-overlay geometry interpretation.
+  Type type = 4;
+
+  // Lifecycle operation requested from the image renderer.
+  Action action = 5;
+
+  // Primary pixel position; x is column, y is row, and z is normally zero.
+  vmsgs.proto.geometry.Point position = 6;
+
+  // Type-dependent size in pixels, such as circle diameter or line width.
+  float scale = 7;
+
+  // Stroke color with normalized RGBA channels in [0, 1].
+  vmsgs.proto.common.ColorRGBA outline_color = 8;
+
+  // Whether polygonal geometry should be filled.
+  bool filled = 9;
+
+  // Fill color with normalized RGBA channels in [0, 1].
+  vmsgs.proto.common.ColorRGBA fill_color = 10;
+
+  // Visibility duration after receipt; unset means persistent.
+  vmsgs.proto.common.Duration lifetime = 11;
+
+  // Ordered pixel vertices interpreted according to type.
+  repeated vmsgs.proto.geometry.Point points = 12;
+
+  // Optional per-vertex stroke colors; empty uses outline_color.
+  repeated vmsgs.proto.common.ColorRGBA outline_colors = 13;
+}
+
+// One menu item displayed by an interactive marker control.
+message MenuEntry {
+  // Stable entry identifier unique within one interactive marker.
+  uint32 id = 1;
+
+  // Parent menu-entry identifier; zero places the item at the root.
+  uint32 parent_id = 2;
+
+  // UTF-8 label shown to the user.
+  string title = 3;
+
+  // Stable application payload returned unchanged in selection feedback.
+  // Receivers must not interpret this value as an executable command.
+  string feedback_payload = 4;
+}
+
+// User-manipulable control embedded in an interactive marker.
+message InteractiveMarkerControl {
+  // Orientation handling relative to the interactive marker reference frame.
+  enum OrientationMode {
+    ORIENTATION_INHERIT = 0;
+    ORIENTATION_FIXED = 1;
+    ORIENTATION_VIEW_FACING = 2;
+  }
+
+  // User interaction behavior exposed by the control.
+  enum InteractionMode {
+    INTERACTION_NONE = 0;
+    MENU = 1;
+    BUTTON = 2;
+    MOVE_AXIS = 3;
+    MOVE_PLANE = 4;
+    ROTATE_AXIS = 5;
+    MOVE_ROTATE = 6;
+    MOVE_3D = 7;
+    ROTATE_3D = 8;
+    MOVE_ROTATE_3D = 9;
+  }
+
+  // Stable control name unique within its containing interactive marker.
+  string name = 1;
+
+  // Control orientation relative to the marker pose.
+  vmsgs.proto.geometry.Quaternion orientation = 2;
+
+  // How orientation is updated as the reference frame or view changes.
+  OrientationMode orientation_mode = 3;
+
+  // User interaction behavior for this control.
+  InteractionMode interaction_mode = 4;
+
+  // True when the control should remain visible when not actively selected.
+  bool always_visible = 5;
+
+  // Visual markers rendered as part of this control.
+  repeated Marker markers = 6;
+
+  // True when marker geometry may capture pointer events independently.
+  bool independent_marker_orientation = 7;
+
+  // Human-readable control description for user interfaces.
+  string description = 8;
+}
+
+// Complete interactive marker definition managed by its stable name.
+message InteractiveMarker {
+  // Definition timestamp in nanoseconds and marker coordinate frame.
+  vmsgs.proto.common.Header header = 1;
+
+  // Stable marker name used by updates and feedback.
+  string name = 2;
+
+  // Human-readable description displayed near the marker.
+  string description = 3;
+
+  // Marker pose in header.frame_id.
+  vmsgs.proto.geometry.Pose pose = 4;
+
+  // Nominal marker scale in metres; must be positive for visible controls.
+  float scale = 5;
+
+  // Hierarchical menu entries with unique IDs and valid parent references.
+  repeated MenuEntry menu_entries = 6;
+
+  // Interactive controls with names unique within this marker.
+  repeated InteractiveMarkerControl controls = 7;
+}
+
+// User interaction event returned to the interactive marker server.
+message InteractiveMarkerFeedback {
+  // Event timestamp in nanoseconds and marker coordinate frame.
+  vmsgs.proto.common.Header header = 1;
+
+  // Client identity used to distinguish concurrent user interfaces.
+  string client_id = 2;
+
+  // Name of the interactive marker that generated the event.
+  string marker_name = 3;
+
+  // Control name that generated the event; may be empty for pose updates.
+  string control_name = 4;
+
+  // Interaction event category.
+  enum EventType {
+    EVENT_TYPE_UNKNOWN = 0;
+    KEEP_ALIVE = 1;
+    POSE_UPDATE = 2;
+    MENU_SELECT = 3;
+    BUTTON_CLICK = 4;
+    MOUSE_DOWN = 5;
+    MOUSE_UP = 6;
+  }
+
+  // Event category controlling which optional fields are meaningful.
+  EventType event_type = 5;
+
+  // Marker pose after the interaction, expressed in header.frame_id.
+  vmsgs.proto.geometry.Pose pose = 6;
+
+  // Selected MenuEntry identifier for MENU_SELECT, otherwise zero.
+  uint32 menu_entry_id = 7;
+
+  // Pointer intersection point in header.frame_id when available.
+  vmsgs.proto.geometry.Point mouse_point = 8;
+
+  // True when mouse_point contains a valid intersection.
+  bool mouse_point_valid = 9;
+}
+
+// Pose-only update for one named interactive marker.
+message InteractiveMarkerPose {
+  // Update timestamp in nanoseconds and marker coordinate frame.
+  vmsgs.proto.common.Header header = 1;
+
+  // Stable interactive marker name.
+  string name = 2;
+
+  // Replacement pose in header.frame_id.
+  vmsgs.proto.geometry.Pose pose = 3;
+}
+
+// Incremental update applied atomically to an interactive marker server.
+message InteractiveMarkerUpdate {
+  // Update generation timestamp in nanoseconds and default coordinate frame.
+  vmsgs.proto.common.Header header = 1;
+
+  // Stable server identity used to reject updates from unrelated publishers.
+  string server_id = 2;
+
+  // Monotonically increasing sequence number within server_id.
+  uint64 sequence_num = 3;
+
+  // Markers to create or replace by name.
+  repeated InteractiveMarker markers = 4;
+
+  // Fields 5 and 6 held fragile parallel name/pose vectors and are retired.
+  reserved 5, 6;
+  reserved "pose_update_names", "pose_updates";
+
+  // Marker names to erase; names should be unique in this update.
+  repeated string erases = 7;
+
+  // Pose-only changes that do not replace controls or menus.
+  repeated InteractiveMarkerPose poses = 8;
+}
+
+// Latched complete state used to initialize a late-joining interactive client.
+message InteractiveMarkerInit {
+  // Initialization generation timestamp in nanoseconds and default frame.
+  vmsgs.proto.common.Header header = 1;
+
+  // Stable server identity shared with subsequent incremental updates.
+  string server_id = 2;
+
+  // Sequence number immediately preceding the next incremental update.
+  uint64 sequence_num = 3;
+
+  // Complete active marker set; names must be unique.
+  repeated InteractiveMarker markers = 4;
+}

@@ -4,15 +4,29 @@ package vmsgs.proto.system;
 
 import "common/header.proto";
 
+// Static identity and launch metadata for one operating-system process.
 message ProcessInfo {
+  // Host name or stable machine identifier on which the process runs.
   string host = 1;
+
+  // Operating-system process identifier; valid only for the current lifetime.
   uint32 pid = 2;
+
+  // Executable, node, or service name.
   string name = 3;
+
+  // Primary textual IP address; empty if not network-addressable.
   string ip = 4;
+
+  // Launch arguments formatted for diagnostics, not for shell evaluation.
   string args = 5;
 }
 
+// Timestamped process inventory for one or more hosts.
 message ProcessInfoArray {
+  // Time when the inventory was sampled.
   vmsgs.proto.common.Header header = 1;
+
+  // Process records; the pair (host, pid) should be unique in this snapshot.
   repeated ProcessInfo processes = 2;
 }

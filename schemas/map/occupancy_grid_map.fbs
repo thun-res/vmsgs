@@ -3,12 +3,18 @@ include "../geometry/geometry.fbs";
 
 namespace vmsgs.fbs.map;
 
-/// 2D static map tile. See perception.OccupancyGrid for the dynamic variant.
+/// 2D static occupancy map tile (zero-copy). See perception.OccupancyGrid for the
+/// dynamic/rolling variant and map.OccupancyGrid (proto) for RPC/incremental use.
 table OccupancyGridMap {
+  /// Timestamp, sequence number, and coordinate frame shared by this payload.
   header:vmsgs.fbs.common.Header (id: 0);
+  /// Cell size in metres per cell; must be positive.
   resolution:float (id: 1);
+  /// Number of grid columns; must be consistent with the row-major data length.
   width:uint32 (id: 2);
+  /// Number of grid rows; `data` contains exactly `width * height` cells.
   height:uint32 (id: 3);
+  /// Origin encoded using the referenced `vmsgs.fbs.geometry.Pose` contract.
   origin:vmsgs.fbs.geometry.Pose (id: 4);
   /// Row-major signed bytes; -1 unknown, 0 free, 100 occupied.
   data:[byte] (id: 5);

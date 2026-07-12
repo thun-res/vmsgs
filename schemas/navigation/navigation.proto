@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package vmsgs.proto.navigation;
+
+import "common/header.proto";
+import "geometry/point.proto";
+import "geometry/pose.proto";
+
+// Ordered poses describing a geometric path through a common coordinate frame.
+// The message intentionally carries no velocity profile; use a planning
+// trajectory when time, speed, or control constraints are required.
+message NavigationPath {
+  // Path creation time in nanoseconds and the coordinate frame of every pose.
+  vmsgs.proto.common.Header header = 1;
+
+  // Poses ordered from the path start to its end.
+  repeated vmsgs.proto.geometry.PoseStamped poses = 2;
+}
+
+// Ordered navigation goals that a task executor should visit in sequence.
+message Goals {
+  // Goal-list creation time in nanoseconds and the common reference frame.
+  vmsgs.proto.common.Header header = 1;
+
+  // Goal poses in execution order; an empty list cancels no goal by itself.
+  repeated vmsgs.proto.geometry.PoseStamped goals = 2;
+}
+
+// Sparse set of occupied or selected cells in a two-dimensional metric grid.
+message GridCells {
+  // Grid timestamp in nanoseconds and the coordinate frame of cell centers.
+  vmsgs.proto.common.Header header = 1;
+
+  // Cell extent along the frame x axis, in metres; must be positive.
+  float cell_width = 2;
+
+  // Cell extent along the frame y axis, in metres; must be positive.
+  float cell_height = 3;
+
+  // Centers of represented cells; z may be zero for a planar grid.
+  repeated vmsgs.proto.geometry.Point cells = 4;
+}
