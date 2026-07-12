@@ -1,0 +1,46 @@
+include "../common/header.fbs";
+include "../geometry/geometry.fbs";
+
+namespace vmsgs.fbs.perception;
+
+/// Semantic class of a bird's-eye-view occupancy-grid cell. Zero is the unknown
+/// sentinel; higher values name the dominant object or surface occupying the cell:
+/// Free (drivable), Occupied (unclassified obstacle), Curb, Gate (barrier gate),
+/// Pedestrian (VRU), Vehicle, Cone, Vegetation, Noise (spray or dust).
+enum OccupancyClass : ubyte {
+  Unknown = 0,
+  Free = 1,
+  Occupied = 2,
+  Curb = 3,
+  Gate = 4,
+  Pedestrian = 5,
+  Vehicle = 6,
+  Cone = 7,
+  Vegetation = 8,
+  Noise = 9,
+}
+
+/// Bird's-eye-view semantic occupancy grid over the local drivable area: a per-cell
+/// semantic class on top of occupancy (zero-copy). Cells are row-major, length
+/// width*height; the center of cell (col,row) is
+/// origin.position + ((col+0.5)*resolution, (row+0.5)*resolution).
+table SemanticOccupancyGrid {
+  /// Observation timestamp in nanoseconds and grid coordinate frame.
+  header:vmsgs.fbs.common.Header (id: 0);
+  /// Cell edge length in metres.
+  resolution:float (id: 1);
+  /// Number of columns along the grid x axis.
+  width:uint32 (id: 2);
+  /// Number of rows along the grid y axis.
+  height:uint32 (id: 3);
+  /// Origin of cell (0,0) lower corner in `header.frame_id`.
+  origin:vmsgs.fbs.geometry.Pose (id: 4);
+  /// Row-major semantic class per cell (OccupancyClass values), length width*height.
+  cells:[ubyte] (id: 5);
+  /// Optional row-major per-cell surface height in metres; empty or length width*height.
+  cell_height:[float] (id: 6);
+  /// Optional row-major per-cell related object id (0 = none); empty or length width*height.
+  cell_object_id:[uint32] (id: 7);
+}
+
+root_type SemanticOccupancyGrid;

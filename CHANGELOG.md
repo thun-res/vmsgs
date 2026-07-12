@@ -24,6 +24,8 @@
 - 具身：运动规划、规划场景、IK/FK、硬件与控制器状态、Action/Task 生命周期、VLA policy/episode、
   多机器人协调；资源统一用 `*_id` 寻址并移除写死拓扑，补齐 MoveIt/ros2_control 核心契约。
 - 建图定位：OccupancyGrid 全量/增量、地图查询、SLAM/位姿图/闭环、重定位闭环。
+- 感知：新增 SemanticOccupancyGrid（BEV 语义占据栅格，proto + fbs），每格在占据之外携带
+  语义类别（可通行/占据/路沿/行人/车/锥桶/植物等），补足仅有占据概率的 OccupancyGrid。
 - 为 54 个热路径消息新增 FlatBuffers 表示与 canonical `shm://` 接口；有损投影用独立类型名
   （`CompactDetectedObjects`、`CompactRadarObjects`）。
 - InteractiveMarker 位姿更新改为结构化记录，移除远程命令执行语义。

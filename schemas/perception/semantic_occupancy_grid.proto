@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package vmsgs.proto.perception;
+
+import "common/header.proto";
+import "geometry/pose.proto";
+
+// Semantic class of a bird's-eye-view occupancy-grid cell. Zero is the unknown
+// sentinel; higher values name the dominant object or surface occupying the cell.
+enum OccupancyClass {
+  OCCUPANCY_CLASS_UNKNOWN = 0;      // Unobserved or invalid cell.
+  OCCUPANCY_CLASS_FREE = 1;         // Drivable free space.
+  OCCUPANCY_CLASS_OCCUPIED = 2;     // Static impassable obstacle, unclassified.
+  OCCUPANCY_CLASS_CURB = 3;         // Road curb or raised boundary.
+  OCCUPANCY_CLASS_GATE = 4;         // Barrier-gate area.
+  OCCUPANCY_CLASS_PEDESTRIAN = 5;   // Vulnerable road user such as pedestrian or cyclist.
+  OCCUPANCY_CLASS_VEHICLE = 6;      // Vehicle.
+  OCCUPANCY_CLASS_CONE = 7;         // Traffic cone.
+  OCCUPANCY_CLASS_VEGETATION = 8;   // Vegetation such as grass or branches.
+  OCCUPANCY_CLASS_NOISE = 9;        // Sensor noise such as spray or dust.
+}
+
+// Bird's-eye-view semantic occupancy grid over the local drivable area, giving a
+// per-cell semantic class in addition to occupancy. Cells are row-major with
+// exactly width*height entries; the center of cell (col, row) is
+// origin.position + ((col + 0.5) * resolution, (row + 0.5) * resolution) along the
+// grid x and y axes defined by origin.orientation.
+message SemanticOccupancyGrid {
+  // Observation timestamp in nanoseconds and grid coordinate frame.
+  vmsgs.proto.common.Header header = 1;
+  // Cell edge length, in metres.
+  float resolution = 2;
+  // Number of cells along the grid x axis (columns).
+  uint32 width = 3;
+  // Number of cells along the grid y axis (rows).
+  uint32 height = 4;
+  // Pose of the lower corner of cell (0, 0); grid axes follow its orientation.
+  vmsgs.proto.geometry.Pose origin = 5;
+  // Row-major semantic class per cell; exactly width*height entries.
+  repeated OccupancyClass cells = 6 [packed = true];
+  // Optional row-major per-cell surface height in metres; empty or width*height entries.
+  repeated float cell_height = 7 [packed = true];
+  // Optional row-major per-cell related object id, 0 meaning none; empty or width*height entries.
+  repeated uint32 cell_object_id = 8 [packed = true];
+}
