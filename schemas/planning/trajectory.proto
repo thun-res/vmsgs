@@ -8,7 +8,7 @@ import "geometry/pose.proto";
 
 // Time-parameterized state on the planned trajectory.
 message TrajectoryPoint {
-  // Signed time offset from `Trajectory.header.stamp`.
+  // Signed time offset from `Trajectory.header.time_meas`.
   vmsgs.proto.common.Duration time_from_start = 1;
   // Desired body pose expressed in `Trajectory.header.frame_id`.
   vmsgs.proto.geometry.Pose pose = 2;

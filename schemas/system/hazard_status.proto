@@ -45,6 +45,6 @@ message HazardStatusStamped {
   // Assessment and publication time metadata.
   vmsgs.proto.common.Header header = 1;
 
-  // Aggregated hazard status at header.stamp.
+  // Aggregated hazard status at header.time_meas.
   HazardStatus status = 2;
 }

@@ -32,7 +32,7 @@ table VLAAction {
   /// Zero-based position within a multi-step action horizon.
   horizon_step:uint (id: 12);
   /// Last timestamp in nanoseconds at which this action remains valid.
-  valid_until_stamp:ulong (id: 13);
+  time_valid_until:ulong (id: 13);
 }
 
 root_type VLAAction;

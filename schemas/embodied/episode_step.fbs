@@ -55,7 +55,7 @@ table EpisodeStep {
   /// Discount applied to future reward after this transition, normally [0, 1].
   discount:float (id: 11);
 
-  /// Observation sample offsets from header.stamp in signed nanoseconds.
+  /// Observation sample offsets from header.time_meas in signed nanoseconds.
   observation_time_offset_ns:[long] (id: 12);
 
   /// Per-observation validity flags aligned one-to-one with observations.

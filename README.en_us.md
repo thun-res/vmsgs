@@ -100,15 +100,20 @@ At build time VMsgs uses `vlink_generate_cpp` to automatically compile the `.pro
 | --- | :---: | --- |
 | `ENABLE_PROTOBUF` | ON | Compile and link Protobuf schemas |
 | `ENABLE_FLATBUFFERS` | ON | Compile and link FlatBuffers schemas and their registry |
+| `ENABLE_BAG_PLUGIN` | ON | Build the bag message-time reorder plugin |
 | `BUILD_SHARED_LIBS` | ON | Build shared libraries |
 
 > `ENABLE_PROTOBUF` and `ENABLE_FLATBUFFERS` cannot both be disabled.
+
+On Windows shared builds, link through `vmsgs::vmsgs` or `vlink::vmsgs` so consumers receive the DLL import definition required by generated Protobuf types.
 
 ---
 
 ## 🔌 Integration with VLink
 
 VMsgs implements `vlink::SchemaPluginBase` in `src/schema_plugin_impl.cc`, registering itself as a **schema plugin** with VLink. This lets VLink's CLI tools, Viewer, and record/replay components recognize VMsgs' version information and message types. FlatBuffers schemas additionally generate a type registry (`fbs_registry.cc`) for resolving messages by name at runtime.
+
+`plugins/bag/` provides an optional bag message-time reorder plugin. It resolves VMsgs schemas dynamically and supports VLink ZeroCopy PointCloud messages.
 
 ---
 
@@ -137,6 +142,7 @@ vmsgs/
 │   ├── macros.h      topic-URL accessor macros
 │   └── interface/    standard topic declarations per domain
 ├── src/              source (VLink schema plugin implementation)
+├── plugins/bag/      bag message-time reorder plugin
 ├── tools/            formatting and checking scripts
 ├── cmake/            build helpers (version.h.in, etc.)
 ├── CMakeLists.txt    top-level CMake entry

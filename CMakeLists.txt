@@ -35,6 +35,7 @@ set(PROJECT_NAMESPACE vlink::)
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 option(ENABLE_PROTOBUF "" ON)
 option(ENABLE_FLATBUFFERS "" ON)
+option(ENABLE_BAG_PLUGIN "Build the vmsgs bag reorder plugin" ON)
 include(GNUInstallDirs)
 set(INSTALL_CONFIG_DIR
     ${CMAKE_INSTALL_SYSCONFDIR}/${CMAKE_PROJECT_NAME}
@@ -77,7 +78,6 @@ foreach(OUTPUTCONFIG Debug Release RelWithDebInfo MinSizeRel)
   set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG_U} ${CMAKE_BINARY_DIR}/output/lib)
   set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG_U} ${CMAKE_BINARY_DIR}/output/lib)
 endforeach()
-# set(CMAKE_CONFIGURATION_TYPES "RelWithDebInfo;Debug;Release;MinSizeRel" CACHE STRING "" FORCE)
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Release")
 endif()
@@ -122,44 +122,28 @@ target_include_directories(
          $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
          $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}>
 )
-# FlatBuffers emits basename-only includes for referenced schemas (for example "header.fbs.hpp"). Export every generated
-# schema domain so installed consumers can resolve those transitive includes without adding private paths themselves.
-set(VMSGS_SCHEMA_DOMAINS
-    common
-    control
-    embodied
-    geometry
-    localization
-    map
-    navigation
-    perception
-    planning
-    sensor
-    shape
-    system
-    tf2
-    v2x
-    vehicle
-    visualization
-)
-foreach(VMSGS_SCHEMA_DOMAIN IN LISTS VMSGS_SCHEMA_DOMAINS)
-  target_include_directories(
-    ${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/${PROJECT_NAME}/${VMSGS_SCHEMA_DOMAIN}>
-                           $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/${VMSGS_SCHEMA_DOMAIN}>
-  )
-endforeach()
 if(ENABLE_PROTOBUF)
   file(GLOB_RECURSE PROTO_SRCS CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/schemas/*.proto)
+  set(VMSGS_PROTOBUF_FLAGS)
+  if(WIN32 AND BUILD_SHARED_LIBS)
+    set(VMSGS_PROTOBUF_FLAGS "--cpp_opt=dllexport_decl=VMSGS_PROTOBUF_EXPORT")
+  endif()
   vlink_generate_cpp(
     TARGET
     generate_proto
     PROTO
     ${PROTO_SRCS}
+    FLAGS
+    "${VMSGS_PROTOBUF_FLAGS}"
     IN_DIR
     ${PROJECT_SOURCE_DIR}/schemas
     OUT_DIR
     ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}
   )
+  if(WIN32 AND BUILD_SHARED_LIBS)
+    target_compile_definitions(generate_proto PRIVATE "VMSGS_PROTOBUF_EXPORT=__declspec(dllexport)")
+    target_compile_definitions(${PROJECT_NAME} INTERFACE "VMSGS_PROTOBUF_EXPORT=__declspec(dllimport)")
+  endif()
   target_link_libraries(${PROJECT_NAME} PUBLIC ${protobuf_libs})
   target_link_libraries(${PROJECT_NAME} PRIVATE generate_proto)
   target_compile_definitions(${PROJECT_NAME} PUBLIC "VMSGS_ENABLE_PROTOBUF")
@@ -212,6 +196,11 @@ if(EXISTS ${CMAKE_SOURCE_DIR}/version.txt)
   configure_file(${CMAKE_SOURCE_DIR}/version.txt ${CMAKE_BINARY_DIR}/version.txt COPYONLY)
 endif()
 
+# plugins
+if(ENABLE_BAG_PLUGIN)
+  add_subdirectory(plugins/bag)
+endif()
+
 # install
 install(
   TARGETS ${PROJECT_NAME}
@@ -222,7 +211,7 @@ install(
 install(
   DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-  PATTERN "*.pb.cc" EXCLUDE
+  PATTERN "*.cc" EXCLUDE
 )
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${CMAKE_PROJECT_NAME})
 if(EXISTS ${CMAKE_BINARY_DIR}/config/version.h)
@@ -254,6 +243,7 @@ vlink_log("│ BUILD_SHARED_LIBS:    ${BUILD_SHARED_LIBS}")
 vlink_log("│ INSTALL_CONFIG_DIR:   ${INSTALL_CONFIG_DIR}")
 vlink_log("│ ENABLE_PROTOBUF:      ${ENABLE_PROTOBUF}")
 vlink_log("│ ENABLE_FLATBUFFERS:   ${ENABLE_FLATBUFFERS}")
+vlink_log("│ ENABLE_BAG_PLUGIN:    ${ENABLE_BAG_PLUGIN}")
 vlink_log("└────────────────────────────────────────────────────────────────────────────")
 message("")
 install(FILES ${VLINK_INFO_FILE} DESTINATION ${INSTALL_CONFIG_DIR}/)

@@ -1,12 +1,12 @@
 # 更新日志
 
-## v2.0.0（2026/07/12）
+## v2.0.0（2026/07/15）
 
 > 注意：v1.x 数据与 v2.x schema 不互通，历史数据需先离线迁移，节点不可 1.x/2.x 混部。
 
 ### 类型与语义
 
-- 绝对时间戳统一为 `uint64` 纳秒；相对时间量（间隔、超时、生命周期、偏移、步长）统一用
+- 绝对时间戳统一为 `time_*` 命名的 `uint64` 纳秒；相对时间量（间隔、超时、生命周期、偏移、步长）统一用
   `common/duration.proto`（FlatBuffers 用 `_ns`），删除 `time.proto`、`published_time.proto`。
 - 服务与结果响应统一用 `common.Status`；合并 `ResponseStatus`、空 Trigger 请求，删除与
   `Twist` 重复的 `Velocity`。
@@ -29,6 +29,7 @@
 - 为 54 个热路径消息新增 FlatBuffers 表示与 canonical `shm://` 接口；有损投影用独立类型名
   （`CompactDetectedObjects`、`CompactRadarObjects`）。
 - InteractiveMarker 位姿更新改为结构化记录，移除远程命令执行语义。
+- 新增 bag 插件，支持按消息时间重排以及 ZeroCopy PointCloud 落盘。
 
 ### 接口与 QoS
 
@@ -39,6 +40,7 @@
 
 - 修复 install 配置 CMake 条件语法（可 `find_package(vmsgs)` 消费）；递归收集加
   `CONFIGURE_DEPENDS`；导出 `vmsgs::vmsgs` 与兼容 `vlink::vmsgs`。
+- 补齐 Windows 共享库的 Protobuf 符号导出，并为 bag 插件添加版本化库名。
 - 新增 GitHub Actions `schema-validation.yml`：protoc/flatc 全量编译 + package/namespace
   校验，独立于 vlink。
 

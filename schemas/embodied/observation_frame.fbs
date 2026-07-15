@@ -7,7 +7,7 @@ include "../sensor/point_cloud2.fbs";
 namespace vmsgs.fbs.embodied;
 
 /// Multimodal observation snapshot fed to a VLA / world-model.
-/// All modalities share the same `header.stamp` (synchronized fusion bundle).
+/// All modalities share the same `header.time_meas` (synchronized fusion bundle).
 table ObservationCamera {
   /// "head", "left_wrist", "right_wrist", ...
   name:string (id: 0);
@@ -25,7 +25,7 @@ table ObservationFrame {
   header:vmsgs.fbs.common.Header (id: 0);
   /// Named camera observations; camera names must be unique in the frame.
   cameras:[ObservationCamera] (id: 1);
-  /// Optional point cloud synchronized to header.stamp and expressed in header.frame_id.
+  /// Optional point cloud synchronized to header.time_meas and expressed in header.frame_id.
   point_cloud:vmsgs.fbs.sensor.PointCloud2 (id: 2);
   /// Proprioception vector (joint positions+velocities concatenated).
   proprioception:[float] (id: 3);

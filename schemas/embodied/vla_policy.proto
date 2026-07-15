@@ -68,7 +68,7 @@ message VLAInferenceRequest {
   string observation_url = 7;
 
   // Acquisition timestamp of the referenced observation in nanoseconds.
-  uint64 observation_stamp = 8;
+  uint64 time_observation = 8;
 
   // Requested number of future action steps; zero selects the policy default.
   uint32 action_horizon = 9;

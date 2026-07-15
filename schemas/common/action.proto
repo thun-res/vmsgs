@@ -21,7 +21,7 @@ message GoalInfo {
   UUID goal_id = 1;
 
   // Goal acceptance time as an absolute unsigned nanosecond timestamp.
-  uint64 accepted_stamp = 2;
+  uint64 time_accepted = 2;
 }
 
 // Current lifecycle state of one action goal.
@@ -41,12 +41,12 @@ message GoalStatusArray {
 
 // Generic cancellation selector supporting one, many, or all goals.
 message CancelGoalRequest {
-  // Exact goal to cancel; all-zero UUID selects by accepted_before_stamp only.
+  // Exact goal to cancel; all-zero UUID selects by time_accepted_before only.
   UUID goal_id = 1;
 
   // Cancel goals accepted at or before this absolute nanosecond timestamp;
   // zero disables the time selector. Both selectors zero requests all goals.
-  uint64 accepted_before_stamp = 2;
+  uint64 time_accepted_before = 2;
 }
 
 // Result of applying a generic cancellation selector.

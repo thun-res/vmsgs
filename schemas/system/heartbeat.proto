@@ -6,7 +6,7 @@ import "common/header.proto";
 
 // Liveness signal published by every node.
 message Heartbeat {
-  // Publication metadata; stamp marks when liveness was sampled.
+  // Publication metadata; time_meas marks when liveness was sampled.
   vmsgs.proto.common.Header header = 1;
 
   // Stable fully qualified name of the publishing process or node.

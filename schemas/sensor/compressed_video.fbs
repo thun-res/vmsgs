@@ -15,10 +15,10 @@ table CompressedVideo {
   is_keyframe:bool (id: 2);
 
   /// Presentation timestamp as unsigned nanoseconds on the codec time base.
-  pts_ns:uint64 (id: 3);
+  time_pts:uint64 (id: 3);
 
   /// Decode timestamp as unsigned nanoseconds on the codec time base.
-  dts_ns:uint64 (id: 4);
+  time_dts:uint64 (id: 4);
 
   /// Complete encoded access unit or codec packet bytes.
   data:[uint8] (id: 5);

@@ -8,9 +8,9 @@ table JointTrajectoryControllerState {
   header:vmsgs.fbs.common.Header (id: 0);
   /// Joint ordering shared by points and tolerances.
   joint_names:[string] (id: 1);
-  /// Desired sample at header.stamp.
+  /// Desired sample at header.time_meas.
   reference:vmsgs.fbs.embodied.JointTrajectoryPoint (id: 2);
-  /// Measured sample at header.stamp.
+  /// Measured sample at header.time_meas.
   feedback:vmsgs.fbs.embodied.JointTrajectoryPoint (id: 3);
   /// Reference minus feedback.
   error:vmsgs.fbs.embodied.JointTrajectoryPoint (id: 4);

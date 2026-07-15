@@ -6,7 +6,7 @@ import "geometry/pose.proto";
 
 // Static metadata about a 2D occupancy map / lanelet map.
 message MapMetaData {
-  uint64 map_load_time = 1;  // nanoseconds
+  uint64 time_map_load = 1;  // nanoseconds
   float resolution = 2;      // m/cell
   // Number of grid cells along the map x axis.
   uint32 width = 3;

@@ -12,8 +12,8 @@ table Header {
   frame_id:string (id: 1);
 
   /// Source acquisition or measurement time in nanoseconds.
-  stamp:uint64 (id: 2);
+  time_meas:uint64 (id: 2);
 
-  /// Time the message entered the transport in nanoseconds; may equal stamp.
-  publish_stamp:uint64 (id: 3);
+  /// Time the message entered the transport in nanoseconds; may equal time_meas.
+  time_pub:uint64 (id: 3);
 }

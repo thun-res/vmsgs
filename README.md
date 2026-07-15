@@ -100,15 +100,20 @@ target_link_libraries(my_app PRIVATE vlink::vmsgs)
 | --- | :---: | --- |
 | `ENABLE_PROTOBUF` | ON | 编译并链接 Protobuf schema |
 | `ENABLE_FLATBUFFERS` | ON | 编译并链接 FlatBuffers schema 及其注册表 |
+| `ENABLE_BAG_PLUGIN` | ON | 构建 bag 消息时间重排插件 |
 | `BUILD_SHARED_LIBS` | ON | 构建动态库 |
 
 > `ENABLE_PROTOBUF` 与 `ENABLE_FLATBUFFERS` 不可同时关闭。
+
+Windows 共享构建应通过 `vmsgs::vmsgs` 或 `vlink::vmsgs` 目标链接，以传递生成 Protobuf 类型所需的 DLL 导入定义。
 
 ---
 
 ## 🔌 与 VLink 的集成
 
 VMsgs 通过 `src/schema_plugin_impl.cc` 实现 `vlink::SchemaPluginBase`，向 VLink 注册为 **schema 插件**，使 VLink 的 CLI 工具、Viewer 与录制回放等组件能够识别 VMsgs 的版本信息与消息类型。FlatBuffers schema 额外生成类型注册表（`fbs_registry.cc`），供运行时按名解析消息。
+
+`plugins/bag/` 提供可选的 bag 消息时间重排插件，动态读取已加载的 VMsgs schema，并支持 VLink ZeroCopy PointCloud 消息。
 
 ---
 
@@ -137,6 +142,7 @@ vmsgs/
 │   ├── macros.h      话题 URL 访问器宏
 │   └── interface/    各领域标准话题声明
 ├── src/              源码（VLink schema 插件实现）
+├── plugins/bag/      bag 消息时间重排插件
 ├── tools/            格式化与检查脚本
 ├── cmake/            构建辅助（version.h.in 等）
 ├── CMakeLists.txt    顶层 CMake 入口

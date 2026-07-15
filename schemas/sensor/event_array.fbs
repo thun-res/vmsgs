@@ -11,7 +11,7 @@ struct Event {
   polarity:ubyte;
   /// Reserved padding byte kept after polarity for alignment and future use.
   reserved:ubyte;
-  /// Timestamp delta (ns) relative to header.stamp.
+  /// Timestamp delta (ns) relative to header.time_meas.
   delta_ns:uint32;
 }
 

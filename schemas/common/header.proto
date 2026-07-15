@@ -15,9 +15,9 @@ message Header {
 
   // Timestamp when the data was acquired at its source, in nanoseconds.
   // The clock domain is deployment-defined and must be consistent per stream.
-  uint64 stamp = 3;
+  uint64 time_meas = 3;
 
   // Timestamp when the message entered the transport, in nanoseconds.
-  // Producers should set this equal to stamp when no separate value is known.
-  uint64 publish_stamp = 4;
+  // Producers should set this equal to time_meas when no separate value is known.
+  uint64 time_pub = 4;
 }

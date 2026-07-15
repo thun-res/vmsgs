@@ -75,7 +75,7 @@ message GnssSolution {
   double heading = 11;
 
   // Receiver/GNSS time corresponding to the fix as unsigned nanoseconds.
-  uint64 receiver_stamp = 12;
+  uint64 time_receiver = 12;
 
   // Per-satellite signal summaries in receiver-defined order.
   repeated SatelliteSignalStatus satellites = 13;

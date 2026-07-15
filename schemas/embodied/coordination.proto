@@ -140,7 +140,7 @@ message BidNotice {
   // Versioned task category understood by eligible fleet adapters.
   string category = 2;
   // Earliest permitted start as an absolute uint64 nanosecond timestamp.
-  uint64 earliest_start_stamp = 3;
+  uint64 time_earliest_start = 3;
   // Task-specific, low-volume parameters with unique keys.
   repeated vmsgs.proto.common.KeyValue parameters = 4;
 }
@@ -154,7 +154,7 @@ message BidProposal {
   // Non-negative cost comparable across proposals for this task.
   double cost = 3;
   // Estimated finish as an absolute uint64 nanosecond timestamp.
-  uint64 finish_stamp = 4;
+  uint64 time_finish = 4;
   // Proposal identity used by the award message.
   vmsgs.proto.common.UUID proposal_id = 5;
 }
@@ -241,7 +241,7 @@ message TrafficRoute {
   uint64 route_id = 1;
   // Building level or map containing every waypoint.
   string map_name = 2;
-  // Ordered poses; each header stamp is an absolute uint64 nanosecond arrival time.
+  // Ordered poses; each header time_meas is an absolute uint64 nanosecond arrival time.
   repeated vmsgs.proto.geometry.PoseStamped waypoints = 3;
 }
 
@@ -362,9 +362,9 @@ message ChargerReservationRequest {
   // Robot for which the charger is reserved.
   string robot_name = 3;
   // Reservation start as an absolute uint64 nanosecond timestamp.
-  uint64 start_stamp = 4;
+  uint64 time_start = 4;
   // Reservation end as an absolute uint64 nanosecond timestamp.
-  uint64 end_stamp = 5;
+  uint64 time_end = 5;
   // True releases an existing reservation instead of creating one.
   bool release = 6;
 }

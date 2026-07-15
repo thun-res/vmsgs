@@ -10,7 +10,7 @@ import "common/header.proto";
 message SourcePointCloudInfo {
   string topic = 1;     // Canonical URL of the source point-cloud stream.
   string frame_id = 2;  // Coordinate frame of the source cloud before fusion.
-  uint64 stamp = 3;     // nanoseconds
+  uint64 time_meas = 3;  // nanoseconds
   // Number of points contributed.
   uint32 num_points = 4;
 }

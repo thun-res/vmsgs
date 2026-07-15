@@ -40,7 +40,7 @@ message VLAAction {
   uint32 horizon_step = 11;
 
   // Last timestamp in nanoseconds at which this action remains valid.
-  uint64 valid_until_stamp = 12;
+  uint64 time_valid_until = 12;
 }
 
 // Reward / done signal returned by the environment or supervisor.

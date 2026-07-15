@@ -13,7 +13,7 @@ message CooperativeStatus {
   // Stable cooperative-participant identifier for the sender's active lifetime.
   string vehicle_id = 2;
 
-  // Sender pose in header.frame_id at header.stamp.
+  // Sender pose in header.frame_id at header.time_meas.
   vmsgs.proto.geometry.Pose pose = 3;
 
   // Longitudinal speed in metres per second.

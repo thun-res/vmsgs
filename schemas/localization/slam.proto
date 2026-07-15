@@ -34,7 +34,7 @@ message SlamKeyframe {
   uint64 id = 1;
 
   // Sensor acquisition time as an absolute unsigned nanosecond timestamp.
-  uint64 stamp = 2;
+  uint64 time_meas = 2;
 
   // Optimized keyframe pose and row-major 6x6 uncertainty in graph.header.frame_id.
   vmsgs.proto.geometry.PoseWithCovariance pose = 3;
@@ -136,7 +136,7 @@ message SlamStatus {
   uint64 constraint_count = 7;
 
   // Timestamp of the most recently accepted loop closure, in nanoseconds.
-  uint64 last_loop_closure_stamp = 8;
+  uint64 time_last_loop_closure = 8;
 
   // Latest local tracking confidence in the inclusive range [0, 1].
   float tracking_confidence = 9;

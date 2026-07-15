@@ -25,9 +25,9 @@ message JointTrajectoryControllerState {
   vmsgs.proto.common.Header header = 1;
   // Ordered joint names shared by every trajectory point below.
   repeated string joint_names = 2;
-  // Controller reference evaluated at header.stamp.
+  // Controller reference evaluated at header.time_meas.
   JointTrajectoryPoint reference = 3;
-  // Measured or estimated joint feedback at header.stamp.
+  // Measured or estimated joint feedback at header.time_meas.
   JointTrajectoryPoint feedback = 4;
   // reference - feedback for each populated interface.
   JointTrajectoryPoint error = 5;

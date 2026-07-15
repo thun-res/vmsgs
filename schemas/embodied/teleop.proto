@@ -28,7 +28,7 @@ message TeleopFrame {
   vmsgs.proto.common.Header header = 1;
   // Stable identifier of the teleoperation operator.
   string operator_id = 2;
-  // Tracked operator body parts captured at header.stamp; source names should be unique.
+  // Tracked operator body parts captured at header.time_meas; source names should be unique.
   repeated TeleopPose poses = 3;
 }
 
