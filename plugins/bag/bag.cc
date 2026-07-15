@@ -36,12 +36,12 @@
 
 namespace vmsgs {
 
-static constexpr int64_t kDefaultCacheTime{500};
-static constexpr int64_t kDefaultCacheSize{512};
+static constexpr int64_t kDefaultCacheTime{1000};
+static constexpr int64_t kDefaultCacheSize{1024};
 static constexpr int64_t kDefaultJumpTime{10000};
 static constexpr int64_t kBytesPerMb{1024LL * 1024LL};
 static constexpr int64_t kNsPerUs{1000};
-static constexpr char kPointCloudType[]{"vlink::zerocopy::PointCloud"};
+static constexpr std::string_view kPointCloudType{"vlink::zerocopy::PointCloud"};
 
 static int64_t parse_positive_int64(const std::string& value, int64_t fallback) noexcept {
   if (value.empty()) {
@@ -66,6 +66,7 @@ static bool timestamp_ns_to_us(uint64_t timestamp_ns, int64_t& timestamp_us) noe
   }
 
   timestamp_us = static_cast<int64_t>(value);
+
   return true;
 }
 
@@ -200,6 +201,7 @@ static bool extract_zerocopy_timestamp(const std::string& ser_type, const vlink:
   }
 
   const auto* timestamp_ns = std::get_if<uint64_t>(&value);
+
   return timestamp_ns != nullptr && timestamp_ns_to_us(*timestamp_ns, timestamp_us);
 }
 
@@ -208,7 +210,7 @@ class BagPlugin final : public vlink::BagPluginInterface {
   BagPlugin() : enable_lidar_vertical_(vlink::Utils::get_env("VMSGS_BAG_LIDAR_VERTICAL", "1") == "1") {
     std::cout << "* VMSGS_BAG_LIDAR_VERTICAL: " << (enable_lidar_vertical_ ? 1 : 0) << std::endl;
 
-    if (vlink::Utils::get_env("VMSGS_BAG_RESORT") != "1") {
+    if (vlink::Utils::get_env("VMSGS_BAG_RESORT", "1") != "1") {
       std::cout << "* VMSGS_BAG_RESORT:         0" << std::endl;
       return;
     }
@@ -231,7 +233,17 @@ class BagPlugin final : public vlink::BagPluginInterface {
 
   ~BagPlugin() override = default;
 
-  void on_read(const vlink::Frame& frame) override { do_callback(frame); }
+  void on_read(const vlink::Frame& frame) override {
+    int64_t data_timestamp = -1;
+    (void)extract_data_timestamp(frame, data_timestamp);
+
+    if (!processor_) {
+      do_callback(frame);
+      return;
+    }
+
+    processor_->push(data_timestamp, frame);
+  }
 
   void on_write(const vlink::Frame& frame) override {
     int64_t data_timestamp = -1;
