@@ -2,7 +2,7 @@
 # Copyright (C) 2026 by Thun Lu. All rights reserved.
 #
 
-add_library(vmsgs-bag SHARED bag.cc)
+add_library(vmsgs-bag SHARED bag_plugin_impl.cc)
 target_link_libraries(vmsgs-bag PRIVATE vmsgs::vmsgs)
 set_target_properties(
   vmsgs-bag
