@@ -19,8 +19,8 @@ The shared library uses the VMsgs project version while retaining the unversione
 | --- | ---: | --- |
 | `VMSGS_BAG_LIDAR_VERTICAL` | `1` | Store VLink ZeroCopy `PointCloud` payloads in vertical layout. |
 | `VMSGS_BAG_RESORT` | `1` | Set to `0` to disable data-timestamp reordering. |
-| `VMSGS_BAG_CACHE_TIME` | `500` | Reorder window in milliseconds. |
-| `VMSGS_BAG_CACHE_SIZE` | `512` | Maximum buffered payload size in MiB. |
+| `VMSGS_BAG_CACHE_TIME` | `1000` | Reorder window in milliseconds. |
+| `VMSGS_BAG_CACHE_SIZE` | `1024` | Maximum buffered payload size in MiB. |
 | `VMSGS_BAG_JUMP_TIME` | `10000` | Maximum accepted data-timestamp jump in milliseconds. |
 
 PointCloud layout conversion is independent of reordering; set `VMSGS_BAG_LIDAR_VERTICAL=0` to preserve the input layout.

@@ -41,9 +41,12 @@ static constexpr int64_t kDefaultCacheSize{1024};
 static constexpr int64_t kDefaultJumpTime{10000};
 static constexpr int64_t kBytesPerMb{1024LL * 1024LL};
 static constexpr int64_t kNsPerUs{1000};
+static constexpr int64_t kUsPerMs{1000};
+static constexpr int64_t kMaxMilliseconds{std::numeric_limits<int64_t>::max() / kUsPerMs};
+static constexpr int64_t kMaxCacheSizeMb{std::numeric_limits<int64_t>::max() / kBytesPerMb};
 static constexpr std::string_view kPointCloudType{"vlink::zerocopy::PointCloud"};
 
-static int64_t parse_positive_int64(const std::string& value, int64_t fallback) noexcept {
+static int64_t parse_positive_int64(const std::string& value, int64_t fallback, int64_t maximum) noexcept {
   if (value.empty()) {
     return fallback;
   }
@@ -51,7 +54,7 @@ static int64_t parse_positive_int64(const std::string& value, int64_t fallback) 
   int64_t parsed_value = 0;
   const auto result = std::from_chars(value.data(), value.data() + value.size(), parsed_value);
 
-  if (result.ec != std::errc() || result.ptr != value.data() + value.size() || parsed_value <= 0) {
+  if (result.ec != std::errc() || result.ptr != value.data() + value.size() || parsed_value <= 0 || parsed_value > maximum) {
     return fallback;
   }
 
@@ -216,11 +219,11 @@ class BagPlugin final : public vlink::BagPluginInterface {
     }
 
     vlink::BagProcessor::Config config;
-    config.min_cache_time = parse_positive_int64(vlink::Utils::get_env("VMSGS_BAG_CACHE_TIME"), kDefaultCacheTime);
+    config.min_cache_time = parse_positive_int64(vlink::Utils::get_env("VMSGS_BAG_CACHE_TIME"), kDefaultCacheTime, kMaxMilliseconds);
 
-    const int64_t cache_size_mb = parse_positive_int64(vlink::Utils::get_env("VMSGS_BAG_CACHE_SIZE"), kDefaultCacheSize);
-    config.max_cache_size = cache_size_mb > std::numeric_limits<int64_t>::max() / kBytesPerMb ? kDefaultCacheSize * kBytesPerMb : cache_size_mb * kBytesPerMb;
-    config.max_jump_time = parse_positive_int64(vlink::Utils::get_env("VMSGS_BAG_JUMP_TIME"), kDefaultJumpTime);
+    const int64_t cache_size_mb = parse_positive_int64(vlink::Utils::get_env("VMSGS_BAG_CACHE_SIZE"), kDefaultCacheSize, kMaxCacheSizeMb);
+    config.max_cache_size = cache_size_mb * kBytesPerMb;
+    config.max_jump_time = parse_positive_int64(vlink::Utils::get_env("VMSGS_BAG_JUMP_TIME"), kDefaultJumpTime, kMaxMilliseconds);
 
     std::cout << "* VMSGS_BAG_RESORT:         1" << std::endl;
     std::cout << "* VMSGS_BAG_CACHE_TIME:     " << config.min_cache_time << std::endl;
@@ -283,6 +286,12 @@ class BagPlugin final : public vlink::BagPluginInterface {
     }
 
     processor_->push(data_timestamp, frame);
+  }
+
+  void on_reset() override {
+    if (processor_) {
+      processor_->reset();
+    }
   }
 
   void flush() override {
