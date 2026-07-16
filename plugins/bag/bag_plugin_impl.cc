@@ -257,10 +257,10 @@ class BagPlugin final : public vlink::BagPluginInterface {
     if (is_point_cloud) {
       vlink::zerocopy::PointCloud point_cloud;
 
-      if (vlink::Serializer::convert(frame.data, point_cloud) && point_cloud.is_valid()) {
+      if (vlink::Serializer::convert(frame.data, point_cloud)) {
         (void)timestamp_ns_to_us(point_cloud.header.time_meas, data_timestamp);
 
-        if (enable_lidar_vertical_ && !point_cloud.get_vertical()) {
+        if (point_cloud.is_valid() && enable_lidar_vertical_ && !point_cloud.get_vertical()) {
           point_cloud.set_vertical(true);
           vlink::Frame converted_frame = frame;
           converted_frame.data.clear();
