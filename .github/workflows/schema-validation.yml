@@ -7,9 +7,6 @@ name: Schema Validation
 on:
   push:
     branches: [master, main]
-    paths:
-      - "schemas/**"
-      - ".github/workflows/schema-validation.yml"
   pull_request:
     paths:
       - "schemas/**"
